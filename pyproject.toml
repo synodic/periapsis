@@ -26,7 +26,7 @@ dependencies = [
   'honesty>=0.0.0.dev1',
 ]
 
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
   "cppython[pdm,conan,cmake]>=0.0.0.dev1",
 ]
