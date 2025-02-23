@@ -1,5 +1,5 @@
 [project]
-description = "Utility library."
+description = "Generic utilities and templates library."
 name = "synodic-template-library"
 
 license = {text = "MIT"}
@@ -20,20 +20,18 @@ homepage = "https://github.com/Synodic-Software/Synodic-Template-Library"
 repository = "https://github.com/Synodic-Software/Synodic-Template-Library"
 
 [tool.cppython]
-
-[tool.cppython.provider.conan]
 dependencies = [
   'honesty>=0.0.0.dev1',
 ]
 
 [dependency-groups]
 dev = [
-  "cppython[pdm,conan,cmake]>=0.0.0.dev1",
+  "cppython[pdm,vcpkg,cmake]>=0.0.0.dev1",
 ]
 lint = [
-  "ruff>=0.8.1",
-  "mypy>=1.13",
-  "isort>=5.13.2",
+  "ruff>=0.9.1",
+  "mypy>=1.15",
+  "isort>=6.0.0",
 ]
 test = [
   "pytest>=8.3.4",

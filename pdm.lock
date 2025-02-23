@@ -5,7 +5,7 @@
 groups = ["default", "dev", "lint", "test"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:513240ad63a46bef1cb72a510e372f0b286c5ec4db4a27a39ec1056254e3e35a"
+content_hash = "sha256:f9bddda3f84e85ab743e37d16b110ccc3c69a1d8da799b8d51bc8ade9dde8fc3"
 
 [[metadata.targets]]
 requires_python = ">=3.13"
@@ -166,7 +166,7 @@ files = [
 [[package]]
 name = "cppython"
 version = "0.8.0"
-extras = ["cmake", "conan", "pdm"]
+extras = ["cmake", "pdm", "vcpkg"]
 requires_python = ">=3.13"
 summary = "A Python management solution for C++ dependencies"
 dependencies = [
