@@ -1,11 +1,9 @@
-cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
 project(tests
 	DESCRIPTION "Test project for Synodic Template Library"
 	LANGUAGES CXX
 )
-
-find_package(GTest REQUIRED)
 
 add_executable(tests)
 
@@ -18,14 +16,10 @@ set_target_properties(tests
 )
 
 target_link_libraries(tests
-PRIVATE
-	${CMAKE_PROJECT_NAME}
-    GTest::gtest_main
+	PRIVATE
+	synodic::honesty::main
 )
 
 add_subdirectory(
 	"unit"
 )
-
-include(GoogleTest)
-gtest_discover_tests(tests)
