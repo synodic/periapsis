@@ -1,13 +1,14 @@
 {
-	"version": 6,
-	"cmakeMinimumRequired": {
-		"major": 3,
-		"minor": 30,
-		"patch": 5
-	},
-	"include": [
-		"tool/cmake/presets/linux.json",
-		"tool/cmake/presets/macos.json",
-		"tool/cmake/presets/windows.json"
-	]
+    "version": 9,
+    "include": [
+        "tool/cmake/platform/linux/CMakePresets.json",
+        "tool/cmake/platform/mac/CMakePresets.json",
+        "tool/cmake/platform/windows/CMakePresets.json",
+        "tool/cppython/cppython.json"
+    ],
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 30,
+        "patch": 5
+    }
 }
