@@ -2,11 +2,9 @@
 description = "Generic utilities and templates library."
 name = "synodic-template-library"
 
-license = {text = "MIT"}
+license = { text = "MIT" }
 
-authors = [
-  {name = "Synodic Software", email = "contact@synodic.software"},
-]
+authors = [{ name = "Synodic Software", email = "contact@synodic.software" }]
 
 readme = "README.md"
 
@@ -20,31 +18,19 @@ homepage = "https://github.com/Synodic-Software/Synodic-Template-Library"
 repository = "https://github.com/Synodic-Software/Synodic-Template-Library"
 
 [tool.cppython]
-dependencies = [
-  'honesty>=0.0.0.dev1',
-]
-
-[dependency-groups]
-dev = [
-  "cppython[pdm,vcpkg,cmake]>=0.0.0.dev1",
-]
-lint = [
-  "ruff>=0.9.1",
-  "mypy>=1.15",
-  "isort>=6.0.0",
-]
-test = [
-  "pytest>=8.3.4",
-  "pytest-cov>=6.0.0",
-  "pytest-mock>=3.14.0",
-]
+dependencies = ['honesty>=0.0.0.dev1']
 
 [tool.pdm.options]
 update = ["--update-all"]
 
 [tool.pdm.scripts]
-build = {shell = "cppython build"}
-test = {shell = "cppython test"}
+build = { shell = "cppython build" }
+test = { shell = "cppython test" }
+
+[dependency-groups]
+build = ["cppython[cmake,conan,git]>=0.9.3"]
+lint = ["ruff>=0.12.4", "pyrefly>=0.24.2", "isort>=6.0.1"]
+test = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-mock>=3.14.1"]
 
 [build-system]
 build-backend = "pdm.backend"
