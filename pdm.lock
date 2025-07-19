@@ -5,7 +5,7 @@
 groups = ["default", "build", "dev", "lint", "test"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:c137d07ea9b7a9e300cc43a9d5f5dd62308b7728e81de60c73211094ff1fe431"
+content_hash = "sha256:35af826a27b114b130ef32dd65f1b54c2bb77aee28a3556a3f3da6c852c83edc"
 
 [[metadata.targets]]
 requires_python = ">=3.13"
@@ -200,7 +200,7 @@ files = [
 
 [[package]]
 name = "cppython"
-version = "0.9.3"
+version = "0.9.4"
 requires_python = ">=3.13"
 summary = "A Python management solution for C++ dependencies"
 dependencies = [
@@ -211,26 +211,26 @@ dependencies = [
     "types-requests>=2.32.4.20250611",
 ]
 files = [
-    {file = "cppython-0.9.3-py3-none-any.whl", hash = "sha256:f49c4bde8cad76f9c4a18fed18ce6856ba52101091af175f3be5aff283319f37"},
-    {file = "cppython-0.9.3.tar.gz", hash = "sha256:a17377369bfefa91ae481d0a5a12159e6583a95c51da9fc32337d50a8ee50d24"},
+    {file = "cppython-0.9.4-py3-none-any.whl", hash = "sha256:21bbe0baa837799b7afe63b87c5a18b9d219f1c1a863efcb7cf56d9bb1c030d0"},
+    {file = "cppython-0.9.4.tar.gz", hash = "sha256:a8f9fdd0a8a9854dfe152cf845b845b79464afcf3e65c71f4c39ac46ee0badc7"},
 ]
 
 [[package]]
 name = "cppython"
-version = "0.9.3"
+version = "0.9.4"
 extras = ["cmake", "conan", "git"]
 requires_python = ">=3.13"
 summary = "A Python management solution for C++ dependencies"
 dependencies = [
     "cmake>=4.0.3",
     "conan>=2.18.1",
-    "cppython==0.9.3",
+    "cppython==0.9.4",
     "dulwich>=0.23.2",
     "libcst>=1.8.2",
 ]
 files = [
-    {file = "cppython-0.9.3-py3-none-any.whl", hash = "sha256:f49c4bde8cad76f9c4a18fed18ce6856ba52101091af175f3be5aff283319f37"},
-    {file = "cppython-0.9.3.tar.gz", hash = "sha256:a17377369bfefa91ae481d0a5a12159e6583a95c51da9fc32337d50a8ee50d24"},
+    {file = "cppython-0.9.4-py3-none-any.whl", hash = "sha256:21bbe0baa837799b7afe63b87c5a18b9d219f1c1a863efcb7cf56d9bb1c030d0"},
+    {file = "cppython-0.9.4.tar.gz", hash = "sha256:a8f9fdd0a8a9854dfe152cf845b845b79464afcf3e65c71f4c39ac46ee0badc7"},
 ]
 
 [[package]]
