@@ -1,0 +1,43 @@
+{
+	"version": 9,
+	"include": [
+		"../../../cppython/cppython.json"
+	],
+	"configurePresets": [
+		{
+			"name": "default",
+			"inherits": "cppython",
+			"cacheVariables": {
+				"CMAKE_CONFIGURATION_TYPES": {
+					"type": "STRING",
+					"value": "Debug;Development;Release"
+				}
+			},
+			"hidden": true,
+			"description": "Base preset for configurations",
+			"binaryDir": "${sourceDir}/build/${presetName}"
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "default",
+			"hidden": true
+		}
+	],
+	"testPresets": [
+		{
+			"name": "default",
+			"hidden": true,
+			"output": {
+				"outputOnFailure": true,
+				"shortProgress": true,
+				"debug": true,
+				"verbosity": "verbose"
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		}
+	]
+}

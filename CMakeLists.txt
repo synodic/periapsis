@@ -9,16 +9,25 @@ project(synodic-template-library
 # Enable CTest for the project
 include(CTest)
 
+# Find Conan dependencies
+find_package(honesty REQUIRED)
+
 # Provide a namespaced alias
 add_library(synodic-template-library STATIC)
 add_library(synodic::synodic-template-library ALIAS synodic-template-library)
 
 set_target_properties(synodic-template-library
 	PROPERTIES
-		LINKER_LANGUAGE CXX
-		CXX_STANDARD 23
-		CXX_STANDARD_REQUIRED ON
-		CXX_EXTENSIONS NO
+	LINKER_LANGUAGE CXX
+	CXX_STANDARD 23
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS NO
+)
+
+# Link dependencies
+target_link_libraries(synodic-template-library
+	PUBLIC
+	honesty::honesty
 )
 
 add_subdirectory(
@@ -26,9 +35,7 @@ add_subdirectory(
 )
 
 if(BUILD_TESTING)
-
-    add_subdirectory(
+	add_subdirectory(
 		"tests"
 	)
-
 endif()
