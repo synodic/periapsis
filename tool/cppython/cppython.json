@@ -1,13 +1,11 @@
 {
     "version": 9,
-    "include": [
-        "providers/conan.json"
-    ],
     "configurePresets": [
         {
             "name": "cppython",
+            "description": "Injected configuration preset for CPPython",
             "hidden": true,
-            "inherits": "conan"
+            "toolchainFile": "D:/Projects/Synodic/Synodic-Template-Library/build/generators/conan_toolchain.cmake"
         }
     ]
 }

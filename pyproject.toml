@@ -21,8 +21,7 @@ repository = "https://github.com/Synodic-Software/Synodic-Template-Library"
 dependencies = ['honesty>=0.0.0.dev1']
 
 [tool.cppython.providers.conan]
-remotes = []
-
+[tool.cppython.providers.cmake]
 [tool.pdm.options]
 update = ["--update-all"]
 
@@ -31,9 +30,19 @@ build = { shell = "cppython build" }
 test = { shell = "cppython test" }
 
 [dependency-groups]
-build = ["cppython[cmake,conan,git]>=0.9.4"]
-lint = ["ruff>=0.12.4", "pyrefly>=0.24.2", "isort>=6.0.1"]
-test = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-mock>=3.14.1"]
+build = [
+    "cppython[cmake,conan,git]>=0.9.7",
+]
+lint = [
+    "ruff>=0.12.9",
+    "pyrefly>=0.28.1",
+    "isort>=6.0.1",
+]
+test = [
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+]
 
 [build-system]
 build-backend = "pdm.backend"
