@@ -20,10 +20,12 @@ repository = "https://github.com/Synodic-Software/Synodic-Template-Library"
 [tool.cppython]
 dependencies = ['honesty>=0.0.0.dev1']
 
+[tool.cppython.generators.cmake]
+preset_file = "tool/cmake/platform/common/CMakePresets.json"
+configuration_name = "default"
+
 [tool.cppython.providers.conan]
-[tool.cppython.providers.cmake]
-[tool.pdm.options]
-update = ["--update-all"]
+remotes = []
 
 [tool.pdm.scripts]
 build = { shell = "cppython build" }

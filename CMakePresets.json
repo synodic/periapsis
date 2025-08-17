@@ -3,47 +3,7 @@
     "include": [
         "tool/cmake/platform/linux/CMakePresets.json",
         "tool/cmake/platform/mac/CMakePresets.json",
-        "tool/cmake/platform/windows/CMakePresets.json",
-        "tool/cppython/cppython.json"
-    ],
-    "configurePresets": [
-        {
-            "name": "default",
-            "description": "All multi-configuration generators should inherit from this preset",
-            "inherits": "cppython",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_CONFIGURATION_TYPES": "Debug;Release"
-            }
-        },
-        {
-            "name": "default-release",
-            "description": "All single-configuration generators should inherit from this preset",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "default-debug",
-            "description": "All single-configuration generators should inherit from this preset",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "default-release",
-            "description": "An example build preset for release",
-            "configurePreset": "default-release"
-        },
-        {
-            "name": "default-debug",
-            "description": "An example build preset for debug",
-            "configurePreset": "default-debug"
-        }
+        "tool/cmake/platform/windows/CMakePresets.json"
     ],
     "cmakeMinimumRequired": {
         "major": 3,

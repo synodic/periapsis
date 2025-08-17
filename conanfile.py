@@ -3,7 +3,7 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.files import copy
 
 class MyProject(ConanFile):
-	name = "myproject"
+	name = "synodic-template-library"
 	version = "1.0"
 	settings = "os", "compiler", "build_type", "arch"
 	requires = ["honesty/[>=0.0.0.dev1]"]
@@ -28,7 +28,7 @@ class MyProject(ConanFile):
 		cmake.install()
 
 	def package_info(self):
-		self.cpp_info.libs = ["honesty"]
+		self.cpp_info.libs = ["synodic-template-library"]
 
 	def export_sources(self):
 		copy(self, "CMakeLists.txt", src=self.recipe_folder, dst=self.export_sources_folder)
