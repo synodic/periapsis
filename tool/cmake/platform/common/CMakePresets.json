@@ -20,7 +20,9 @@
         {
             "name": "default-release",
             "description": "All single-configuration generators should inherit from this preset",
-            "inherits": "default",
+            "inherits": [
+                "default"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
@@ -28,7 +30,9 @@
         {
             "name": "default-debug",
             "description": "All single-configuration generators should inherit from this preset",
-            "inherits": "default",
+            "inherits": [
+                "default"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
