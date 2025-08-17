@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
+import std;
+import synodic.honesty.test;
 
 import synodic.library.container;
-import std;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -13,12 +16,22 @@ using Queue = synodic::Queue<int, std::vector<int>>;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(queue, type)
+namespace
 {
-	//static_assert(synodic::sequence_container<Queue>);
-}
+	Suite SUITE(
+		"queue",
+		[]() -> Generator
+		{
+			co_yield "type"_test = [](const Requirements& requirements)
+			{
+				//static_assert(synodic::sequence_container<Queue>);
+			};
 
-TEST(queue, construction)
-{
-	//Queue queue;
+			co_yield "construction"_test = [](const Requirements& requirements)
+			{
+				//Queue queue;
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }

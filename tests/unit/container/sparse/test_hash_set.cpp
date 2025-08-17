@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
+import synodic.honesty.test;
 
 import synodic.library.container.sparse;
 import synodic.library.type.concepts;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -13,7 +16,17 @@ using HashSet = synodic::sparse::HashSet<int>;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(sparse_hash_set, type)
+namespace
 {
-	//static_assert(synodic::associative_container<HashSet>);
+	Suite SUITE(
+		"sparse_hash_set",
+		[]() -> Generator
+		{
+			co_yield "type"_test = [](const Requirements& requirements)
+			{
+				//static_assert(synodic::associative_container<HashSet>);
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }

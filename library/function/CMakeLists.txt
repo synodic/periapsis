@@ -5,6 +5,5 @@ target_sources(synodic-template-library
 			"${PROJECT_SOURCE_DIR}/library"
 		FILES
 			"executor.ixx"
-			"function.ixx"
-			"function_ref.ixx"
+			"function.ixx"	
 )

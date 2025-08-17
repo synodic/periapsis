@@ -1,7 +1,9 @@
-#include <gtest/gtest.h>
-
+import synodic.honesty.test;
 import synodic.library.container.sparse;
 import synodic.library.type.concepts;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -13,7 +15,17 @@ using BitMap = synodic::sparse::BitMap<int, 4>;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(sparse_bitmap, type)
+namespace
 {
-	//static_assert(synodic::sequence_container<BitMap>);
+	Suite SUITE(
+		"sparse_bitmap",
+		[]() -> Generator
+		{
+			co_yield "type"_test = [](const Requirements& requirements)
+			{
+				//static_assert(synodic::sequence_container<BitMap>);
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }
