@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
 
 project(tests
 	DESCRIPTION "Test project for Synodic Template Library"
@@ -21,5 +21,5 @@ target_link_libraries(tests
 )
 
 add_subdirectory(
-	"unit"
+	unit
 )

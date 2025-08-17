@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
 
 project(synodic-template-library
 	VERSION 0.1.0
@@ -25,17 +25,14 @@ set_target_properties(synodic-template-library
 )
 
 # Link dependencies
-target_link_libraries(synodic-template-library
-	PUBLIC
-	honesty::honesty
-)
+target_link_libraries(synodic-template-library)
 
 add_subdirectory(
-	"library"
+	library
 )
 
 if(BUILD_TESTING)
 	add_subdirectory(
-		"tests"
+		tests
 	)
 endif()
