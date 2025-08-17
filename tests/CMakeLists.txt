@@ -5,9 +5,6 @@ project(tests
 	LANGUAGES CXX
 )
 
-# Find Conan dependencies
-find_package(honesty REQUIRED)
-
 add_executable(tests)
 
 set_target_properties(tests
