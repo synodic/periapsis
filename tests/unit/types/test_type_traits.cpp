@@ -1,10 +1,8 @@
-#include <gtest/gtest.h>
+import std;
+import synodic.honesty.test;
 
-import synodic.library.type.traits;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 struct TestData
 {
@@ -71,30 +69,38 @@ private:
 	int* data3_;
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-TEST(type_traits, Value)
+namespace
 {
-	using ConstructorType = synodic::ConstructorParameters<TestClass>;
-	EXPECT_TRUE((std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
-}
+	Suite SUITE(
+		"type_traits",
+		[]() -> Generator
+		{
+			co_yield "value"_test = [](const Requirements& requirements)
+			{
+				using ConstructorType = synodic::ConstructorParameters<TestClass>;
+				requirements.Equal((std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
+			};
 
-TEST(type_traits, Const)
-{
-	using ConstructorType = synodic::ConstructorParameters<ConstTestClass>;
-	EXPECT_TRUE((std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
-}
+			co_yield "const"_test = [](const Requirements& requirements)
+			{
+				using ConstructorType = synodic::ConstructorParameters<ConstTestClass>;
+				requirements.Equal((std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
+			};
+		
 
-TEST(type_traits, Reference)
-{
-	// using ConstructorType = synodic::ConstructorParameters<ReferenceTestClass>;
-	// REQUIRE(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
-}
+			co_yield "ref"_test = [](const Requirements& requirements)
+				{
+					// using ConstructorType = synodic::ConstructorParameters<ReferenceTestClass>;
+				// requirements.Equal(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
+				};
+			}
 
-TEST(type_traits, Pointer)
-{
-	// using ConstructorType = synodic::ConstructorParameters<PointerTestClass>;
-	// REQUIRE(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
+			co_yield "ptr"_test = [](const Requirements& requirements)
+			{
+				// using ConstructorType = synodic::ConstructorParameters<PointerTestClass>;
+				// requirements.Equal(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
+			};
+
+		});
+	SuiteRegistrar _(SUITE);
 }

@@ -1,20 +1,24 @@
-#include <gtest/gtest.h>
+import std;
+import synodic.honesty.test;
 
-import synodic.library.utility;
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-TEST(utility, value)
+namespace
 {
-	static_assert(1 == synodic::nth_element<0>(1));
-	static_assert(1 == synodic::nth_element<0>(1, 2));
-	static_assert(2 == synodic::nth_element<1>(1, 2));
-	static_assert(1 == synodic::nth_element<0>(1, 2, 3));
-	static_assert(2 == synodic::nth_element<1>(1, 2, 3));
+	Suite SUITE(
+		"utility",
+		[]() -> Generator
+		{
+			co_yield "nth_element"_test = [](const Requirements& requirements)
+			{
+				static_assert(1 == synodic::nth_element<0>(1));
+				static_assert(1 == synodic::nth_element<0>(1, 2));
+				static_assert(2 == synodic::nth_element<1>(1, 2));
+				static_assert(1 == synodic::nth_element<0>(1, 2, 3));
+				static_assert(2 == synodic::nth_element<1>(1, 2, 3));
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }

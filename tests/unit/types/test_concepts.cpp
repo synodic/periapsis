@@ -1,9 +1,10 @@
 // Verifies that the container concepts work for all standard containers
 
-#include <gtest/gtest.h>
-
-import synodic.library.type.concepts;
 import std;
+import synodic.honesty.test;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -28,21 +29,31 @@ using Vector			= std::vector<int>;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(container, clearable)
+namespace
 {
-	static_assert(synodic::clearable_container<Deque>);
-	static_assert(synodic::clearable_container<ForwardList>);
-	static_assert(synodic::clearable_container<List>);
-	static_assert(synodic::clearable_container<Map>);
-	static_assert(synodic::clearable_container<MultiMap>);
-	static_assert(synodic::clearable_container<Set>);
-	static_assert(synodic::clearable_container<MultiSet>);
-	static_assert(synodic::clearable_container<String>);
-	static_assert(synodic::clearable_container<UnorderedMap>);
-	static_assert(synodic::clearable_container<UnorderedMultiMap>);
-	static_assert(synodic::clearable_container<UnorderedSet>);
-	static_assert(synodic::clearable_container<UnorderedMultiSet>);
-	static_assert(synodic::clearable_container<Vector>);
+	Suite SUITE(
+		"container",
+		[]() -> Generator
+		{
+			co_yield "clearable"_test = [](const Requirements& requirements)
+			{
+				static_assert(synodic::clearable_container<Deque>);
+				static_assert(synodic::clearable_container<ForwardList>);
+				static_assert(synodic::clearable_container<List>);
+				static_assert(synodic::clearable_container<Map>);
+				static_assert(synodic::clearable_container<MultiMap>);
+				static_assert(synodic::clearable_container<Set>);
+				static_assert(synodic::clearable_container<MultiSet>);
+				static_assert(synodic::clearable_container<String>);
+				static_assert(synodic::clearable_container<UnorderedMap>);
+				static_assert(synodic::clearable_container<UnorderedMultiMap>);
+				static_assert(synodic::clearable_container<UnorderedSet>);
+				static_assert(synodic::clearable_container<UnorderedMultiSet>);
+				static_assert(synodic::clearable_container<Vector>);
 
-	static_assert(not synodic::clearable_container<Array>);
+				static_assert(not synodic::clearable_container<Array>);
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }

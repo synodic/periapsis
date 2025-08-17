@@ -1,6 +1,8 @@
-#include <gtest/gtest.h>
-
+import synodic.honesty.test;
 import synodic.library.function;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -12,7 +14,15 @@ namespace test = synodic::executor;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(executor, TODO)
+namespace
 {
-
+	Suite SUITE(
+		"utility",
+		[]() -> Generator
+		{
+			co_return;
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }
+

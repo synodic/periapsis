@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
+import synodic.honesty.test;
 
 import synodic.library.container.sparse;
 import synodic.library.type.concepts;
+
+using namespace honesty::test;
+using namespace honesty::test::literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Types
@@ -13,7 +16,18 @@ using Vector = synodic::sparse::Vector<int, 3>;
 // Tests
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(sparse_vector, type)
+
+namespace
 {
-	//static_assert(synodic::contiguous_container<Vector>);
+	Suite SUITE(
+		"sparse_vector",
+		[]() -> Generator
+		{
+			co_yield "type"_test = [](const Requirements& requirements)
+			{
+				//static_assert(synodic::contiguous_container<Vector>);
+			};
+		}
+		);
+	SuiteRegistrar _(SUITE);
 }
