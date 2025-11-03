@@ -11,10 +11,6 @@
 			],
 			"hidden": true,
 			"description": "Base preset for Windows configurations",
-			"architecture": {
-				"value": "x64",
-				"strategy": "external"
-			},
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -26,9 +22,6 @@
 			"displayName": "Ninja - MSVC",
 			"description": "Ninja Multi-Config generator with Microsoft Visual C++ (MSVC)",
 			"generator": "Ninja Multi-Config",
-			"architecture": {
-				"strategy": "external"
-			},
 			"inherits": [
 				"windows-default"
 			],
@@ -42,9 +35,6 @@
 			"displayName": "Ninja - Clang",
 			"description": "Ninja Multi-Config generator with Clang (clang-cl)",
 			"generator": "Ninja Multi-Config",
-			"architecture": {
-				"strategy": "external"
-			},
 			"inherits": [
 				"windows-default"
 			],
@@ -59,6 +49,7 @@
 			"description": "Visual Studio 17 2022 generator with Microsoft Visual C++ (MSVC)",
 			"generator": "Visual Studio 17 2022",
 			"architecture": {
+				"value": "x64",
 				"strategy": "set"
 			},
 			"inherits": [
@@ -75,6 +66,7 @@
 			"description": "Visual Studio 17 2022 generator with Clang (clang-cl)",
 			"generator": "Visual Studio 17 2022",
 			"architecture": {
+				"value": "x64",
 				"strategy": "set"
 			},
 			"inherits": [
