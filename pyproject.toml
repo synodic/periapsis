@@ -14,8 +14,8 @@ dependencies = []
 requires-python = ">=3.14"
 
 [project.urls]
-homepage = "https://github.com/Synodic-Software/Synodic-Template-Library"
-repository = "https://github.com/Synodic-Software/Synodic-Template-Library"
+homepage = "https://github.com/synodic/Synodic-Template-Library"
+repository = "https://github.com/synodic/Synodic-Template-Library"
 
 [dependency-groups]
 build = ["cppython[cmake,conan,git]>=0.9.8"]
