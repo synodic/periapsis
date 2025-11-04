@@ -9,15 +9,16 @@ add_executable(tests)
 
 set_target_properties(tests
 	PROPERTIES
-		LINKER_LANGUAGE CXX
-		CXX_STANDARD 23
-		CXX_STANDARD_REQUIRED ON
-		CXX_EXTENSIONS NO
+	LINKER_LANGUAGE CXX
+	CXX_STANDARD 23
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS NO
 )
 
 target_link_libraries(tests
 	PRIVATE
-	synodic::honesty::main
+	synodic::honesty
+	synodic::honesty_main
 )
 
 add_subdirectory(
