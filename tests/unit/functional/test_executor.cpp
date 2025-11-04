@@ -17,7 +17,7 @@ namespace test = synodic::executor;
 namespace
 {
 	Suite SUITE(
-		"utility",
+		"executor",
 		[]() -> Generator
 		{
 			co_return;
