@@ -23,6 +23,7 @@ dependencies = ['honesty>=0.0.0.dev1']
 [tool.cppython.generators.cmake]
 preset_file = "tool/cmake/platform/common/CMakePresets.json"
 configuration_name = "default"
+cmake_binary = "C:/Program Files/CMake/bin/cmake.exe"
 
 [tool.cppython.providers.conan]
 remotes = []
