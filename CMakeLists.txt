@@ -29,6 +29,8 @@ set_target_properties(synodic-template-library
 	CXX_EXTENSIONS NO
 )
 
+target_compile_features(synodic-template-library PUBLIC cxx_std_23)
+
 # Link dependencies
 target_link_libraries(synodic-template-library)
 
