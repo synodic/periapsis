@@ -24,9 +24,6 @@ export import :exception.not_implemented;
 // String partitions
 export import :string.hash_string;
 
-// Structure partitions
-export import :structure.graph;
-
 // Algorithm partitions
 export import :algorithm.graph.max_flow;
 
