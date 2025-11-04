@@ -11,8 +11,7 @@ project(synodic-template-library
 	LANGUAGES CXX
 )
 
-# Enable CTest for the project
-include(CTest)
+option(BUILD_TESTING "Build the tests verifying Honesty functionality" ON)
 
 # Find Conan dependencies
 find_package(honesty REQUIRED)
@@ -38,8 +37,63 @@ add_subdirectory(
 	src
 )
 
+# NOTE: For IDE setups that do not use CMake directly, we setup all IDE directories to mimic
+# their system directory structure. See https://gitlab.kitware.com/cmake/cmake/-/issues/25992
+file(GLOB_RECURSE file_list ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
+
+# Must be called from the target definition directory. Only matched against 'target_sources'
+# files (No nested CMakeList.txt, docs, etc).
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${file_list})
+
 if(BUILD_TESTING)
+	# Do not include CTest because it adds targets and integrations we do not want to support
+	enable_testing()
+
 	add_subdirectory(
 		tests
 	)
 endif()
+
+# Installation
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Generate package config files
+write_basic_package_version_file(
+	synodic-template-libraryConfigVersion.cmake
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+	tool/cmake/synodic-template-libraryConfig.cmake.in
+	synodic-template-libraryConfig.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+)
+
+install(TARGETS synodic-template-library
+	EXPORT synodic-template-libraryTargets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+
+	FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+)
+
+# Create empty include directory to satisfy CMake's exported target requirements
+# (module-only library with no headers, but CMake expects the directory to exist)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Export and package configuration
+install(EXPORT synodic-template-libraryTargets
+	FILE synodic-template-libraryTargets.cmake
+	NAMESPACE synodic::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+)
+
+install(
+	FILES
+	${CMAKE_CURRENT_BINARY_DIR}/synodic-template-libraryConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/synodic-template-libraryConfigVersion.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+)
