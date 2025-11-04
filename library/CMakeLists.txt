@@ -28,10 +28,6 @@ add_subdirectory(
 )
 
 add_subdirectory(
-	"structure"
-)
-
-add_subdirectory(
 	"thread"
 )
 
