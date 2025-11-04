@@ -1,6 +1,6 @@
-export module synodic.library.type.concepts:container;
+export module synodic.library:type.concepts.container;
 
-import :shared;
+import :type.concepts.shared;
 
 import std;
 
@@ -26,6 +26,7 @@ export namespace synodic
 			requires std::same_as<typename T::reference, typename T::value_type&>;
 			requires std::same_as<typename T::const_reference, typename T::value_type const&>;
 
+
 			requires std::forward_iterator<typename T::iterator>;
 			requires std::forward_iterator<typename T::const_iterator>;
 			requires std::convertible_to<typename T::iterator, typename T::const_iterator>;
@@ -50,6 +51,7 @@ export namespace synodic
 				typename std::iterator_traits<typename T::const_iterator>::difference_type>;
 
 			requires not std::equality_comparable<typename T::value_type> or std::equality_comparable<T>;
+
 
 			requires not std::movable<typename T::value_type> or std::movable<T>;
 			requires not std::copyable<typename T::value_type> or std::copyable<T>;

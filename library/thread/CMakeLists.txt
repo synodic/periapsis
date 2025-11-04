@@ -5,5 +5,4 @@ target_sources(synodic-template-library
 			"${PROJECT_SOURCE_DIR}/library"
 		FILES
 			"local.ixx"
-			"thread.ixx"
-)
+))

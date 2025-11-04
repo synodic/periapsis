@@ -1,6 +1,6 @@
-export module synodic.library.type.concepts:associative_container;
+export module synodic.library:type.concepts.associative_container;
 
-import :container;
+import :type.concepts.container;
 
 import std;
 

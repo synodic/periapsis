@@ -1,6 +1,6 @@
-export module synodic.library.algorithm.graph:max_flow;
+export module synodic.library:algorithm.graph.max_flow;
 
-import synodic.library.structure.graph;
+import :structure.graph;
 
 import std;
 

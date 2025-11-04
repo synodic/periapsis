@@ -1,4 +1,4 @@
-export module synodic.library.utility;
+export module synodic.library:utility;
 
 import std;
 

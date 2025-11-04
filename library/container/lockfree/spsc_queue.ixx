@@ -1,7 +1,8 @@
-export module synodic.library.container.lockfree:spsc_queue;
+export module synodic.library:container.lockfree.spsc_queue;
 
-import synodic.library.exception;
-import synodic.library.type.concepts;
+import :exception.not_implemented;
+import :type.concepts.container;
+import :type.concepts.sequence_container;
 
 import std;
 
@@ -258,5 +259,4 @@ export namespace synodic::lockfree
 	SPSCQueue(InputIt, InputIt) -> SPSCQueue<
 		typename std::iterator_traits<InputIt>::value_type::value_type,
 		typename std::iterator_traits<InputIt>::value_type>;
-
 }

@@ -8,5 +8,4 @@ target_sources(synodic-template-library
 			"hash_map.ixx"
 			"hash_set.ixx"
 			"vector.ixx"
-			"sparse.ixx"
-)
+))

@@ -1,9 +1,9 @@
-export module synodic.honesty.utility:string;
+export module synodic.library.string:fixed;
 
 import std;
 import inplace_vector;
 
-namespace synodic::honesty::utility
+namespace synodic::library::string
 {
 
 	export template<typename CharT, std::size_t MaxSize, typename Traits = std::char_traits<CharT>>

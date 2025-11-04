@@ -1,6 +1,6 @@
-export module synodic.library.type.concepts:sequence_container;
+export module synodic.library:type.concepts.sequence_container;
 
-import :container;
+import :type.concepts.container;
 
 export namespace synodic
 {

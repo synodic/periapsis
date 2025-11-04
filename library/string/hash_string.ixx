@@ -1,5 +1,4 @@
-
-export module synodic.library.string:hash_string;
+export module synodic.library:string.hash_string;
 
 import std;
 
@@ -64,4 +63,4 @@ export namespace synodic
 		return HashString {str};
 	}
 
-}
+}}

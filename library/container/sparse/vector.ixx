@@ -1,9 +1,7 @@
+export module synodic.library:container.sparse.vector;
 
-
-export module synodic.library.container.sparse:vector;
-
-import :bit_map;
-import synodic.library.exception;
+import :container.sparse.bit_map;
+import :exception.not_implemented;
 
 import std;
 
@@ -172,6 +170,7 @@ export namespace synodic::sparse
 	typename Vector<T, BlockSize>::iterator Vector<T, BlockSize>::begin() noexcept
 	{
 		return {blocks_.begin(), blocks_.front().begin()};
+
 	}
 
 	template<class T, std::uint8_t BlockSize>
@@ -180,4 +179,4 @@ export namespace synodic::sparse
 		return {blocks_.end(), blocks_.back().end()};
 	}
 
-}
+}}

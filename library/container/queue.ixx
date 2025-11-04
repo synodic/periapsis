@@ -1,7 +1,8 @@
-export module synodic.library.container:queue;
+export module synodic.library:container.queue;
 
-import synodic.library.exception;
-import synodic.library.type.concepts;
+import :exception.not_implemented;
+import :type.concepts.container;
+import :type.concepts.sequence_container;
 
 export namespace synodic
 {

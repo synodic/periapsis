@@ -1,4 +1,4 @@
-export module synodic.library.container.sparse:bit_map;
+export module synodic.library:container.sparse.bit_map;
 
 import std;
 

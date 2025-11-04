@@ -1,4 +1,4 @@
-export module synodic.library.exception:not_implemented;
+export module synodic.library:exception.not_implemented;
 
 import std;
 

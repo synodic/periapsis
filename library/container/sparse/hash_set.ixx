@@ -1,7 +1,6 @@
+export module synodic.library:container.sparse.hash_set;
 
-export module synodic.library.container.sparse:hash_set;
-
-import :vector;
+import :container.sparse.vector;
 
 export namespace synodic::sparse
 {
@@ -21,4 +20,4 @@ export namespace synodic::sparse
 		std::vector<Key> keys_;
 	};
 
-}
+}}

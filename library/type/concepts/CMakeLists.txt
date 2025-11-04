@@ -4,9 +4,8 @@ target_sources(synodic-template-library
 		BASE_DIRS
 			"${PROJECT_SOURCE_DIR}/library"
 		FILES
-			"concepts.ixx"
 			"shared.ixx"
 			"container_c.ixx"
 			"sequence_container.ixx"
 			"associative_container.ixx"
-)
+))

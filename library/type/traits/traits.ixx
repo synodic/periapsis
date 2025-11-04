@@ -1,5 +1,4 @@
-
-export module synodic.library.type.traits;
+export module synodic.library:type.traits;
 
 import std;
 
@@ -85,4 +84,4 @@ namespace synodic
 	using ConstructorParameters =
 		typename TaggedTuple<T, std::make_index_sequence<ConstructorParameterCount<T>(0)>>::Type;
 
-}
+}}

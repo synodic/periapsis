@@ -1,7 +1,7 @@
-export module synodic.library.container.sparse:hash_map;
+export module synodic.library:container.sparse.hash_map;
 
-import synodic.library.exception;
-import :vector;
+import :exception.not_implemented;
+import :container.sparse.vector;
 
 import std;
 
