@@ -1,6 +1,5 @@
 import synodic.honesty.test;
-import synodic.library.container.sparse;
-import synodic.library.type.concepts;
+import synodic.library;
 
 using namespace honesty::test;
 using namespace honesty::test::literals;

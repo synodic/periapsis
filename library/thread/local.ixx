@@ -15,7 +15,9 @@ export namespace synodic
 		ThreadLocal(const ThreadLocal&)		  = delete;
 		ThreadLocal(ThreadLocal&& o) noexcept = default;
 
-		ThreadLocal& operator=(const ThreadLocal&) = delete;
+		ThreadLocal& operator=(const ThreadLocal&)			 = delete;
 		ThreadLocal& operator=(ThreadLocal&& other) noexcept = default;
 
 		ThreadLocal<T>(const T&);
+	};
+}

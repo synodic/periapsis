@@ -84,4 +84,4 @@ namespace synodic
 	using ConstructorParameters =
 		typename TaggedTuple<T, std::make_index_sequence<ConstructorParameterCount<T>(0)>>::Type;
 
-}}
+}

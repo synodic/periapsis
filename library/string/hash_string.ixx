@@ -21,7 +21,7 @@ export namespace synodic
 		constexpr static HashType Hash(HashType, std::string_view);
 
 		constexpr static HashType offset_ = 0xcbf29ce484222325;
-		constexpr static HashType prime_  = 0x100000001b3;
+		constexpr static HashType prime_ = 0x100000001b3;
 
 		const HashType hash_;
 		std::string_view string_;
@@ -60,7 +60,6 @@ export namespace synodic
 
 	constexpr HashString operator"" _hashed(const char* str, std::size_t)
 	{
-		return HashString {str};
+		return HashString{str};
 	}
-
-}}
+}

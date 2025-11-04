@@ -1,5 +1,5 @@
 import synodic.honesty.test;
-import synodic.library.function;
+import synodic.library;
 
 using namespace honesty::test;
 using namespace honesty::test::literals;

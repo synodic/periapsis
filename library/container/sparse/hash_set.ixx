@@ -20,4 +20,4 @@ export namespace synodic::sparse
 		std::vector<Key> keys_;
 	};
 
-}}
+}

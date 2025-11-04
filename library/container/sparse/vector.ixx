@@ -179,4 +179,4 @@ export namespace synodic::sparse
 		return {blocks_.end(), blocks_.back().end()};
 	}
 
-}}
+}
