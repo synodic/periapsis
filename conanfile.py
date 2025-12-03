@@ -1,24 +1,28 @@
-from conan import ConanFile
-from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
+from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain
 from conan.tools.files import copy
 
+from conanfile_base import CPPythonBase
 
-class MyProject(ConanFile):
+
+class MyProject(CPPythonBase):
     name = 'synodic-template-library'
     version = '1.0'
     settings = 'os', 'compiler', 'build_type', 'arch'
-    requires = ['honesty/[>=0.0.0.dev1]']
 
     def layout(self):
-        cmake_layout(self)
+        super().layout()
 
     def generate(self):
         deps = CMakeDeps(self)
         deps.generate()
         tc = CMakeToolchain(self)
-        tc.user_presets_path = None
-        tc.variables['BUILD_TESTING'] = 'OFF'
         tc.generate()
+
+    def requirements(self):
+        super().requirements()
+
+    def build_requirements(self):
+        super().build_requirements()
 
     def build(self):
         cmake = CMake(self)
