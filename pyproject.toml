@@ -18,9 +18,9 @@ homepage = "https://github.com/synodic/Synodic-Template-Library"
 repository = "https://github.com/synodic/Synodic-Template-Library"
 
 [dependency-groups]
-build = ["cppython[cmake,conan,git]>=0.9.8"]
-lint = ["ruff>=0.14.3", "pyrefly>=0.40.0", "isort>=7.0.0"]
-test = ["pytest>=8.4.2", "pytest-cov>=7.0.0", "pytest-mock>=3.15.1"]
+build = ["cppython[cmake,conan,git]>=0.9.15.dev1"]
+lint = ["ruff>=0.14.7", "pyrefly>=0.44.0", "isort>=7.0.0"]
+test = ["pytest>=9.0.1", "pytest-cov>=7.0.0", "pytest-mock>=3.15.1"]
 
 [tool.cppython]
 dependencies = ['honesty>=0.0.0.dev1']
