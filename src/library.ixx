@@ -13,7 +13,15 @@ export import :container.sparse.hash_map;
 export import :container.sparse.hash_set;
 export import :container.sparse.vector;
 export import :container.lockfree.spsc_queue;
-export import :container.queue;
+export import :container.fixed.ring_buffer;
+
+// Structure partitions
+export import :structure.graph.concepts;
+export import :structure.graph.storage_traits;
+export import :structure.graph.storage.static_storage;
+export import :structure.graph.storage.csr;
+export import :structure.graph.storage.adjacency_list;
+export import :structure.graph.graph;
 
 // Function partitions
 export import :function.executor;

@@ -45,7 +45,7 @@ file(GLOB_RECURSE file_list ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
 # files (No nested CMakeList.txt, docs, etc).
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${file_list})
 
-if(BUILD_TESTING)
+if(BUILD_TESTING AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 	# Do not include CTest because it adds targets and integrations we do not want to support
 	enable_testing()
 

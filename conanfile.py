@@ -8,6 +8,7 @@ class MyProject(CPPythonBase):
     name = 'synodic-template-library'
     version = '1.0'
     settings = 'os', 'compiler', 'build_type', 'arch'
+    exports = 'conanfile_base.py'
 
     def layout(self):
         super().layout()

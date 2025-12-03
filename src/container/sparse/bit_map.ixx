@@ -5,9 +5,9 @@ import std;
 export namespace synodic::sparse
 {
 	/**
-	 * \brief Faster creation than unordered_set, but suffers from worse intersection
-	 * \tparam T  The type to store
-	 * \tparam N  The capacity
+	 * @brief Faster creation than unordered_set, but suffers from worse intersection
+	 * @tparam T  The type to store
+	 * @tparam N  The capacity
 	 */
 	template<class T, std::uint8_t N>
 	class BitMap final
@@ -18,7 +18,7 @@ export namespace synodic::sparse
 		using size_type = std::uint8_t;
 		using iterator	= typename std::vector<T>::iterator;
 
-		BitMap()	= default;
+		BitMap()  = default;
 		~BitMap() = default;
 
 		T& operator[](size_type);
@@ -62,11 +62,9 @@ export namespace synodic::sparse
 
 	template<class T, std::uint8_t N>
 	template<typename... Args>
-	std::pair<typename BitMap<T, N>::iterator, bool> BitMap<T, N>::Emplace(
-		size_type position,
-		Args&&... args)
+	std::pair<typename BitMap<T, N>::iterator, bool> BitMap<T, N>::Emplace(size_type position, Args&&... args)
 	{
-		if(Test(position))
+		if (Test(position))
 		{
 			return {operator[](position), false};
 		}
@@ -80,11 +78,9 @@ export namespace synodic::sparse
 	}
 
 	template<class T, std::uint8_t N>
-	std::pair<typename BitMap<T, N>::iterator, bool> BitMap<T, N>::Insert(
-		size_type position,
-		const T& value)
+	std::pair<typename BitMap<T, N>::iterator, bool> BitMap<T, N>::Insert(size_type position, const T& value)
 	{
-		if(Test(position))
+		if (Test(position))
 		{
 			return {data_.begin() + position, false};
 		}
@@ -107,7 +103,7 @@ export namespace synodic::sparse
 	template<class T, std::uint8_t N>
 	typename BitMap<T, N>::iterator BitMap<T, N>::Find(const size_type position)
 	{
-		if(!Test(position))
+		if (!Test(position))
 		{
 			return data_.end();
 		}

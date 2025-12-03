@@ -1,0 +1,5 @@
+[project]
+site_name = "Synodic Template Library"
+site_url = "https://synodic.github.io/Synodic-Template-Library"
+docs_dir = "docs"
+site_dir = "dist"

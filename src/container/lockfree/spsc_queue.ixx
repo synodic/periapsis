@@ -21,13 +21,13 @@ export namespace synodic::lockfree
 	concept spsc_queue_container_of = container_of<T, ValueType> && spsc_queue_container<T>;
 
 	/**
-	 * \brief An adapter for containers that enforces single producer, single consumer atomic access. This queue is an
+	 * @brief An adapter for containers that enforces single producer, single consumer atomic access. This queue is an
 	 *		adapter and stores all relevant tracking information external to the wrapped container. As a result the
 	 *		internal size tracking of the container is wasted. If you need memory efficiency for the queue itself this
 	 *		is not the type to use. However, this design allows the extraction the underlying container into a
 	 *		single-threaded context.
-	 * \tparam T The type to store
-	 * \tparam Container The container for storage backing
+	 * @tparam T The type to store
+	 * @tparam Container The container for storage backing
 	 */
 	template<spsc_queue_type T, spsc_queue_container_of<T> Container>
 	class SPSCQueue
@@ -68,10 +68,10 @@ export namespace synodic::lockfree
 		// Accessors
 
 		/**
-		 * \brief Removes the wrapped container from the queue. As any usage other than a single reader and
+		 * @brief Removes the wrapped container from the queue. As any usage other than a single reader and
 		 *		single writer is invalid, this function expects that there will be no reads or writes
 		 *		during its execution. TODO: Guard against invalid usage
-		 * \return The underlying container
+		 * @return The underlying container
 		 */
 		constexpr container_type extract() noexcept;
 
@@ -90,7 +90,7 @@ export namespace synodic::lockfree
 		constexpr bool try_push(T&& value);
 
 		/**
-		 * \brief
+		 * @brief
 		 */
 		constexpr std::optional<T> pop() noexcept;
 
@@ -174,7 +174,7 @@ export namespace synodic::lockfree
 	{
 		std::ptrdiff_t difference =
 			writeIndex_.load(std::memory_order_acquire) - readIndex_.load(std::memory_order_acquire);
-		if(difference < 0)
+		if (difference < 0)
 		{
 			difference += capacity_;
 		}
@@ -215,17 +215,17 @@ export namespace synodic::lockfree
 	constexpr std::optional<T> SPSCQueue<T, Container>::pop() noexcept
 	{
 		const auto readIndex = readIndex_.load(std::memory_order_relaxed);
-		if(readIndex == cachedWriteIndex_)
+		if (readIndex == cachedWriteIndex_)
 		{
 			cachedWriteIndex_ = writeIndex_.load(std::memory_order_acquire);
-			if(cachedWriteIndex_ == readIndex)
+			if (cachedWriteIndex_ == readIndex)
 			{
 				return {};
 			}
 		}
 
 		auto nextReadIdx = readIndex + 1;
-		if(nextReadIdx == capacity_)
+		if (nextReadIdx == capacity_)
 		{
 			nextReadIdx = 0;
 		}

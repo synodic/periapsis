@@ -1,8 +1,8 @@
 target_sources(synodic-template-library
 	PUBLIC
-		FILE_SET CXX_MODULES
-		FILES
-			"library.ixx"
+	FILE_SET CXX_MODULES
+	FILES
+	"library.ixx"
 )
 
 add_subdirectory(
@@ -31,6 +31,10 @@ add_subdirectory(
 
 add_subdirectory(
 	"type"
+)
+
+add_subdirectory(
+	"structure"
 )
 
 add_subdirectory(
