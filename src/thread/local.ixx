@@ -9,8 +9,8 @@ export namespace synodic
 	class ThreadLocal
 	{
 	public:
-		ThreadLocal();
-		~ThreadLocal();
+		ThreadLocal() = default;
+		~ThreadLocal() = default;
 
 		ThreadLocal(const ThreadLocal&)		  = delete;
 		ThreadLocal(ThreadLocal&& o) noexcept = default;

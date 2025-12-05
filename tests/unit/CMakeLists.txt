@@ -11,6 +11,10 @@ add_subdirectory(
 )
 
 add_subdirectory(
+	math
+)
+
+add_subdirectory(
 	structure
 )
 

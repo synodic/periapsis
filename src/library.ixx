@@ -35,6 +35,13 @@ export import :string.hash_string;
 // Algorithm partitions
 export import :algorithm.graph.max_flow;
 
+// Math partitions
+export import :math.concepts;
+export import :math.vector;
+export import :math.matrix;
+export import :math.quaternion;
+export import :math.geometry;
+
 // Thread partitions
 export import :thread.local;
 

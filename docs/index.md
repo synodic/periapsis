@@ -32,6 +32,12 @@ The Synodic Template Library provides high-performance, concept-constrained data
 - [Algorithms](algorithms.md) - Graph and general algorithms
   - Max Flow (Edmonds-Karp, constexpr-capable)
 
+### Math
+
+- [Math](math.md) - Vector and matrix types for graphics
+  - `Vec2`, `Vec3`, `Vec4` - SIMD-ready vector types
+  - Constexpr operations: `Dot`, `Cross`, `Normalize`, `Lerp`
+
 ### Type System
 
 - [Concepts](concepts.md) - Container and utility concepts
