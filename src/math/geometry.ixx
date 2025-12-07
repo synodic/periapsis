@@ -442,6 +442,35 @@ export namespace synodic::math
 				return AABB<OtherStorage> {Center(), Extents()};
 			}
 		}
+
+		/**
+		 * @brief Create an empty AABB with inverted bounds for incremental expansion
+		 * @details Min is +infinity, Max is -infinity. First Expand() call sets actual bounds.
+		 */
+		[[nodiscard]] static constexpr auto Empty() noexcept -> AABB
+		{
+			using T			= value_type;
+			constexpr T inf = std::numeric_limits<T>::infinity();
+			if constexpr (std::same_as<Storage, AABBMinMax<T>>)
+			{
+				return AABB {Vec3<T> {inf, inf, inf}, Vec3<T> {-inf, -inf, -inf}};
+			}
+			else if constexpr (std::same_as<Storage, AABBCenterExtents<T>>)
+			{
+				// Center at origin, negative extents represent empty
+				return AABB {Vec3<T> {}, Vec3<T> {-inf, -inf, -inf}};
+			}
+		}
+
+		/**
+		 * @brief Check if this AABB is empty (has inverted or zero bounds)
+		 */
+		[[nodiscard]] constexpr auto IsEmpty() const noexcept -> bool
+		{
+			const auto mn = Min();
+			const auto mx = Max();
+			return mn.x > mx.x || mn.y > mx.y || mn.z > mx.z;
+		}
 	};
 
 	// ============================================================================
