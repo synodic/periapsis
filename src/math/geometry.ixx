@@ -1,6 +1,6 @@
 /**
  * @brief Geometric primitives with storage abstraction
- * 
+ *
  * Provides Ray, Plane, AABB with pluggable storage backends.
  * Users can provide optimized overloads via ADL for custom storage types.
  * Prepared for C++26 reflection and std::simd integration.
@@ -251,7 +251,8 @@ export namespace synodic::math
 	 * @brief Signed distance from point to plane (generic)
 	 */
 	template<typename Storage>
-	[[nodiscard]] constexpr auto SignedDistance(const Plane<Storage>& plane, const Vec3<typename Storage::value_type>& point) noexcept ->
+	[[nodiscard]] constexpr auto
+		SignedDistance(const Plane<Storage>& plane, const Vec3<typename Storage::value_type>& point) noexcept ->
 		typename Storage::value_type
 	{
 		return Dot(plane.Normal(), point) - plane.Distance();
@@ -261,7 +262,8 @@ export namespace synodic::math
 	 * @brief Signed distance - optimized for PlaneCoefficients (uses dot4)
 	 */
 	template<std::floating_point T>
-	[[nodiscard]] constexpr auto SignedDistance(const Plane<PlaneCoefficients<T>>& plane, const Vec3<T>& point) noexcept -> T
+	[[nodiscard]] constexpr auto SignedDistance(const Plane<PlaneCoefficients<T>>& plane, const Vec3<T>& point) noexcept
+		-> T
 	{
 		// Can use single dot4 with SIMD
 		return Dot(plane.storage.coeffs, Vec4<T> {point, T {1}});
@@ -453,12 +455,18 @@ export namespace synodic::math
 			constexpr T inf = std::numeric_limits<T>::infinity();
 			if constexpr (std::same_as<Storage, AABBMinMax<T>>)
 			{
-				return AABB {Vec3<T> {inf, inf, inf}, Vec3<T> {-inf, -inf, -inf}};
+				return AABB {
+					Vec3<T> {inf,  inf,  inf },
+					Vec3<T> {-inf, -inf, -inf}
+				  };
 			}
 			else if constexpr (std::same_as<Storage, AABBCenterExtents<T>>)
 			{
 				// Center at origin, negative extents represent empty
-				return AABB {Vec3<T> {}, Vec3<T> {-inf, -inf, -inf}};
+				return AABB {
+					Vec3<T> {},
+					Vec3<T> {-inf, -inf, -inf}
+				  };
 			}
 		}
 
