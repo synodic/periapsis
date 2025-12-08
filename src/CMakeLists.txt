@@ -42,5 +42,9 @@ add_subdirectory(
 )
 
 add_subdirectory(
+	"statistics"
+)
+
+add_subdirectory(
 	"utility"
 )

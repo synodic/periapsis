@@ -50,6 +50,12 @@ export import :math.matrix;
 export import :math.quaternion;
 export import :math.geometry;
 
+// Statistics partitions
+export import :statistics.concepts;
+export import :statistics.features;
+export import :statistics.accumulator;
+export import :statistics.query;
+
 // Thread partitions
 export import :thread.local;
 
