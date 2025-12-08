@@ -58,14 +58,14 @@ export namespace synodic::statistics
 			constexpr accumulator_type() noexcept = default;
 
 			/// Accumulate unweighted sample
-			constexpr void operator()(Sample) noexcept
+			constexpr void Push(Sample) noexcept
 			{
 				++count_;
 			}
 
 			/// Accumulate weighted sample (weight contributes to effective count)
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample, Weight weight) noexcept
+			constexpr void Push(Sample, Weight weight) noexcept
 			{
 				weight_sum_ += static_cast<double>(weight);
 				++count_;
@@ -115,13 +115,13 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				sum_ += static_cast<result_type>(value);
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight weight) noexcept
+			constexpr void Push(Sample value, Weight weight) noexcept
 			{
 				sum_ += static_cast<result_type>(value) * static_cast<result_type>(weight);
 			}
@@ -162,7 +162,7 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				if (!has_value_ || value < min_)
 				{
@@ -172,9 +172,9 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);	// Weight doesn't affect min
+				Push(value);	// Weight doesn't affect min
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
@@ -220,7 +220,7 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				if (!has_value_ || value > max_)
 				{
@@ -230,9 +230,9 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);	// Weight doesn't affect max
+				Push(value);	// Weight doesn't affect max
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
@@ -280,7 +280,7 @@ export namespace synodic::statistics
 			constexpr accumulator_type() noexcept = default;
 
 			/// Welford's online mean update
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
 				const auto delta  = static_cast<result_type>(value) - mean_;
@@ -289,7 +289,7 @@ export namespace synodic::statistics
 
 			/// Weighted incremental mean (West's algorithm)
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight weight) noexcept
+			constexpr void Push(Sample value, Weight weight) noexcept
 			{
 				const auto w	  = static_cast<result_type>(weight);
 				weight_sum_		 += w;
@@ -349,7 +349,7 @@ export namespace synodic::statistics
 			constexpr accumulator_type() noexcept = default;
 
 			/// Welford's online variance update
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
 				const auto x	   = static_cast<result_type>(value);
@@ -361,7 +361,7 @@ export namespace synodic::statistics
 
 			/// Weighted Welford's algorithm (West's algorithm)
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight weight) noexcept
+			constexpr void Push(Sample value, Weight weight) noexcept
 			{
 				const auto w = static_cast<result_type>(weight);
 				const auto x = static_cast<result_type>(value);
@@ -466,7 +466,7 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
 				const auto x	  = static_cast<result_type>(value);
@@ -479,7 +479,7 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight weight) noexcept
+			constexpr void Push(Sample value, Weight weight) noexcept
 			{
 				const auto w	   = static_cast<result_type>(weight);
 				weight_sum_		  += w;
@@ -548,7 +548,7 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				const auto x = static_cast<result_type>(value);
 
@@ -566,9 +566,9 @@ export namespace synodic::statistics
 			// Note: Rolling statistics typically don't use weights
 			// but we provide the interface for consistency
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);
+				Push(value);
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> result_type
@@ -626,7 +626,7 @@ export namespace synodic::statistics
 
 			constexpr accumulator_type() noexcept = default;
 
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				const auto x = static_cast<result_type>(value);
 
@@ -645,9 +645,9 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);
+				Push(value);
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> result_type
@@ -719,7 +719,7 @@ export namespace synodic::statistics
 			constexpr accumulator_type() noexcept = default;
 
 			/// Online algorithm for skewness (Terriberry's method)
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				const auto n1 = count_;
 				++count_;
@@ -737,9 +737,9 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);	// Simplified: ignore weight for skewness
+				Push(value);	// Simplified: ignore weight for skewness
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> result_type
@@ -796,7 +796,7 @@ export namespace synodic::statistics
 			constexpr accumulator_type() noexcept = default;
 
 			/// Online algorithm for kurtosis
-			constexpr void operator()(Sample value) noexcept
+			constexpr void Push(Sample value) noexcept
 			{
 				const auto n1 = count_;
 				++count_;
@@ -818,9 +818,9 @@ export namespace synodic::statistics
 			}
 
 			template<typename Weight = Sample>
-			constexpr void operator()(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight) noexcept
 			{
-				operator()(value);
+				Push(value);
 			}
 
 			/// Excess kurtosis (normal distribution = 0)

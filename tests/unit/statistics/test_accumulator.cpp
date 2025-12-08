@@ -38,7 +38,7 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, count> acc;
-					acc(1.0);
+					acc.Push(1.0);
 					return acc.get<count>().result();
 				}();
 				static_assert(result == 1);
@@ -49,9 +49,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, count> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return acc.get<count>().result();
 				}();
 				static_assert(result == 3);
@@ -62,8 +62,8 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, count> acc;
-					acc(1.0);
-					acc(2.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
 					acc.reset();
 					return acc.get<count>().result();
 				}();
@@ -90,7 +90,7 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, sum> acc;
-					acc(5.0);
+					acc.Push(5.0);
 					return acc.get<sum>().result();
 				}();
 				static_assert(result == 5.0);
@@ -101,9 +101,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, sum> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return acc.get<sum>().result();
 				}();
 				static_assert(result == 6.0);
@@ -114,9 +114,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<int, sum> acc;
-					acc(10);
-					acc(20);
-					acc(30);
+					acc.Push(10);
+					acc.Push(20);
+					acc.Push(30);
 					return acc.get<sum>().result();
 				}();
 				static_assert(result == 60.0);
@@ -148,7 +148,7 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, min> acc;
-					acc(5.0);
+					acc.Push(5.0);
 					return acc.get<min>().result();
 				}();
 				static_assert(result.has_value());
@@ -160,10 +160,10 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, min> acc;
-					acc(3.0);
-					acc(1.0);
-					acc(4.0);
-					acc(1.5);
+					acc.Push(3.0);
+					acc.Push(1.0);
+					acc.Push(4.0);
+					acc.Push(1.5);
 					return acc.get<min>().result();
 				}();
 				static_assert(*result == 1.0);
@@ -174,10 +174,10 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, max> acc;
-					acc(3.0);
-					acc(1.0);
-					acc(4.0);
-					acc(1.5);
+					acc.Push(3.0);
+					acc.Push(1.0);
+					acc.Push(4.0);
+					acc.Push(1.5);
 					return acc.get<max>().result();
 				}();
 				static_assert(*result == 4.0);
@@ -188,10 +188,10 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, min, max> acc;
-					acc(5.0);
-					acc(2.0);
-					acc(8.0);
-					acc(1.0);
+					acc.Push(5.0);
+					acc.Push(2.0);
+					acc.Push(8.0);
+					acc.Push(1.0);
 					return std::pair {*acc.get<min>().result(), *acc.get<max>().result()};
 				}();
 				static_assert(result.first == 1.0);
@@ -224,7 +224,7 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, mean> acc;
-					acc(5.0);
+					acc.Push(5.0);
 					return acc.get<mean>().result();
 				}();
 				static_assert(result == 5.0);
@@ -235,8 +235,8 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, mean> acc;
-					acc(2.0);
-					acc(4.0);
+					acc.Push(2.0);
+					acc.Push(4.0);
 					return acc.get<mean>().result();
 				}();
 				static_assert(result == 3.0);
@@ -247,11 +247,11 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, mean> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
-					acc(4.0);
-					acc(5.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
+					acc.Push(4.0);
+					acc.Push(5.0);
 					return acc.get<mean>().result();
 				}();
 				static_assert(result == 3.0);
@@ -262,9 +262,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<int, mean> acc;
-					acc(2);
-					acc(4);
-					acc(6);
+					acc.Push(2);
+					acc.Push(4);
+					acc.Push(6);
 					return acc.get<mean>().result();
 				}();
 				static_assert(result == 4.0);
@@ -290,7 +290,7 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, variance> acc;
-					acc(5.0);
+					acc.Push(5.0);
 					return acc.get<variance>().result();
 				}();
 				static_assert(result == 0.0);  // Variance of single sample is 0
@@ -301,8 +301,8 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, variance> acc;
-					acc(2.0);
-					acc(4.0);
+					acc.Push(2.0);
+					acc.Push(4.0);
 					return acc.get<variance>().result();
 				}();
 				// Sample variance: sum((x - mean)^2) / (n-1)
@@ -315,8 +315,8 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, variance> acc;
-					acc(2.0);
-					acc(4.0);
+					acc.Push(2.0);
+					acc.Push(4.0);
 					return acc.get<variance>().population_variance();
 				}();
 				// Population variance: sum((x - mean)^2) / n = 2/2 = 1
@@ -328,14 +328,14 @@ namespace
 				// Dataset: 2, 4, 4, 4, 5, 5, 7, 9
 				// Mean = 5, Sample Variance = 4.571..., Population Variance = 4
 				Accumulator<double, variance> acc;
-				acc(2.0);
-				acc(4.0);
-				acc(4.0);
-				acc(4.0);
-				acc(5.0);
-				acc(5.0);
-				acc(7.0);
-				acc(9.0);
+				acc.Push(2.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
+				acc.Push(5.0);
+				acc.Push(5.0);
+				acc.Push(7.0);
+				acc.Push(9.0);
 
 				requirements.Expect(ApproxEqual(acc.get<variance>().mean(), 5.0));
 				requirements.Expect(ApproxEqual(acc.get<variance>().population_variance(), 4.0));
@@ -345,14 +345,14 @@ namespace
 			co_yield "stddev"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, variance> acc;
-				acc(2.0);
-				acc(4.0);
-				acc(4.0);
-				acc(4.0);
-				acc(5.0);
-				acc(5.0);
-				acc(7.0);
-				acc(9.0);
+				acc.Push(2.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
+				acc.Push(5.0);
+				acc.Push(5.0);
+				acc.Push(7.0);
+				acc.Push(9.0);
 
 				requirements.Expect(ApproxEqual(acc.get<variance>().population_stddev(), 2.0));
 			};
@@ -362,9 +362,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, variance> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return acc.get<variance>().mean();
 				}();
 				static_assert(result == 2.0);
@@ -384,11 +384,11 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, count, sum, mean, min, max> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
-					acc(4.0);
-					acc(5.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
+					acc.Push(4.0);
+					acc.Push(5.0);
 					return std::tuple {
 						acc.get<count>().result(),
 						acc.get<sum>().result(),
@@ -415,9 +415,9 @@ namespace
 			co_yield "basic_stats_alias"_test = [](const Requirements& requirements)
 			{
 				BasicStats<double> stats;
-				stats(1.0);
-				stats(2.0);
-				stats(3.0);
+				stats.Push(1.0);
+				stats.Push(2.0);
+				stats.Push(3.0);
 
 				requirements.Expect(stats.get<count>().result() == 3);
 				requirements.Expect(ApproxEqual(stats.get<mean>().result(), 2.0));
@@ -435,8 +435,8 @@ namespace
 			co_yield "weighted_sum"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, sum> acc;
-				acc(2.0, 3.0);	// value=2, weight=3 -> contributes 6
-				acc(4.0, 2.0);	// value=4, weight=2 -> contributes 8
+				acc.Push(2.0, 3.0);	// value=2, weight=3 -> contributes 6
+				acc.Push(4.0, 2.0);	// value=4, weight=2 -> contributes 8
 
 				requirements.Expect(ApproxEqual(acc.get<sum>().result(), 14.0));
 			};
@@ -445,8 +445,8 @@ namespace
 			{
 				Accumulator<double, mean> acc;
 				// Weighted mean of (1, weight=2) and (3, weight=2) should be 2
-				acc(1.0, 2.0);
-				acc(3.0, 2.0);
+				acc.Push(1.0, 2.0);
+				acc.Push(3.0, 2.0);
 
 				requirements.Expect(ApproxEqual(acc.get<mean>().result(), 2.0));
 			};
@@ -454,8 +454,8 @@ namespace
 			co_yield "mixed_weighted_unweighted"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, count> acc;
-				acc(1.0);  // unweighted
-				acc(2.0, 2.0);	// weighted
+				acc.Push(1.0);  // unweighted
+				acc.Push(2.0, 2.0);	// weighted
 
 				requirements.Expect(acc.get<count>().result() == 2);
 			};
@@ -474,8 +474,8 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, rolling_mean<5>> acc;
-					acc(2.0);
-					acc(4.0);
+					acc.Push(2.0);
+					acc.Push(4.0);
 					return acc.get<rolling_mean<5>>().result();
 				}();
 				static_assert(result == 3.0);  // (2 + 4) / 2
@@ -486,11 +486,11 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, rolling_mean<3>> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
-					acc(4.0);  // Pushes out 1.0
-					acc(5.0);  // Pushes out 2.0
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
+					acc.Push(4.0);  // Pushes out 1.0
+					acc.Push(5.0);  // Pushes out 2.0
 					return acc.get<rolling_mean<3>>().result();
 				}();
 				// Window contains [3, 4, 5], mean = 4
@@ -503,10 +503,10 @@ namespace
 				{
 					Accumulator<double, rolling_mean<3>> acc;
 					bool before_full = acc.get<rolling_mean<3>>().window_full();
-					acc(1.0);
-					acc(2.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
 					bool still_not_full = acc.get<rolling_mean<3>>().window_full();
-					acc(3.0);
+					acc.Push(3.0);
 					bool now_full = acc.get<rolling_mean<3>>().window_full();
 					return std::tuple {before_full, still_not_full, now_full};
 				}();
@@ -518,10 +518,10 @@ namespace
 			co_yield "rolling_variance"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, rolling_variance<4>> acc;
-				acc(2.0);
-				acc(4.0);
-				acc(4.0);
-				acc(4.0);
+				acc.Push(2.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
+				acc.Push(4.0);
 
 				// Window: [2, 4, 4, 4], mean = 3.5, variance = 1
 				requirements.Expect(ApproxEqual(acc.get<rolling_variance<4>>().mean(), 3.5));
@@ -539,9 +539,9 @@ namespace
 			co_yield "extract_functions"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, count, sum, mean, variance, min, max> acc;
-				acc(1.0);
-				acc(2.0);
-				acc(3.0);
+				acc.Push(1.0);
+				acc.Push(2.0);
+				acc.Push(3.0);
 
 				requirements.Expect(extract_count(acc) == 3);
 				requirements.Expect(ApproxEqual(extract_sum(acc), 6.0));
@@ -555,8 +555,8 @@ namespace
 			co_yield "stddev_extract"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, variance> acc;
-				acc(2.0);
-				acc(4.0);
+				acc.Push(2.0);
+				acc.Push(4.0);
 
 				// Sample stddev of [2, 4] = sqrt(2) ≈ 1.414
 				requirements.Expect(ApproxEqual(extract_stddev(acc), std::sqrt(2.0)));
@@ -565,9 +565,9 @@ namespace
 			co_yield "range_function"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, min, max> acc;
-				acc(5.0);
-				acc(2.0);
-				acc(8.0);
+				acc.Push(5.0);
+				acc.Push(2.0);
+				acc.Push(8.0);
 
 				auto r = range(acc);
 				requirements.Expect(r.has_value());
@@ -577,9 +577,9 @@ namespace
 			co_yield "coefficient_of_variation"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, variance> acc;
-				acc(10.0);
-				acc(20.0);
-				acc(30.0);
+				acc.Push(10.0);
+				acc.Push(20.0);
+				acc.Push(30.0);
 
 				// Mean = 20, stddev ≈ 10, CV = 10/20 = 0.5
 				auto cv = coefficient_of_variation(acc);
@@ -600,9 +600,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, count, sum, mean, min, max> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					acc.reset();
 
 					return std::tuple {
@@ -625,12 +625,12 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, mean> acc;
-					acc(10.0);
-					acc(20.0);
+					acc.Push(10.0);
+					acc.Push(20.0);
 					acc.reset();
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return acc.get<mean>().result();
 				}();
 				static_assert(result == 2.0);
@@ -650,9 +650,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, moment<1>, mean> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return std::pair {acc.get<moment<1>>().result(), acc.get<mean>().result()};
 				}();
 				static_assert(result.first == result.second);
@@ -663,9 +663,9 @@ namespace
 				constexpr auto result = []
 				{
 					Accumulator<double, moment<2>> acc;
-					acc(1.0);
-					acc(2.0);
-					acc(3.0);
+					acc.Push(1.0);
+					acc.Push(2.0);
+					acc.Push(3.0);
 					return acc.get<moment<2>>().result();
 				}();
 				// E[X²] = (1 + 4 + 9) / 3 = 14/3 ≈ 4.667

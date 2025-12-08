@@ -8,19 +8,6 @@
  *          - Type-safe feature extraction via get<Feature>()
  *          - Support for weighted samples through the same API
  *          - Full constexpr capability for compile-time statistics
- *
- * @example
- *     Accumulator<double, mean, variance, min, max> stats;
- *     stats(1.0);
- *     stats(2.0);
- *     stats(3.0);
- *     auto m = stats.get<mean>().result();      // 2.0
- *     auto v = stats.get<variance>().result();  // 1.0
- *
- * @example Weighted accumulation:
- *     Accumulator<double, mean, variance> weighted_stats;
- *     weighted_stats(1.0, 2.0);  // value=1.0, weight=2.0
- *     weighted_stats(2.0, 1.0);  // value=2.0, weight=1.0
  */
 
 export module synodic.library:statistics.accumulator;
@@ -78,12 +65,12 @@ export namespace synodic::statistics
 	 * @tparam Features... The feature tags to include (count, mean, variance, etc.)
 	 *
 	 * @details Accumulator holds one accumulator for each requested feature.
-	 *          Samples are forwarded to all accumulators when operator() is called.
+	 *          Samples are forwarded to all accumulators when Push() is called.
 	 *          Results are extracted using get<Feature>() to access the accumulator.
 	 *
 	 *          The same API supports both weighted and unweighted accumulation:
-	 *          - acc(value)          -> unweighted sample
-	 *          - acc(value, weight)  -> weighted sample
+	 *          - acc.Push(value)          -> unweighted sample
+	 *          - acc.Push(value, weight)  -> weighted sample
 	 */
 	template<statistical_sample Sample, typename... Features>
 		requires(sizeof...(Features) > 0) and (feature_tag<Features> and ...)
@@ -109,12 +96,12 @@ export namespace synodic::statistics
 		 * @brief Accumulate an unweighted sample
 		 * @param value The sample value to accumulate
 		 */
-		constexpr void operator()(Sample value) noexcept
+		constexpr void Push(Sample value) noexcept
 		{
 			std::apply(
 				[value](auto&... accs)
 				{
-					(accs(value), ...);
+					(accs.Push(value), ...);
 				},
 				accumulators_);
 		}
@@ -125,12 +112,12 @@ export namespace synodic::statistics
 		 * @param weight The weight for this sample
 		 */
 		template<typename Weight = Sample>
-		constexpr void operator()(Sample value, Weight weight) noexcept
+		constexpr void Push(Sample value, Weight weight) noexcept
 		{
 			std::apply(
 				[value, weight](auto&... accs)
 				{
-					(accs(value, weight), ...);
+					(accs.Push(value, weight), ...);
 				},
 				accumulators_);
 		}
@@ -145,7 +132,7 @@ export namespace synodic::statistics
 		{
 			for (auto&& value: range)
 			{
-				operator()(static_cast<Sample>(value));
+				Push(static_cast<Sample>(value));
 			}
 		}
 
@@ -163,7 +150,7 @@ export namespace synodic::statistics
 
 			while (value_it != std::ranges::end(values) && weight_it != std::ranges::end(weights))
 			{
-				operator()(*value_it, *weight_it);
+				Push(*value_it, *weight_it);
 				++value_it;
 				++weight_it;
 			}

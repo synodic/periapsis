@@ -20,9 +20,9 @@ using namespace synodic::statistics;
 
 // Basic usage
 Accumulator<double, mean, variance, min, max> stats;
-stats(1.0);
-stats(2.0);
-stats(3.0);
+stats.Push(1.0);
+stats.Push(2.0);
+stats.Push(3.0);
 
 auto m = stats.get<mean>().result();      // 2.0
 auto v = stats.get<variance>().result();  // 1.0 (sample variance)
@@ -69,7 +69,7 @@ stats.get<variance>().mean();                // Also tracks mean internally
 
 ```cpp
 Accumulator<double, mean, variance, skewness, kurtosis> dist;
-for (double x : data) dist(x);
+for (double x : data) dist.Push(x);
 
 auto skew = stats.get<skewness>().result();  // Positive = right-tailed
 auto kurt = stats.get<kurtosis>().result();  // >0 heavy tails, <0 light tails
@@ -90,7 +90,7 @@ Rolling statistics use `FixedRingBuffer` for O(1) updates:
 Accumulator<double, rolling_mean<10>, rolling_variance<10>> rolling;
 
 for (double sample : streaming_data) {
-    rolling(sample);
+    rolling.Push(sample);
 
     auto current_mean = rolling.get<rolling_mean<10>>().result();
     auto current_std  = rolling.get<rolling_variance<10>>().stddev();
@@ -109,12 +109,12 @@ The same API supports weighted samples—no separate type needed:
 Accumulator<double, mean, variance> stats;
 
 // Unweighted
-stats(1.0);
-stats(2.0);
+stats.Push(1.0);
+stats.Push(2.0);
 
 // Weighted (same accumulator)
-stats(3.0, 2.0);  // value=3.0, weight=2.0
-stats(4.0, 0.5);  // value=4.0, weight=0.5
+stats.Push(3.0, 2.0);  // value=3.0, weight=2.0
+stats.Push(4.0, 0.5);  // value=4.0, weight=0.5
 
 // Results account for weights
 auto weighted_mean = stats.get<mean>().result();
@@ -173,9 +173,9 @@ All accumulators are fully constexpr:
 ```cpp
 constexpr auto compute_stats() {
     Accumulator<double, mean, variance> acc;
-    acc(1.0);
-    acc(2.0);
-    acc(3.0);
+    acc.Push(1.0);
+    acc.Push(2.0);
+    acc.Push(3.0);
     return acc.get<mean>().result();
 }
 
@@ -236,7 +236,7 @@ concept statistical_sample = std::is_arithmetic_v<T> && std::is_trivially_copyab
 
 template<typename A, typename Sample>
 concept basic_accumulator = requires(A& acc, const A& cacc, Sample s) {
-    { acc(s) } -> std::same_as<void>;
+    { acc.Push(s) } -> std::same_as<void>;
     { cacc.result() };
     { acc.reset() } -> std::same_as<void>;
 };
@@ -244,6 +244,6 @@ concept basic_accumulator = requires(A& acc, const A& cacc, Sample s) {
 template<typename A, typename Sample, typename Weight = Sample>
 concept weighted_accumulator = basic_accumulator<A, Sample> &&
     requires(A& acc, Sample s, Weight w) {
-        { acc(s, w) } -> std::same_as<void>;
+        { acc.Push(s, w) } -> std::same_as<void>;
     };
 ```

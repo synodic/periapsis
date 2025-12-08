@@ -4,16 +4,7 @@
  *
  * @details Provides convenient free functions to extract results from
  *          Accumulator instances. These are designed for ADL (Argument
- *          Dependent Lookup) so they can be called unqualified:
- *
- * @example
- *     using namespace synodic::statistics;
- *     Accumulator<double, mean, variance> stats;
- *     stats(1.0); stats(2.0); stats(3.0);
- *
- *     auto m = mean(stats);      // ADL finds synodic::statistics::mean()
- *     auto v = variance(stats);
- *     auto s = stddev(stats);
+ *          Dependent Lookup) so they can be called unqualified.
  */
 
 export module synodic.library:statistics.query;

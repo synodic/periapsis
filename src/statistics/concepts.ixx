@@ -40,7 +40,7 @@ export namespace synodic::statistics
 	template<typename A, typename Sample>
 	concept basic_accumulator = requires(A& acc, const A& cacc, Sample s) {
 		// Can accumulate a sample
-		{ acc(s) } -> std::same_as<void>;
+		{ acc.Push(s) } -> std::same_as<void>;
 		// Can extract result
 		{ cacc.result() };
 		// Can reset to initial state
@@ -54,7 +54,7 @@ export namespace synodic::statistics
 	template<typename A, typename Sample, typename Weight = Sample>
 	concept weighted_accumulator = basic_accumulator<A, Sample> and requires(A& acc, Sample s, Weight w) {
 		// Can accumulate a weighted sample (same function, optional weight)
-		{ acc(s, w) } -> std::same_as<void>;
+		{ acc.Push(s, w) } -> std::same_as<void>;
 	};
 
 	/**
