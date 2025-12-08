@@ -10,7 +10,7 @@
  *     using namespace synodic::statistics;
  *     Accumulator<double, mean, variance> stats;
  *     stats(1.0); stats(2.0); stats(3.0);
- *     
+ *
  *     auto m = mean(stats);      // ADL finds synodic::statistics::mean()
  *     auto v = variance(stats);
  *     auto s = stddev(stats);
@@ -38,8 +38,8 @@ export namespace synodic::statistics
 		};
 
 		template<typename Feature, statistical_sample Sample, typename... Features>
-		struct accumulator_has_feature<Feature, Accumulator<Sample, Features...>>
-			: std::bool_constant<(std::is_same_v<Feature, Features> || ...)>
+		struct accumulator_has_feature<Feature, Accumulator<Sample, Features...>> :
+			std::bool_constant<(std::is_same_v<Feature, Features> || ...)>
 		{
 		};
 
@@ -291,9 +291,9 @@ export namespace synodic::statistics
 				 detail::accumulator_has_feature_v<max, std::remove_cvref_t<AccSet>>
 	[[nodiscard]] constexpr auto summary(const AccSet& acc) noexcept
 	{
-		using T = typename std::remove_cvref_t<AccSet>::sample_type;
+		using T		  = typename std::remove_cvref_t<AccSet>::sample_type;
 		using ResultT = std::conditional_t<std::floating_point<T>, T, double>;
-		
+
 		return StatsSummary<ResultT> {
 			.count	  = extract_count(acc),
 			.sum	  = extract_sum(acc),
@@ -301,7 +301,6 @@ export namespace synodic::statistics
 			.variance = extract_variance(acc),
 			.stddev	  = extract_stddev(acc),
 			.min	  = extract_min(acc),
-			.max	  = extract_max(acc)
-		};
+			.max	  = extract_max(acc)};
 	}
 }

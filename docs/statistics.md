@@ -91,10 +91,10 @@ Accumulator<double, rolling_mean<10>, rolling_variance<10>> rolling;
 
 for (double sample : streaming_data) {
     rolling(sample);
-    
+
     auto current_mean = rolling.get<rolling_mean<10>>().result();
     auto current_std  = rolling.get<rolling_variance<10>>().stddev();
-    
+
     if (rolling.get<rolling_mean<10>>().window_full()) {
         // Window is now fully populated
     }
@@ -242,7 +242,7 @@ concept basic_accumulator = requires(A& acc, const A& cacc, Sample s) {
 };
 
 template<typename A, typename Sample, typename Weight = Sample>
-concept weighted_accumulator = basic_accumulator<A, Sample> && 
+concept weighted_accumulator = basic_accumulator<A, Sample> &&
     requires(A& acc, Sample s, Weight w) {
         { acc(s, w) } -> std::same_as<void>;
     };

@@ -54,7 +54,7 @@ export namespace synodic::statistics
 		template<typename Target>
 		struct feature_index<Target>
 		{
-			static constexpr std::size_t value = 0; // Will cause compile error if used
+			static constexpr std::size_t value = 0;	 // Will cause compile error if used
 		};
 
 		template<typename Target, typename... Features>
@@ -111,7 +111,12 @@ export namespace synodic::statistics
 		 */
 		constexpr void operator()(Sample value) noexcept
 		{
-			std::apply([value](auto&... accs) { (accs(value), ...); }, accumulators_);
+			std::apply(
+				[value](auto&... accs)
+				{
+					(accs(value), ...);
+				},
+				accumulators_);
 		}
 
 		/**
@@ -122,7 +127,12 @@ export namespace synodic::statistics
 		template<typename Weight = Sample>
 		constexpr void operator()(Sample value, Weight weight) noexcept
 		{
-			std::apply([value, weight](auto&... accs) { (accs(value, weight), ...); }, accumulators_);
+			std::apply(
+				[value, weight](auto&... accs)
+				{
+					(accs(value, weight), ...);
+				},
+				accumulators_);
 		}
 
 		/**
@@ -203,7 +213,12 @@ export namespace synodic::statistics
 		 */
 		constexpr void reset() noexcept
 		{
-			std::apply([](auto&... accs) { (accs.reset(), ...); }, accumulators_);
+			std::apply(
+				[](auto&... accs)
+				{
+					(accs.reset(), ...);
+				},
+				accumulators_);
 		}
 
 	private:

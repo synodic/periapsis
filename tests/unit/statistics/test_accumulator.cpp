@@ -339,7 +339,7 @@ namespace
 
 				requirements.Expect(ApproxEqual(acc.get<variance>().mean(), 5.0));
 				requirements.Expect(ApproxEqual(acc.get<variance>().population_variance(), 4.0));
-				requirements.Expect(ApproxEqual(acc.get<variance>().result(), 32.0 / 7.0));  // ~4.571
+				requirements.Expect(ApproxEqual(acc.get<variance>().result(), 32.0 / 7.0));	 // ~4.571
 			};
 
 			co_yield "stddev"_test = [](const Requirements& requirements)
@@ -454,8 +454,8 @@ namespace
 			co_yield "mixed_weighted_unweighted"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, count> acc;
-				acc(1.0);		 // unweighted
-				acc(2.0, 2.0);	 // weighted
+				acc(1.0);  // unweighted
+				acc(2.0, 2.0);	// weighted
 
 				requirements.Expect(acc.get<count>().result() == 2);
 			};
@@ -571,7 +571,7 @@ namespace
 
 				auto r = range(acc);
 				requirements.Expect(r.has_value());
-				requirements.Expect(ApproxEqual(*r, 6.0));  // 8 - 2
+				requirements.Expect(ApproxEqual(*r, 6.0));	// 8 - 2
 			};
 
 			co_yield "coefficient_of_variation"_test = [](const Requirements& requirements)
@@ -604,7 +604,7 @@ namespace
 					acc(2.0);
 					acc(3.0);
 					acc.reset();
-					
+
 					return std::tuple {
 						acc.get<count>().result(),
 						acc.get<sum>().result(),
@@ -612,7 +612,7 @@ namespace
 						acc.get<min>().result().has_value(),
 						acc.get<max>().result().has_value()};
 				}();
-				
+
 				static_assert(std::get<0>(result) == 0);
 				static_assert(std::get<1>(result) == 0.0);
 				static_assert(std::get<2>(result) == 0.0);
@@ -653,9 +653,7 @@ namespace
 					acc(1.0);
 					acc(2.0);
 					acc(3.0);
-					return std::pair {
-						acc.get<moment<1>>().result(),
-						acc.get<mean>().result()};
+					return std::pair {acc.get<moment<1>>().result(), acc.get<mean>().result()};
 				}();
 				static_assert(result.first == result.second);
 			};
