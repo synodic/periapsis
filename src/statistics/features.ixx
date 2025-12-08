@@ -174,7 +174,7 @@ export namespace synodic::statistics
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
 			{
-				Push(value);	// Weight doesn't affect min
+				Push(value);  // Weight doesn't affect min
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
@@ -232,7 +232,7 @@ export namespace synodic::statistics
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
 			{
-				Push(value);	// Weight doesn't affect max
+				Push(value);  // Weight doesn't affect max
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
@@ -739,7 +739,7 @@ export namespace synodic::statistics
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
 			{
-				Push(value);	// Simplified: ignore weight for skewness
+				Push(value);  // Simplified: ignore weight for skewness
 			}
 
 			[[nodiscard]] constexpr auto result() const noexcept -> result_type

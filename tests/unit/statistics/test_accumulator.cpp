@@ -435,8 +435,8 @@ namespace
 			co_yield "weighted_sum"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, sum> acc;
-				acc.Push(2.0, 3.0);	// value=2, weight=3 -> contributes 6
-				acc.Push(4.0, 2.0);	// value=4, weight=2 -> contributes 8
+				acc.Push(2.0, 3.0);	 // value=2, weight=3 -> contributes 6
+				acc.Push(4.0, 2.0);	 // value=4, weight=2 -> contributes 8
 
 				requirements.Expect(ApproxEqual(acc.get<sum>().result(), 14.0));
 			};
@@ -454,8 +454,8 @@ namespace
 			co_yield "mixed_weighted_unweighted"_test = [](const Requirements& requirements)
 			{
 				Accumulator<double, count> acc;
-				acc.Push(1.0);  // unweighted
-				acc.Push(2.0, 2.0);	// weighted
+				acc.Push(1.0);	// unweighted
+				acc.Push(2.0, 2.0);	 // weighted
 
 				requirements.Expect(acc.get<count>().result() == 2);
 			};
@@ -489,8 +489,8 @@ namespace
 					acc.Push(1.0);
 					acc.Push(2.0);
 					acc.Push(3.0);
-					acc.Push(4.0);  // Pushes out 1.0
-					acc.Push(5.0);  // Pushes out 2.0
+					acc.Push(4.0);	// Pushes out 1.0
+					acc.Push(5.0);	// Pushes out 2.0
 					return acc.get<rolling_mean<3>>().result();
 				}();
 				// Window contains [3, 4, 5], mean = 4
