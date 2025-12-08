@@ -13,7 +13,6 @@ using namespace honesty::test::literals;
 namespace
 {
 	using namespace synodic::graph;
-	using namespace synodic::graph::storage;
 	using namespace synodic::algorithm::graph;
 
 	// ============================================================================
@@ -30,7 +29,7 @@ namespace
 				//   0 --10--> 1 --10--> 2
 				// Max flow from 0 to 2 should be 10
 
-				Graph<StaticStorage<void, FlowEdge<int>, 4, 4>> graph;
+				Graph<void, FlowEdge<int>, 4, 4> graph;
 				auto v0 = graph.add_vertex();
 				auto v1 = graph.add_vertex();
 				auto v2 = graph.add_vertex();
@@ -50,7 +49,7 @@ namespace
 				//   0 --10--> 1 --5--> 2
 				// Max flow should be limited by bottleneck = 5
 
-				Graph<StaticStorage<void, FlowEdge<int>, 4, 4>> graph;
+				Graph<void, FlowEdge<int>, 4, 4> graph;
 				auto v0 = graph.add_vertex();
 				auto v1 = graph.add_vertex();
 				auto v2 = graph.add_vertex();
@@ -77,7 +76,7 @@ namespace
 				//       2
 				// Max flow = 20 (10 through each path)
 
-				Graph<StaticStorage<void, FlowEdge<int>, 8, 8>> graph;
+				Graph<void, FlowEdge<int>, 8, 8> graph;
 				auto v0 = graph.add_vertex();
 				auto v1 = graph.add_vertex();
 				auto v2 = graph.add_vertex();
@@ -98,7 +97,7 @@ namespace
 				// Disconnected graph: no path from 0 to 2
 				//   0 -> 1    2 (isolated)
 
-				Graph<StaticStorage<void, FlowEdge<int>, 4, 4>> graph;
+				Graph<void, FlowEdge<int>, 4, 4> graph;
 				auto v0 = graph.add_vertex();
 				auto v1 = graph.add_vertex();
 				auto v2 = graph.add_vertex();
@@ -116,7 +115,7 @@ namespace
 				// Verify the algorithm works at compile-time
 				constexpr auto compute_flow = []() constexpr
 				{
-					Graph<StaticStorage<void, FlowEdge<int>, 4, 4>> graph;
+					Graph<void, FlowEdge<int>, 4, 4> graph;
 					auto v0 = graph.add_vertex();
 					auto v1 = graph.add_vertex();
 					auto v2 = graph.add_vertex();
@@ -159,7 +158,7 @@ namespace
 				//   1 --10--> 2
 				// Max flow from 0 to 3
 
-				Graph<StaticStorage<void, FlowEdge<int>, 8, 8>> graph;
+				Graph<void, FlowEdge<int>, 8, 8> graph;
 				auto v0 = graph.add_vertex();
 				auto v1 = graph.add_vertex();
 				auto v2 = graph.add_vertex();

@@ -23,9 +23,16 @@ The Synodic Template Library provides high-performance, concept-constrained data
   - `lockfree::SPSCQueue`
 
 - [Graph Library](graph.md) - High-performance graph data structures
-  - Storage backends: `StaticStorage`, `AdjacencyListStorage`, `CSRStorage`
+  - Unified `Graph<V,E,MaxV,MaxE>` type with automatic storage selection
   - Compile-time graph construction
-  - Subgraph composition
+  - `Visitor` class for traversal (satisfies `visitor` concept)
+  - Visitor concept for generic algorithm compatibility
+
+- [State Machine](state_machine.md) - Constexpr-capable finite state machines
+  - Unified `StateMachine<Event,StateData,TransData,MaxS,MaxT>` type
+  - Compile-time FSM definition and validation
+  - `Runner` class for execution (satisfies `visitor` concept)
+  - Guards, actions, and event processing
 
 ### Algorithms
 
@@ -77,18 +84,24 @@ constexpr auto sum = []() constexpr {
 }();
 static_assert(sum == 3);
 
-// Compile-time graph
+// Compile-time graph with unified API
 using namespace synodic::graph;
-using namespace synodic::graph::storage;
 
 constexpr auto build_graph() {
-    Graph<StaticStorage<void, void, 4, 4>> g;
+    Graph<void, void, 4, 4> g;  // Fixed-size, constexpr capable
     auto v0 = g.add_vertex();
     auto v1 = g.add_vertex();
     g.add_edge(v0, v1);
     return g.num_edges();
 }
 static_assert(build_graph() == 1);
+
+// Visitor concept - same interface for graph and FSM traversal
+Graph<int, void> graph;
+Visitor vis{graph, start_vertex};
+vis.position();     // Get current position
+vis.move_to(v);     // Navigate directly
+vis.advance(...);   // Follow edge
 
 // Container concepts
 template<random_access_container C>
@@ -102,7 +115,8 @@ synodic.library
 ├── :container.fixed.ring_buffer      - FixedRingBuffer, FixedQueue, FixedStack
 ├── :container.sparse.*               - BitMap, HashMap, HashSet, Vector
 ├── :container.lockfree.spsc_queue    - SPSCQueue
-├── :structure.graph.*                - Graph, storage backends, concepts
+├── :structure.graph.*                - Graph, Visitor, walker concept
+├── :structure.state_machine.*        - StateMachine, Runner
 ├── :algorithm.graph.max_flow         - Max flow algorithm
 ├── :type.concepts.*                  - Container concepts
 ├── :type.traits                      - ConstructorParameters

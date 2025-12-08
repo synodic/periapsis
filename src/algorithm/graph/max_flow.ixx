@@ -48,24 +48,31 @@ export namespace synodic::algorithm::graph
 	 *        Time complexity: O(V * E^2)
 	 *
 	 * @tparam MaxVertices Maximum number of vertices (for constexpr array allocation)
-	 * @tparam Storage The graph storage type
+	 * @tparam VertexProperty The vertex property type
+	 * @tparam EdgeProperty The edge property type (must have capacity/flow members)
+	 * @tparam MaxV Maximum vertices in graph
+	 * @tparam MaxE Maximum edges in graph
 	 * @param graph The flow network (modified in place with flow values)
 	 * @param source Source vertex
 	 * @param sink Sink vertex
 	 * @return The maximum flow value
 	 */
-	template<std::size_t MaxVertices, typename Storage>
-		requires synodic::graph::incidence_storage<Storage> and synodic::graph::vertex_list_storage<Storage> and
-				 synodic::graph::edge_list_storage<Storage>
+	template<
+		std::size_t MaxVertices,
+		typename VertexProperty,
+		typename EdgeProperty,
+		std::size_t MaxV,
+		std::size_t MaxE>
 	constexpr auto max_flow(
-		synodic::graph::Graph<Storage>& graph,
-		typename Storage::vertex_descriptor source,
-		typename Storage::vertex_descriptor sink)
-		-> MaxFlowResult<decltype(std::declval<typename Storage::edge_property_type>().capacity)>
+		synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>& graph,
+		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor source,
+		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor sink)
+		-> MaxFlowResult<decltype(std::declval<EdgeProperty>().capacity)>
 	{
-		using vertex_descriptor = typename Storage::vertex_descriptor;
-		using edge_descriptor	= typename Storage::edge_descriptor;
-		using flow_type			= decltype(std::declval<typename Storage::edge_property_type>().capacity);
+		using graph_type		= synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>;
+		using vertex_descriptor = typename graph_type::vertex_descriptor;
+		using edge_descriptor	= typename graph_type::edge_descriptor;
+		using flow_type			= decltype(std::declval<EdgeProperty>().capacity);
 
 		MaxFlowResult<flow_type> result {};
 
@@ -178,20 +185,14 @@ export namespace synodic::algorithm::graph
 	}
 
 	/**
-	 * @brief Helper to deduce MaxVertices from static storage.
+	 * @brief Helper to deduce MaxVertices from fixed-size graph.
 	 */
-	template<
-		typename VertexProperty,
-		typename EdgeProperty,
-		std::size_t MaxVertices,
-		std::size_t MaxEdges,
-		std::unsigned_integral IndexType>
+	template<typename VertexProperty, typename EdgeProperty, std::size_t MaxVertices, std::size_t MaxEdges>
+		requires(MaxVertices != synodic::graph::detail::dynamic_extent)
 	constexpr auto max_flow(
-		synodic::graph::Graph<
-			synodic::graph::storage::StaticStorage<VertexProperty, EdgeProperty, MaxVertices, MaxEdges, IndexType>>&
-			graph,
-		IndexType source,
-		IndexType sink)
+		synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>& graph,
+		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>::vertex_descriptor source,
+		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>::vertex_descriptor sink)
 	{
 		return max_flow<MaxVertices>(graph, source, sink);
 	}

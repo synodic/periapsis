@@ -22,6 +22,14 @@ export import :structure.graph.storage.static_storage;
 export import :structure.graph.storage.csr;
 export import :structure.graph.storage.adjacency_list;
 export import :structure.graph.graph;
+export import :structure.graph.visitor;
+
+// State Machine partitions
+export import :structure.state_machine.concepts;
+export import :structure.state_machine.storage.static_storage;
+export import :structure.state_machine.storage.dynamic_storage;
+export import :structure.state_machine.state_machine;
+export import :structure.state_machine.runner;
 
 // Function partitions
 export import :function.executor;

@@ -5,6 +5,7 @@ target_sources(synodic-template-library
     "concepts.ixx"
     "storage_traits.ixx"
     "graph.ixx"
+    "visitor.ixx"
 )
 
 add_subdirectory(
