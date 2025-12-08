@@ -3,4 +3,5 @@ target_sources(synodic-template-library
 		FILE_SET CXX_MODULES
 		FILES
 			"executor.ixx"
+			"function_ref.ixx"
 )

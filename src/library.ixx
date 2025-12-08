@@ -39,6 +39,7 @@ export import :exception.not_implemented;
 
 // String partitions
 export import :string.hash_string;
+export import :string.inplace_string;
 
 // Algorithm partitions
 export import :algorithm.graph.max_flow;
@@ -59,5 +60,6 @@ export import :statistics.query;
 // Thread partitions
 export import :thread.local;
 
-// Utility
+// Utility partitions
 export import :utility;
+export import :utility.hash;
