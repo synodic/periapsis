@@ -17,6 +17,7 @@ class MyProject(CPPythonBase):
         deps = CMakeDeps(self)
         deps.generate()
         tc = CMakeToolchain(self)
+        tc.user_presets_path = False
         tc.generate()
 
     def requirements(self):

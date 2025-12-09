@@ -1,31 +1,18 @@
-import synodic.honesty.test;
+/**
+ * @brief Unit tests for sparse hash set
+ */
+
+#include <gtest/gtest.h>
 
 import synodic.library;
 
-using namespace honesty::test;
-using namespace honesty::test::literals;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-using HashSet = synodic::sparse::HashSet<int>;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 namespace
 {
-	Suite SUITE(
-		"sparse_hash_set",
-		[]() -> Generator
-		{
-			co_yield "type"_test = [](const Requirements& requirements)
-			{
-				//static_assert(synodic::associative_container<HashSet>);
-			};
-		}
-		);
-	SuiteRegistrar _(SUITE);
-}
+	using HashSet = synodic::sparse::HashSet<int>;
+
+	TEST(SparseHashSet, Type)
+	{
+		// static_assert(synodic::associative_container<HashSet>);
+	}
+
+}  // namespace

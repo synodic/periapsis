@@ -1,32 +1,18 @@
-import synodic.honesty.test;
+/**
+ * @brief Unit tests for sparse vector
+ */
+
+#include <gtest/gtest.h>
 
 import synodic.library;
 
-using namespace honesty::test;
-using namespace honesty::test::literals;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-using Vector = synodic::sparse::Vector<int, 3>;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 namespace
 {
-	Suite SUITE(
-		"sparse_vector",
-		[]() -> Generator
-		{
-			co_yield "type"_test = [](const Requirements& requirements)
-			{
-				//static_assert(synodic::contiguous_container<Vector>);
-			};
-		}
-		);
-	SuiteRegistrar _(SUITE);
-}
+	using Vector = synodic::sparse::Vector<int, 3>;
+
+	TEST(SparseVector, Type)
+	{
+		// static_assert(synodic::contiguous_container<Vector>);
+	}
+
+}  // namespace

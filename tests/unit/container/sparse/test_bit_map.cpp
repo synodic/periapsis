@@ -1,30 +1,18 @@
-import synodic.honesty.test;
+/**
+ * @brief Unit tests for sparse bit map
+ */
+
+#include <gtest/gtest.h>
+
 import synodic.library;
-
-using namespace honesty::test;
-using namespace honesty::test::literals;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-using BitMap = synodic::sparse::BitMap<int, 4>;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
-	Suite SUITE(
-		"sparse_bitmap",
-		[]() -> Generator
-		{
-			co_yield "type"_test = [](const Requirements& requirements)
-			{
-				//static_assert(synodic::sequence_container<BitMap>);
-			};
-		}
-		);
-	SuiteRegistrar _(SUITE);
-}
+	using BitMap = synodic::sparse::BitMap<int, 4>;
+
+	TEST(SparseBitMap, Type)
+	{
+		// static_assert(synodic::sequence_container<BitMap>);
+	}
+
+}  // namespace

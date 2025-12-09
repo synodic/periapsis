@@ -1,31 +1,18 @@
-import synodic.honesty.test;
+/**
+ * @brief Unit tests for sparse hash map
+ */
+
+#include <gtest/gtest.h>
 
 import synodic.library;
 
-using namespace honesty::test;
-using namespace honesty::test::literals;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Types
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-using HashMap = synodic::sparse::HashMap<int, int>;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 namespace
 {
-	Suite SUITE(
-		"sparse_hash_map",
-		[]() -> Generator
-		{
-			co_yield "type"_test = [](const Requirements& requirements)
-			{
-				//static_assert(synodic::associative_container<HashMap>);
-			};
-		}
-		);
-	SuiteRegistrar _(SUITE);
-}
+	using HashMap = synodic::sparse::HashMap<int, int>;
+
+	TEST(SparseHashMap, Type)
+	{
+		// static_assert(synodic::associative_container<HashMap>);
+	}
+
+}  // namespace

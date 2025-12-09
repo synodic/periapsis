@@ -18,8 +18,8 @@ set_target_properties(tests
 target_link_libraries(tests
 	PRIVATE
 	synodic::synodic-template-library
-	synodic::honesty
-	synodic::honesty_main
+	GTest::gtest
+	GTest::gtest_main
 )
 
 add_subdirectory(

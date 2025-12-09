@@ -1,121 +1,113 @@
+/**
+ * @brief Unit tests for fixed ring buffer and related containers
+ */
+
+#include <gtest/gtest.h>
+
 import std;
-import synodic.honesty.test;
-
 import synodic.library;
-
-using namespace honesty::test;
-using namespace honesty::test::literals;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
 	using namespace synodic;
 
-	Suite SUITE(
-		"fixed_ring_buffer",
-		[]() -> Generator
+	TEST(FixedRingBuffer, DefaultConstruction)
+	{
+		FixedRingBuffer<int, 8> buffer;
+		EXPECT_TRUE(buffer.empty());
+		EXPECT_EQ(buffer.size(), 0);
+		EXPECT_EQ(buffer.capacity(), 8);
+	}
+
+	TEST(FixedRingBuffer, PushBackPopFront)
+	{
+		FixedRingBuffer<int, 8> buffer;
+		buffer.push_back(1);
+		buffer.push_back(2);
+		buffer.push_back(3);
+
+		EXPECT_EQ(buffer.size(), 3);
+		EXPECT_EQ(buffer.front(), 1);
+		EXPECT_EQ(buffer.back(), 3);
+
+		buffer.pop_front();
+		EXPECT_EQ(buffer.front(), 2);
+		EXPECT_EQ(buffer.size(), 2);
+	}
+
+	TEST(FixedRingBuffer, PushFrontPopBack)
+	{
+		FixedRingBuffer<int, 8> buffer;
+		buffer.push_front(1);
+		buffer.push_front(2);
+		buffer.push_front(3);
+
+		EXPECT_EQ(buffer.size(), 3);
+		EXPECT_EQ(buffer.front(), 3);
+		EXPECT_EQ(buffer.back(), 1);
+
+		buffer.pop_back();
+		EXPECT_EQ(buffer.back(), 2);
+		EXPECT_EQ(buffer.size(), 2);
+	}
+
+	TEST(FixedRingBuffer, WrapAround)
+	{
+		FixedRingBuffer<int, 4> buffer;
+		buffer.push_back(1);
+		buffer.push_back(2);
+		buffer.push_back(3);
+		buffer.pop_front();	 // Remove 1
+		buffer.pop_front();	 // Remove 2
+		buffer.push_back(4);
+		buffer.push_back(5);  // Should wrap around
+
+		EXPECT_EQ(buffer.size(), 3);
+		EXPECT_EQ(buffer.front(), 3);
+		EXPECT_EQ(buffer.back(), 5);
+	}
+
+	TEST(FixedRingBuffer, ConstexprUsage)
+	{
+		constexpr auto test = []() constexpr
 		{
-			co_yield "default_construction"_test = [](const Requirements& requirements)
-			{
-				FixedRingBuffer<int, 8> buffer;
-				requirements.Expect(buffer.empty());
-				requirements.Expect(buffer.size() == 0);
-				requirements.Expect(buffer.capacity() == 8);
-			};
+			FixedRingBuffer<int, 8> buffer;
+			buffer.push_back(10);
+			buffer.push_back(20);
+			return buffer.front() + buffer.back();
+		}();
 
-			co_yield "push_back_pop_front"_test = [](const Requirements& requirements)
-			{
-				FixedRingBuffer<int, 8> buffer;
-				buffer.push_back(1);
-				buffer.push_back(2);
-				buffer.push_back(3);
+		static_assert(test == 30);
+		EXPECT_EQ(test, 30);
+	}
 
-				requirements.Expect(buffer.size() == 3);
-				requirements.Expect(buffer.front() == 1);
-				requirements.Expect(buffer.back() == 3);
+	TEST(FixedRingBuffer, StdQueueAdapter)
+	{
+		FixedQueue<int, 8> queue;
+		queue.push(1);
+		queue.push(2);
+		queue.push(3);
 
-				buffer.pop_front();
-				requirements.Expect(buffer.front() == 2);
-				requirements.Expect(buffer.size() == 2);
-			};
+		EXPECT_EQ(queue.front(), 1);
+		EXPECT_EQ(queue.back(), 3);
+		EXPECT_EQ(queue.size(), 3);
 
-			co_yield "push_front_pop_back"_test = [](const Requirements& requirements)
-			{
-				FixedRingBuffer<int, 8> buffer;
-				buffer.push_front(1);
-				buffer.push_front(2);
-				buffer.push_front(3);
+		queue.pop();
+		EXPECT_EQ(queue.front(), 2);
+	}
 
-				requirements.Expect(buffer.size() == 3);
-				requirements.Expect(buffer.front() == 3);
-				requirements.Expect(buffer.back() == 1);
+	TEST(FixedRingBuffer, StdStackAdapter)
+	{
+		FixedStack<int, 8> stack;
+		stack.push(1);
+		stack.push(2);
+		stack.push(3);
 
-				buffer.pop_back();
-				requirements.Expect(buffer.back() == 2);
-				requirements.Expect(buffer.size() == 2);
-			};
+		EXPECT_EQ(stack.top(), 3);
+		EXPECT_EQ(stack.size(), 3);
 
-			co_yield "wrap_around"_test = [](const Requirements& requirements)
-			{
-				FixedRingBuffer<int, 4> buffer;
-				buffer.push_back(1);
-				buffer.push_back(2);
-				buffer.push_back(3);
-				buffer.pop_front();	 // Remove 1
-				buffer.pop_front();	 // Remove 2
-				buffer.push_back(4);
-				buffer.push_back(5);  // Should wrap around
+		stack.pop();
+		EXPECT_EQ(stack.top(), 2);
+	}
 
-				requirements.Expect(buffer.size() == 3);
-				requirements.Expect(buffer.front() == 3);
-				requirements.Expect(buffer.back() == 5);
-			};
-
-			co_yield "constexpr_usage"_test = [](const Requirements& requirements)
-			{
-				constexpr auto test = []() constexpr
-				{
-					FixedRingBuffer<int, 8> buffer;
-					buffer.push_back(10);
-					buffer.push_back(20);
-					return buffer.front() + buffer.back();
-				}();
-
-				static_assert(test == 30);
-				requirements.Expect(test == 30);
-			};
-
-			co_yield "std_queue_adapter"_test = [](const Requirements& requirements)
-			{
-				FixedQueue<int, 8> queue;
-				queue.push(1);
-				queue.push(2);
-				queue.push(3);
-
-				requirements.Expect(queue.front() == 1);
-				requirements.Expect(queue.back() == 3);
-				requirements.Expect(queue.size() == 3);
-
-				queue.pop();
-				requirements.Expect(queue.front() == 2);
-			};
-
-			co_yield "std_stack_adapter"_test = [](const Requirements& requirements)
-			{
-				FixedStack<int, 8> stack;
-				stack.push(1);
-				stack.push(2);
-				stack.push(3);
-
-				requirements.Expect(stack.top() == 3);
-				requirements.Expect(stack.size() == 3);
-
-				stack.pop();
-				requirements.Expect(stack.top() == 2);
-			};
-		});
-	SuiteRegistrar _(SUITE);
-}
+}  // namespace

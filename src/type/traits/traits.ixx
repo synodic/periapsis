@@ -35,6 +35,7 @@ namespace synodic
 		{
 			return U();
 		}
+
 		consteval friend size_t GetID(Tag<T, N>)
 		{
 			return 0;

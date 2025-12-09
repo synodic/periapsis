@@ -1,9 +1,11 @@
-import std;
-import synodic.honesty.test;
-import synodic.library;
+/**
+ * @brief Unit tests for type traits
+ */
 
-using namespace honesty::test;
-using namespace honesty::test::literals;
+#include <gtest/gtest.h>
+
+import std;
+import synodic.library;
 
 struct TestStruct
 {
@@ -13,7 +15,9 @@ class TestClass
 {
 public:
 	TestClass(std::vector<int> parameter1, TestStruct parameter2, int parameter3) :
-		data1_(std::move(parameter1)), data2_(parameter2), data3_(parameter3)
+		data1_(std::move(parameter1)),
+		data2_(parameter2),
+		data3_(parameter3)
 	{
 	}
 
@@ -32,7 +36,9 @@ class ConstTestClass
 {
 public:
 	ConstTestClass(const std::vector<int> parameter1, const TestStruct parameter2, const int parameter3) :
-		data1_(parameter1), data2_(parameter2), data3_(parameter3)
+		data1_(parameter1),
+		data2_(parameter2),
+		data3_(parameter3)
 	{
 	}
 
@@ -46,7 +52,9 @@ class ReferenceTestClass
 {
 public:
 	ReferenceTestClass(std::vector<int>& parameter1, TestStruct& parameter2, int& parameter3) :
-		data1_(parameter1), data2_(parameter2), data3_(parameter3)
+		data1_(parameter1),
+		data2_(parameter2),
+		data3_(parameter3)
 	{
 	}
 
@@ -60,7 +68,9 @@ class PointerTestClass
 {
 public:
 	PointerTestClass(std::vector<int>* parameter1, TestStruct* parameter2, int* parameter3) :
-		data1_(parameter1), data2_(parameter2), data3_(parameter3)
+		data1_(parameter1),
+		data2_(parameter2),
+		data3_(parameter3)
 	{
 	}
 
@@ -70,39 +80,13 @@ private:
 	int* data3_;
 };
 
-//namespace
-//{
-//	Suite SUITE(
-//		"type_traits",
-//		[]() -> Generator
-//		{
-//			co_yield "value"_test = [](const Requirements& requirements)
-//			{
-//				using ConstructorType = synodic::ConstructorParameters<TestClass>;
-//				requirements.ExpectEquals(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
-//			};
-//
-//			co_yield "const"_test = [](const Requirements& requirements)
-//			{
-//				using ConstructorType = synodic::ConstructorParameters<ConstTestClass>;
-//				requirements.ExpectEquals(
-//					(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>));
-//			};
-//		
-//
-//			co_yield "ref"_test = [](const Requirements& requirements)
-//				{
-//					// using ConstructorType = synodic::ConstructorParameters<ReferenceTestClass>;
-//				// requirements.Equal(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
-//				};
-//			}
-//
-//			co_yield "ptr"_test = [](const Requirements& requirements)
-//			{
-//				// using ConstructorType = synodic::ConstructorParameters<PointerTestClass>;
-//				// requirements.Equal(std::is_same_v<ConstructorType, std::tuple<std::vector<int>, TestData, int>>);
-//			};
-//
-//		});
-//	SuiteRegistrar _(SUITE);
-//}
+namespace
+{
+	// Tests are commented out in the original - keeping as placeholder
+	TEST(TypeTraits, Placeholder)
+	{
+		// Type trait tests to be implemented
+		EXPECT_TRUE(true);
+	}
+
+}  // namespace
