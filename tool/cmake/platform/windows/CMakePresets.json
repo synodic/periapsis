@@ -63,7 +63,7 @@
 		{
 			"name": "windows-msbuild-clang",
 			"displayName": "MSBuild - Clang",
-			"description": "Visual Studio 18 2026 generator with Clang (clang-cl)",
+			"description": "Visual Studio 18 2022 generator with Clang (clang-cl)",
 			"generator": "Visual Studio 18 2026",
 			"architecture": {
 				"value": "x64",
