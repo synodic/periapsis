@@ -18,13 +18,11 @@ homepage = "https://github.com/synodic/Synodic-Template-Library"
 repository = "https://github.com/synodic/Synodic-Template-Library"
 
 [dependency-groups]
-build = ["cppython[cmake,conan,git]>=0.9.15.dev1"]
-lint = ["ruff>=0.14.7", "pyrefly>=0.44.1", "isort>=7.0.0"]
-test = ["pytest>=9.0.1", "pytest-cov>=7.0.0", "pytest-mock>=3.15.1"]
+build = ["cppython[cmake,conan,git]>=0.9.15.dev3"]
+lint = ["ruff>=0.14.9", "pyrefly>=0.45.2", "isort>=7.0.0"]
+test = ["pytest>=9.0.2", "pytest-cov>=7.0.0", "pytest-mock>=3.15.1"]
 docs = ["zensical>=0.0.11"]
-config = [
-    "copier>=9.11.0",
-]
+config = ["copier>=9.11.0"]
 
 [tool.cppython]
 dependencies = ['gtest==1.17.0']
