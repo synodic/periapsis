@@ -5,7 +5,7 @@ from conanfile_base import CPPythonBase
 
 
 class MyProject(CPPythonBase):
-    name = 'synodic-template-library'
+    name = 'periapsis'
     version = '1.0'
     settings = 'os', 'compiler', 'build_type', 'arch'
     exports = 'conanfile_base.py'
@@ -44,7 +44,7 @@ class MyProject(CPPythonBase):
         copy(self, 'src/*', src=self.recipe_folder, dst=self.export_sources_folder)
         copy(
             self,
-            'tool/cmake/synodic-template-libraryConfig.cmake.in',
+            'tool/cmake/periapsisConfig.cmake.in',
             src=self.recipe_folder,
             dst=self.export_sources_folder,
         )

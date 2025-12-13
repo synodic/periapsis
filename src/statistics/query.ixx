@@ -1,13 +1,4 @@
-/**
- * @file query.ixx
- * @brief Free functions for querying statistical results
- *
- * @details Provides convenient free functions to extract results from
- *          Accumulator instances. These are designed for ADL (Argument
- *          Dependent Lookup) so they can be called unqualified.
- */
-
-export module synodic.library:statistics.query;
+export module synodic.periapsis:statistics.query;
 
 import :statistics.concepts;
 import :statistics.features;
@@ -15,7 +6,7 @@ import :statistics.accumulator;
 
 import std;
 
-export namespace synodic::statistics
+export namespace peri::statistics
 {
 	// ============================================================================
 	// Type Trait: Has Feature
@@ -46,110 +37,110 @@ export namespace synodic::statistics
 	 * @brief Extract sample count
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<count, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_count(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Count, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractCount(const AccSet& acc) noexcept
 	{
-		return acc.template get<count>().result();
+		return acc.template Get<Count>().Result();
 	}
 
 	/**
 	 * @brief Extract sum
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<sum, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_sum(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Sum, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractSum(const AccSet& acc) noexcept
 	{
-		return acc.template get<sum>().result();
+		return acc.template Get<Sum>().Result();
 	}
 
 	/**
 	 * @brief Extract minimum value
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<min, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_min(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Min, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractMin(const AccSet& acc) noexcept
 	{
-		return acc.template get<min>().result();
+		return acc.template Get<Min>().Result();
 	}
 
 	/**
 	 * @brief Extract maximum value
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<max, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_max(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Max, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractMax(const AccSet& acc) noexcept
 	{
-		return acc.template get<max>().result();
+		return acc.template Get<Max>().Result();
 	}
 
 	/**
 	 * @brief Extract arithmetic mean
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<mean, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_mean(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Mean, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractMean(const AccSet& acc) noexcept
 	{
-		return acc.template get<mean>().result();
+		return acc.template Get<Mean>().Result();
 	}
 
 	/**
 	 * @brief Extract sample variance
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_variance(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractVariance(const AccSet& acc) noexcept
 	{
-		return acc.template get<variance>().result();
+		return acc.template Get<Variance>().Result();
 	}
 
 	/**
 	 * @brief Extract population variance
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_population_variance(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractPopulationVariance(const AccSet& acc) noexcept
 	{
-		return acc.template get<variance>().population_variance();
+		return acc.template Get<Variance>().PopulationVariance();
 	}
 
 	/**
 	 * @brief Extract standard deviation
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_stddev(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractStdDev(const AccSet& acc) noexcept
 	{
-		return acc.template get<variance>().stddev();
+		return acc.template Get<Variance>().StdDev();
 	}
 
 	/**
 	 * @brief Extract population standard deviation
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_population_stddev(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractPopulationStdDev(const AccSet& acc) noexcept
 	{
-		return acc.template get<variance>().population_stddev();
+		return acc.template Get<Variance>().PopulationStdDev();
 	}
 
 	/**
 	 * @brief Extract skewness
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<skewness, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_skewness(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Skewness, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractSkewness(const AccSet& acc) noexcept
 	{
-		return acc.template get<skewness>().result();
+		return acc.template Get<Skewness>().Result();
 	}
 
 	/**
 	 * @brief Extract excess kurtosis
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<kurtosis, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_kurtosis(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Kurtosis, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractKurtosis(const AccSet& acc) noexcept
 	{
-		return acc.template get<kurtosis>().result();
+		return acc.template Get<Kurtosis>().Result();
 	}
 
 	// ============================================================================
@@ -160,10 +151,10 @@ export namespace synodic::statistics
 	 * @brief Extract N-th moment
 	 */
 	template<std::size_t N, typename AccSet>
-		requires detail::accumulator_has_feature_v<moment<N>, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_moment(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Moment<N>, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractMoment(const AccSet& acc) noexcept
 	{
-		return acc.template get<moment<N>>().result();
+		return acc.template Get<Moment<N>>().Result();
 	}
 
 	// ============================================================================
@@ -174,30 +165,30 @@ export namespace synodic::statistics
 	 * @brief Extract rolling mean
 	 */
 	template<std::size_t WindowSize, typename AccSet>
-		requires detail::accumulator_has_feature_v<rolling_mean<WindowSize>, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_rolling_mean(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<RollingMean<WindowSize>, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractRollingMean(const AccSet& acc) noexcept
 	{
-		return acc.template get<rolling_mean<WindowSize>>().result();
+		return acc.template Get<RollingMean<WindowSize>>().Result();
 	}
 
 	/**
 	 * @brief Extract rolling variance
 	 */
 	template<std::size_t WindowSize, typename AccSet>
-		requires detail::accumulator_has_feature_v<rolling_variance<WindowSize>, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_rolling_variance(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<RollingVariance<WindowSize>, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractRollingVariance(const AccSet& acc) noexcept
 	{
-		return acc.template get<rolling_variance<WindowSize>>().result();
+		return acc.template Get<RollingVariance<WindowSize>>().Result();
 	}
 
 	/**
 	 * @brief Extract rolling standard deviation
 	 */
 	template<std::size_t WindowSize, typename AccSet>
-		requires detail::accumulator_has_feature_v<rolling_variance<WindowSize>, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto extract_rolling_stddev(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<RollingVariance<WindowSize>, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto ExtractRollingStdDev(const AccSet& acc) noexcept
 	{
-		return acc.template get<rolling_variance<WindowSize>>().stddev();
+		return acc.template Get<RollingVariance<WindowSize>>().StdDev();
 	}
 
 	// ============================================================================
@@ -205,50 +196,50 @@ export namespace synodic::statistics
 	// ============================================================================
 
 	/**
-	 * @brief Compute coefficient of variation (CV = stddev / mean)
+	 * @brief Compute coefficient of variation (CV = stdDev / mean)
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto coefficient_of_variation(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto CoefficientOfVariation(const AccSet& acc) noexcept
 	{
-		const auto m = acc.template get<variance>().mean();
-		if (m == decltype(m) {})
+		const auto m = acc.template Get<Variance>().Mean();
+		if (m == decltype(m){})
 		{
-			return decltype(m) {};
+			return decltype(m){};
 		}
-		return acc.template get<variance>().stddev() / m;
+		return acc.template Get<Variance>().StdDev() / m;
 	}
 
 	/**
-	 * @brief Compute standard error of the mean (SEM = stddev / sqrt(n))
+	 * @brief Compute standard error of the mean (SEM = stdDev / sqrt(n))
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto standard_error(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto StandardError(const AccSet& acc) noexcept
 	{
-		const auto n = acc.template get<variance>().count();
+		const auto n = acc.template Get<Variance>().Count();
 		if (n == 0)
 		{
-			return decltype(acc.template get<variance>().stddev()) {};
+			return decltype(acc.template Get<Variance>().StdDev()){};
 		}
-		return acc.template get<variance>().stddev() / std::sqrt(static_cast<double>(n));
+		return acc.template Get<Variance>().StdDev() / std::sqrt(static_cast<double>(n));
 	}
 
 	/**
 	 * @brief Get the range (max - min)
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<min, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<max, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto range(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Min, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Max, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto Range(const AccSet& acc) noexcept
 	{
-		const auto min_val = acc.template get<min>().result();
-		const auto max_val = acc.template get<max>().result();
+		const auto min_val = acc.template Get<Min>().Result();
+		const auto max_val = acc.template Get<Max>().Result();
 		if (!min_val || !max_val)
 		{
-			return std::optional<typename std::remove_cvref_t<AccSet>::sample_type> {};
+			return std::optional<typename std::remove_cvref_t<AccSet>::SampleType>{};
 		}
-		return std::optional {*max_val - *min_val};
+		return std::optional{*max_val - *min_val};
 	}
 
 	// ============================================================================
@@ -261,37 +252,37 @@ export namespace synodic::statistics
 	template<typename T>
 	struct StatsSummary
 	{
-		std::size_t count {};
-		T sum {};
-		T mean {};
-		T variance {};
-		T stddev {};
-		std::optional<T> min {};
-		std::optional<T> max {};
+		std::size_t count{};
+		T sum{};
+		T mean{};
+		T variance{};
+		T stdDev{};
+		std::optional<T> min{};
+		std::optional<T> max{};
 	};
 
 	/**
 	 * @brief Extract a summary of all basic statistics
 	 */
 	template<typename AccSet>
-		requires detail::accumulator_has_feature_v<count, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<sum, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<mean, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<variance, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<min, std::remove_cvref_t<AccSet>> and
-				 detail::accumulator_has_feature_v<max, std::remove_cvref_t<AccSet>>
-	[[nodiscard]] constexpr auto summary(const AccSet& acc) noexcept
+		requires detail::accumulator_has_feature_v<Count, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Sum, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Mean, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Variance, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Min, std::remove_cvref_t<AccSet>> and
+		         detail::accumulator_has_feature_v<Max, std::remove_cvref_t<AccSet>>
+	[[nodiscard]] constexpr auto Summary(const AccSet& acc) noexcept
 	{
-		using T		  = typename std::remove_cvref_t<AccSet>::sample_type;
+		using T       = typename std::remove_cvref_t<AccSet>::SampleType;
 		using ResultT = std::conditional_t<std::floating_point<T>, T, double>;
 
-		return StatsSummary<ResultT> {
-			.count	  = extract_count(acc),
-			.sum	  = extract_sum(acc),
-			.mean	  = extract_mean(acc),
-			.variance = extract_variance(acc),
-			.stddev	  = extract_stddev(acc),
-			.min	  = extract_min(acc),
-			.max	  = extract_max(acc)};
+		return StatsSummary<ResultT>{
+			.count = ExtractCount(acc),
+			.sum = ExtractSum(acc),
+			.mean = ExtractMean(acc),
+			.variance = ExtractVariance(acc),
+			.stdDev = ExtractStdDev(acc),
+			.min = ExtractMin(acc),
+			.max = ExtractMax(acc)};
 	}
 }

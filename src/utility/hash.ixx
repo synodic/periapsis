@@ -2,11 +2,11 @@
  *	@brief Hashing utilities for associative containers. Not suitable for cryptographic purposes.
  */
 
-export module synodic.library:utility.hash;
+export module synodic.periapsis:utility.hash;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 
 	/**
@@ -89,9 +89,9 @@ export namespace synodic
  * @brief std::hash specialization for BasicHash that allows it to be used in associative containers
  */
 export template<typename Integral>
-struct std::hash<synodic::BasicHash<Integral>>
+struct std::hash<peri::BasicHash<Integral>>
 {
-	std::size_t operator()(const synodic::BasicHash<Integral>& hash) const noexcept
+	std::size_t operator()(const peri::BasicHash<Integral>& hash) const noexcept
 	{
 		return static_cast<std::size_t>(hash);
 	}

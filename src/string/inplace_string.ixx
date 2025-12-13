@@ -1,9 +1,9 @@
-export module synodic.library:string.inplace_string;
+export module synodic.periapsis:string.inplace_string;
 
 import std;
 import :type.traits;
 
-export namespace synodic
+export namespace peri
 {
 
 	/**
@@ -208,36 +208,36 @@ export namespace synodic
 }
 
 export template<std::size_t N>
-struct std::hash<synodic::InplaceString<N>> : std::hash<std::string_view>
+struct std::hash<peri::InplaceString<N>> : std::hash<std::string_view>
 {
 };
 
 export template<std::size_t N>
-struct std::hash<synodic::InplaceU8String<N>> : std::hash<std::u8string_view>
+struct std::hash<peri::InplaceU8String<N>> : std::hash<std::u8string_view>
 {
 };
 
 export template<std::size_t N>
-struct std::hash<synodic::InplaceU16String<N>> : std::hash<std::u16string_view>
+struct std::hash<peri::InplaceU16String<N>> : std::hash<std::u16string_view>
 {
 };
 
 export template<std::size_t N>
-struct std::hash<synodic::InplaceU32String<N>> : std::hash<std::u32string_view>
+struct std::hash<peri::InplaceU32String<N>> : std::hash<std::u32string_view>
 {
 };
 
 export template<std::size_t N>
-struct std::hash<synodic::InplaceWString<N>> : std::hash<std::wstring_view>
+struct std::hash<peri::InplaceWString<N>> : std::hash<std::wstring_view>
 {
 };
 
 export template<typename CharT, std::size_t N>
-struct std::formatter<synodic::BasicInplaceString<CharT, N>> :
+struct std::formatter<peri::BasicInplaceString<CharT, N>> :
 	std::formatter<std::basic_string_view<CharT>>
 {
 	template<typename FormatContext>
-	auto format(const synodic::BasicInplaceString<CharT, N>& str, FormatContext& ctx) const
+	auto format(const peri::BasicInplaceString<CharT, N>& str, FormatContext& ctx) const
 		-> decltype(ctx.out())
 	{
 		return std::formatter<std::basic_string_view<CharT>>::format(std::basic_string_view<CharT>(str), ctx);

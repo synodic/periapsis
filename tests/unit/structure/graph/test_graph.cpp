@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
@@ -29,8 +29,8 @@ namespace
 
 	TEST(GraphStaticStorage, ConstexprConstruction)
 	{
-		using namespace synodic::graph;
-		using namespace synodic::graph::storage;
+		using namespace peri::graph;
+		using namespace peri::graph::storage;
 
 		// Verify constexpr construction works
 		constexpr auto make_graph = []() constexpr
@@ -56,7 +56,7 @@ namespace
 
 	TEST(GraphStaticStorage, VertexProperties)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		StaticStorage<VertexData, void, 4, 4> storage;
 		auto v0 = storage.add_vertex(VertexData {10});
@@ -68,7 +68,7 @@ namespace
 
 	TEST(GraphStaticStorage, OutEdges)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		StaticStorage<void, void, 4, 8> storage;
 		auto v0 = storage.add_vertex();
@@ -86,7 +86,7 @@ namespace
 
 	TEST(GraphStaticStorage, BoundaryVertices)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		StaticStorage<void, void, 4, 4> storage;
 		auto v0 = storage.add_vertex();
@@ -109,7 +109,7 @@ namespace
 
 	TEST(GraphAdjacencyList, AddRemoveVertices)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		AdjacencyListStorage<VertexData, void> storage;
 
@@ -127,7 +127,7 @@ namespace
 
 	TEST(GraphAdjacencyList, AddRemoveEdges)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		AdjacencyListStorage<void, EdgeData> storage;
 
@@ -150,7 +150,7 @@ namespace
 
 	TEST(GraphAdjacencyList, AdjacencyTraversal)
 	{
-		using namespace synodic::graph::storage;
+		using namespace peri::graph::storage;
 
 		AdjacencyListStorage<void, void> storage;
 
@@ -177,7 +177,7 @@ namespace
 
 	TEST(GraphWrapper, DynamicGraph)
 	{
-		using namespace synodic::graph;
+		using namespace peri::graph;
 
 		DynamicGraph<VertexData, EdgeData> graph;
 
@@ -197,8 +197,8 @@ namespace
 
 	TEST(GraphWrapper, ConceptSatisfaction)
 	{
-		using namespace synodic::graph;
-		using namespace synodic::graph::storage;
+		using namespace peri::graph;
+		using namespace peri::graph::storage;
 
 		// Verify storage types satisfy the expected concepts
 		static_assert(graph_storage<StaticStorage<void, void, 4, 4>>);
@@ -219,8 +219,8 @@ namespace
 
 	TEST(GraphComposition, ComposeStaticIntoDynamic)
 	{
-		using namespace synodic::graph;
-		using namespace synodic::graph::storage;
+		using namespace peri::graph;
+		using namespace peri::graph::storage;
 
 		// Create a compile-time subgraph
 		StaticStorage<VertexData, void, 4, 4> subgraph;
@@ -245,5 +245,4 @@ namespace
 		EXPECT_EQ(host[mapping[s0]].id, 1);
 		EXPECT_EQ(host[mapping[s1]].id, 2);
 	}
-
-}  // namespace
+}

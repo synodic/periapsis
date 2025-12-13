@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 struct TestStruct
 {
@@ -88,5 +88,4 @@ namespace
 		// Type trait tests to be implemented
 		EXPECT_TRUE(true);
 	}
-
-}  // namespace
+}

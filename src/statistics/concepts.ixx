@@ -1,17 +1,8 @@
-/**
- * @file concepts.ixx
- * @brief Core concepts for the statistics accumulator framework
- *
- * @details Provides the fundamental concepts that define statistical sample types,
- *          accumulators, features, and their dependencies. This module forms the
- *          type-theoretic foundation for the accumulator framework.
- */
-
-export module synodic.library:statistics.concepts;
+export module synodic.periapsis:statistics.concepts;
 
 import std;
 
-export namespace synodic::statistics
+export namespace peri::statistics
 {
 	// ============================================================================
 	// Sample Type Concepts
@@ -38,13 +29,14 @@ export namespace synodic::statistics
 	 * @brief Basic accumulator that can receive samples and produce results
 	 */
 	template<typename A, typename Sample>
-	concept basic_accumulator = requires(A& acc, const A& cacc, Sample s) {
+	concept basic_accumulator = requires(A& acc, const A& constAcc, Sample s)
+	{
 		// Can accumulate a sample
 		{ acc.Push(s) } -> std::same_as<void>;
 		// Can extract result
-		{ cacc.result() };
+		{ constAcc.Result() };
 		// Can reset to initial state
-		{ acc.reset() } -> std::same_as<void>;
+		{ acc.Reset() } -> std::same_as<void>;
 	};
 
 	/**
@@ -52,8 +44,9 @@ export namespace synodic::statistics
 	 * @details The weight is optional - accumulator works with or without weights
 	 */
 	template<typename A, typename Sample, typename Weight = Sample>
-	concept weighted_accumulator = basic_accumulator<A, Sample> and requires(A& acc, Sample s, Weight w) {
-		// Can accumulate a weighted sample (same function, optional weight)
+	concept weighted_accumulator = basic_accumulator<A, Sample> and requires(A& acc, Sample s, Weight w)
+	{
+		// Can accumulate a weighted sample
 		{ acc.Push(s, w) } -> std::same_as<void>;
 	};
 
@@ -61,11 +54,12 @@ export namespace synodic::statistics
 	 * @brief Accumulator that maintains a rolling window of samples
 	 */
 	template<typename A, typename Sample>
-	concept rolling_accumulator = basic_accumulator<A, Sample> and requires(const A& acc) {
+	concept rolling_accumulator = basic_accumulator<A, Sample> and requires(const A& acc)
+	{
 		// Query the window size
-		{ A::window_size } -> std::convertible_to<std::size_t>;
+		{ A::WINDOW_SIZE } -> std::convertible_to<std::size_t>;
 		// Check if window is full
-		{ acc.window_full() } -> std::convertible_to<bool>;
+		{ acc.WindowFull() } -> std::convertible_to<bool>;
 	};
 
 	// ============================================================================
@@ -77,18 +71,20 @@ export namespace synodic::statistics
 	 * @details Features define what statistics to compute and their dependencies
 	 */
 	template<typename F>
-	concept feature_tag = requires {
+	concept feature_tag = requires
+	{
 		// The accumulator type template this feature uses
-		typename F::template accumulator_type<double>;
+		typename F::template AccumulatorType<double>;
 	};
 
 	/**
 	 * @brief A feature with explicit dependencies on other features
 	 */
 	template<typename F>
-	concept dependent_feature = feature_tag<F> and requires {
+	concept dependent_feature = feature_tag<F> and requires
+	{
 		// Tuple of dependent feature tags
-		typename F::dependencies;
+		typename F::Dependencies;
 	};
 
 	// ============================================================================
@@ -99,8 +95,9 @@ export namespace synodic::statistics
 	 * @brief Can extract a specific feature's result from an accumulator set
 	 */
 	template<typename E, typename AccSet, typename Feature>
-	concept result_extractor = requires(const AccSet& acc) {
-		{ E::template extract<Feature>(acc) };
+	concept result_extractor = requires(const AccSet& acc)
+	{
+		{ E::template Extract<Feature>(acc) };
 	};
 
 	// ============================================================================
@@ -111,8 +108,9 @@ export namespace synodic::statistics
 	 * @brief An accumulator that can be composed with others in a set
 	 */
 	template<typename A, typename Sample>
-	concept composable_accumulator = basic_accumulator<A, Sample> and requires {
+	concept composable_accumulator = basic_accumulator<A, Sample> and requires
+	{
 		// Has a feature tag type
-		typename A::feature_type;
+		typename A::FeatureType;
 	};
 }

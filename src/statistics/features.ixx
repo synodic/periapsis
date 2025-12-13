@@ -1,30 +1,11 @@
-/**
- * @file features.ixx
- * @brief Statistical feature tags and their accumulator implementations
- *
- * @details This module defines the core statistical features:
- *          - count: Number of samples
- *          - sum: Sum of samples
- *          - min/max: Extreme values
- *          - mean: Arithmetic mean (lazy computation)
- *          - variance: Sample variance using Welford's algorithm
- *          - moment<N>: N-th central moment
- *
- *          Each feature is defined as a tag struct containing:
- *          - accumulator_type<Sample>: The accumulator implementation
- *          - dependencies (optional): Tuple of required feature tags
- *
- *          All accumulators support optional weights via a unified API.
- */
-
-export module synodic.library:statistics.features;
+export module synodic.periapsis:statistics.features;
 
 import :statistics.concepts;
 import :container.fixed.ring_buffer;
 
 import std;
 
-export namespace synodic::statistics
+export namespace peri::statistics
 {
 	// ============================================================================
 	// Utility: Result Type Deduction
@@ -43,19 +24,19 @@ export namespace synodic::statistics
 	/**
 	 * @brief Feature tag for sample count
 	 */
-	struct count
+	struct Count
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = std::size_t;
-			using feature_type = count;
+			using SampleType  = Sample;
+			using ResultType  = std::size_t;
+			using FeatureType = Count;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			/// Accumulate unweighted sample
 			constexpr void Push(Sample) noexcept
@@ -67,30 +48,30 @@ export namespace synodic::statistics
 			template<typename Weight = Sample>
 			constexpr void Push(Sample, Weight weight) noexcept
 			{
-				weight_sum_ += static_cast<double>(weight);
+				weightSum_ += static_cast<double>(weight);
 				++count_;
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				return count_;
 			}
 
 			/// Effective count for weighted statistics
-			[[nodiscard]] constexpr auto effective_count() const noexcept -> double
+			[[nodiscard]] constexpr auto EffectiveCount() const noexcept -> double
 			{
-				return weight_sum_ > 0.0 ? weight_sum_ : static_cast<double>(count_);
+				return weightSum_ > 0.0 ? weightSum_ : static_cast<double>(count_);
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				count_		= 0;
-				weight_sum_ = 0.0;
+				count_     = 0;
+				weightSum_ = 0.0;
 			}
 
 		private:
-			std::size_t count_ {};
-			double weight_sum_ {};
+			std::size_t count_{};
+			double weightSum_{};
 		};
 	};
 
@@ -101,43 +82,43 @@ export namespace synodic::statistics
 	/**
 	 * @brief Feature tag for sum of samples
 	 */
-	struct sum
+	struct Sum
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = sum;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Sum;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
-				sum_ += static_cast<result_type>(value);
+				sum_ += static_cast<ResultType>(value);
 			}
 
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight weight) noexcept
 			{
-				sum_ += static_cast<result_type>(value) * static_cast<result_type>(weight);
+				sum_ += static_cast<ResultType>(value) * static_cast<ResultType>(weight);
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				return sum_;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				sum_ = result_type {};
+				sum_ = ResultType{};
 			}
 
 		private:
-			result_type sum_ {};
+			ResultType sum_{};
 		};
 	};
 
@@ -148,54 +129,54 @@ export namespace synodic::statistics
 	/**
 	 * @brief Feature tag for minimum value
 	 */
-	struct min
+	struct Min
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = Sample;
-			using feature_type = min;
+			using SampleType  = Sample;
+			using ResultType  = Sample;
+			using FeatureType = Min;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
-				if (!has_value_ || value < min_)
+				if (!hasValue_ || value < min_)
 				{
-					min_	   = value;
-					has_value_ = true;
+					min_      = value;
+					hasValue_ = true;
 				}
 			}
 
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
 			{
-				Push(value);  // Weight doesn't affect min
+				Push(value); // Weight doesn't affect min
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
+			[[nodiscard]] constexpr auto Result() const noexcept -> std::optional<ResultType>
 			{
-				return has_value_ ? std::optional {min_} : std::nullopt;
+				return hasValue_ ? std::optional{min_} : std::nullopt;
 			}
 
-			[[nodiscard]] constexpr auto result_or(result_type default_value) const noexcept -> result_type
+			[[nodiscard]] constexpr auto ResultOr(ResultType defaultValue) const noexcept -> ResultType
 			{
-				return has_value_ ? min_ : default_value;
+				return hasValue_ ? min_ : defaultValue;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				min_	   = Sample {};
-				has_value_ = false;
+				min_      = Sample{};
+				hasValue_ = false;
 			}
 
 		private:
-			Sample min_ {};
-			bool has_value_ {false};
+			Sample min_{};
+			bool hasValue_{false};
 		};
 	};
 
@@ -206,54 +187,54 @@ export namespace synodic::statistics
 	/**
 	 * @brief Feature tag for maximum value
 	 */
-	struct max
+	struct Max
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = Sample;
-			using feature_type = max;
+			using SampleType  = Sample;
+			using ResultType  = Sample;
+			using FeatureType = Max;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
-				if (!has_value_ || value > max_)
+				if (!hasValue_ || value > max_)
 				{
-					max_	   = value;
-					has_value_ = true;
+					max_      = value;
+					hasValue_ = true;
 				}
 			}
 
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
 			{
-				Push(value);  // Weight doesn't affect max
+				Push(value); // Weight doesn't affect max
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> std::optional<result_type>
+			[[nodiscard]] constexpr auto Result() const noexcept -> std::optional<ResultType>
 			{
-				return has_value_ ? std::optional {max_} : std::nullopt;
+				return hasValue_ ? std::optional{max_} : std::nullopt;
 			}
 
-			[[nodiscard]] constexpr auto result_or(result_type default_value) const noexcept -> result_type
+			[[nodiscard]] constexpr auto ResultOr(ResultType defaultValue) const noexcept -> ResultType
 			{
-				return has_value_ ? max_ : default_value;
+				return hasValue_ ? max_ : defaultValue;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				max_	   = Sample {};
-				has_value_ = false;
+				max_      = Sample{};
+				hasValue_ = false;
 			}
 
 		private:
-			Sample max_ {};
-			bool has_value_ {false};
+			Sample max_{};
+			bool hasValue_{false};
 		};
 	};
 
@@ -265,64 +246,64 @@ export namespace synodic::statistics
 	 * @brief Feature tag for arithmetic mean
 	 * @details Uses numerically stable incremental computation
 	 */
-	struct mean
+	struct Mean
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = mean;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Mean;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			/// Welford's online mean update
 			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
-				const auto delta  = static_cast<result_type>(value) - mean_;
-				mean_			 += delta / static_cast<result_type>(count_);
+				const auto delta = static_cast<ResultType>(value) - mean_;
+				mean_            += delta / static_cast<ResultType>(count_);
 			}
 
 			/// Weighted incremental mean (West's algorithm)
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight weight) noexcept
 			{
-				const auto w	  = static_cast<result_type>(weight);
-				weight_sum_		 += w;
-				const auto delta  = static_cast<result_type>(value) - mean_;
-				mean_			 += (w / weight_sum_) * delta;
+				const auto w     = static_cast<ResultType>(weight);
+				weightSum_       += w;
+				const auto delta = static_cast<ResultType>(value) - mean_;
+				mean_            += w / weightSum_ * delta;
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				return mean_;
 			}
 
-			[[nodiscard]] constexpr auto count() const noexcept -> std::size_t
+			[[nodiscard]] constexpr auto Count() const noexcept -> std::size_t
 			{
 				return count_;
 			}
 
-			[[nodiscard]] constexpr auto weight_sum() const noexcept -> result_type
+			[[nodiscard]] constexpr auto WeightSum() const noexcept -> ResultType
 			{
-				return weight_sum_;
+				return weightSum_;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				mean_		= result_type {};
-				count_		= 0;
-				weight_sum_ = result_type {};
+				mean_      = ResultType{};
+				count_     = 0;
+				weightSum_ = ResultType{};
 			}
 
 		private:
-			result_type mean_ {};
-			std::size_t count_ {};
-			result_type weight_sum_ {};
+			ResultType mean_{};
+			std::size_t count_{};
+			ResultType weightSum_{};
 		};
 	};
 
@@ -334,112 +315,112 @@ export namespace synodic::statistics
 	 * @brief Feature tag for sample variance
 	 * @details Uses Welford's numerically stable online algorithm
 	 */
-	struct variance
+	struct Variance
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = variance;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Variance;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			/// Welford's online variance update
 			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
-				const auto x	   = static_cast<result_type>(value);
-				const auto delta   = x - mean_;
-				mean_			  += delta / static_cast<result_type>(count_);
-				const auto delta2  = x - mean_;
-				m2_				  += delta * delta2;
+				const auto x      = static_cast<ResultType>(value);
+				const auto delta  = x - mean_;
+				mean_             += delta / static_cast<ResultType>(count_);
+				const auto delta2 = x - mean_;
+				m2_               += delta * delta2;
 			}
 
 			/// Weighted Welford's algorithm (West's algorithm)
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight weight) noexcept
 			{
-				const auto w = static_cast<result_type>(weight);
-				const auto x = static_cast<result_type>(value);
+				const auto w = static_cast<ResultType>(weight);
+				const auto x = static_cast<ResultType>(value);
 
-				const auto old_weight_sum  = weight_sum_;
-				weight_sum_				  += w;
+				const auto oldWeightSum = weightSum_;
+				weightSum_              += w;
 
-				const auto delta  = x - mean_;
-				const auto R	  = delta * w / weight_sum_;
-				mean_			 += R;
-				m2_				 += old_weight_sum * delta * R;
+				const auto delta = x - mean_;
+				const auto R     = delta * w / weightSum_;
+				mean_            += R;
+				m2_              += oldWeightSum * delta * R;
 			}
 
 			/// Sample variance (N-1 denominator)
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				if (count_ < 2)
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return m2_ / static_cast<result_type>(count_ - 1);
+				return m2_ / static_cast<ResultType>(count_ - 1);
 			}
 
 			/// Population variance (N denominator)
-			[[nodiscard]] constexpr auto population_variance() const noexcept -> result_type
+			[[nodiscard]] constexpr auto PopulationVariance() const noexcept -> ResultType
 			{
 				if (count_ == 0)
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return m2_ / static_cast<result_type>(count_);
+				return m2_ / static_cast<ResultType>(count_);
 			}
 
 			/// Weighted variance
-			[[nodiscard]] constexpr auto weighted_result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto WeightedResult() const noexcept -> ResultType
 			{
-				if (weight_sum_ == result_type {})
+				if (weightSum_ == ResultType{})
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return m2_ / weight_sum_;
+				return m2_ / weightSum_;
 			}
 
 			/// Standard deviation
-			[[nodiscard]] constexpr auto stddev() const noexcept -> result_type
+			[[nodiscard]] constexpr auto StdDev() const noexcept -> ResultType
 			{
-				return std::sqrt(result());
+				return std::sqrt(Result());
 			}
 
 			/// Population standard deviation
-			[[nodiscard]] constexpr auto population_stddev() const noexcept -> result_type
+			[[nodiscard]] constexpr auto PopulationStdDev() const noexcept -> ResultType
 			{
-				return std::sqrt(population_variance());
+				return std::sqrt(PopulationVariance());
 			}
 
-			[[nodiscard]] constexpr auto mean() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Mean() const noexcept -> ResultType
 			{
 				return mean_;
 			}
 
-			[[nodiscard]] constexpr auto count() const noexcept -> std::size_t
+			[[nodiscard]] constexpr auto Count() const noexcept -> std::size_t
 			{
 				return count_;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				mean_		= result_type {};
-				m2_			= result_type {};
-				count_		= 0;
-				weight_sum_ = result_type {};
+				mean_      = ResultType{};
+				m2_        = ResultType{};
+				count_     = 0;
+				weightSum_ = ResultType{};
 			}
 
 		private:
-			result_type mean_ {};
-			result_type m2_ {};	 // Sum of squared deviations from mean
-			std::size_t count_ {};
-			result_type weight_sum_ {};
+			ResultType mean_{};
+			ResultType m2_{}; // Sum of squared deviations from mean
+			std::size_t count_{};
+			ResultType weightSum_{};
 		};
 	};
 
@@ -452,75 +433,75 @@ export namespace synodic::statistics
 	 * @tparam N The moment order (1 = mean, 2 = mean of squares, etc.)
 	 */
 	template<std::size_t N>
-	struct moment
+	struct Moment
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = moment<N>;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Moment<N>;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
 				++count_;
-				const auto x	  = static_cast<result_type>(value);
-				result_type power = result_type {1};
+				const auto x     = static_cast<ResultType>(value);
+				ResultType power = ResultType{1};
 				for (std::size_t i = 0; i < N; ++i)
 				{
 					power *= x;
 				}
-				sum_of_powers_ += power;
+				sumOfPowers_ += power;
 			}
 
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight weight) noexcept
 			{
-				const auto w	   = static_cast<result_type>(weight);
-				weight_sum_		  += w;
-				const auto x	   = static_cast<result_type>(value);
-				result_type power  = result_type {1};
+				const auto w     = static_cast<ResultType>(weight);
+				weightSum_       += w;
+				const auto x     = static_cast<ResultType>(value);
+				ResultType power = ResultType{1};
 				for (std::size_t i = 0; i < N; ++i)
 				{
 					power *= x;
 				}
-				sum_of_powers_ += w * power;
+				sumOfPowers_ += w * power;
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				if (count_ == 0)
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return sum_of_powers_ / static_cast<result_type>(count_);
+				return sumOfPowers_ / static_cast<ResultType>(count_);
 			}
 
-			[[nodiscard]] constexpr auto weighted_result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto WeightedResult() const noexcept -> ResultType
 			{
-				if (weight_sum_ == result_type {})
+				if (weightSum_ == ResultType{})
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return sum_of_powers_ / weight_sum_;
+				return sumOfPowers_ / weightSum_;
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				sum_of_powers_ = result_type {};
-				count_		   = 0;
-				weight_sum_	   = result_type {};
+				sumOfPowers_ = ResultType{};
+				count_       = 0;
+				weightSum_   = ResultType{};
 			}
 
 		private:
-			result_type sum_of_powers_ {};
-			std::size_t count_ {};
-			result_type weight_sum_ {};
+			ResultType sumOfPowers_{};
+			std::size_t count_{};
+			ResultType weightSum_{};
 		};
 	};
 
@@ -533,29 +514,29 @@ export namespace synodic::statistics
 	 * @tparam WindowSize Number of samples in the rolling window
 	 */
 	template<std::size_t WindowSize>
-	struct rolling_mean
+	struct RollingMean
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type						 = Sample;
-			using result_type						 = detail::default_result_t<Sample>;
-			using feature_type						 = rolling_mean<WindowSize>;
-			static constexpr std::size_t window_size = WindowSize;
+			using SampleType                         = Sample;
+			using ResultType                         = detail::default_result_t<Sample>;
+			using FeatureType                        = RollingMean<WindowSize>;
+			static constexpr std::size_t WINDOW_SIZE = WindowSize;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
-				const auto x = static_cast<result_type>(value);
+				const auto x = static_cast<ResultType>(value);
 
 				if (buffer_.full())
 				{
 					// Remove oldest value from sum
-					sum_ -= static_cast<result_type>(buffer_.front());
+					sum_ -= static_cast<ResultType>(buffer_.front());
 					buffer_.pop_front();
 				}
 
@@ -571,34 +552,34 @@ export namespace synodic::statistics
 				Push(value);
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				if (buffer_.empty())
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				return sum_ / static_cast<result_type>(buffer_.size());
+				return sum_ / static_cast<ResultType>(buffer_.size());
 			}
 
-			[[nodiscard]] constexpr auto window_full() const noexcept -> bool
+			[[nodiscard]] constexpr auto WindowFull() const noexcept -> bool
 			{
 				return buffer_.full();
 			}
 
-			[[nodiscard]] constexpr auto current_window_size() const noexcept -> std::size_t
+			[[nodiscard]] constexpr auto CurrentWindowSize() const noexcept -> std::size_t
 			{
 				return buffer_.size();
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
 				buffer_.clear();
-				sum_ = result_type {};
+				sum_ = ResultType{};
 			}
 
 		private:
-			FixedRingBuffer<Sample, WindowSize> buffer_ {};
-			result_type sum_ {};
+			FixedRingBuffer<Sample, WindowSize> buffer_{};
+			ResultType sum_{};
 		};
 	};
 
@@ -611,37 +592,36 @@ export namespace synodic::statistics
 	 * @tparam WindowSize Number of samples in the rolling window
 	 */
 	template<std::size_t WindowSize>
-	struct rolling_variance
+	struct RollingVariance
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type						 = Sample;
-			using result_type						 = detail::default_result_t<Sample>;
-			using feature_type						 = rolling_variance<WindowSize>;
-			static constexpr std::size_t window_size = WindowSize;
+			using SampleType                         = Sample;
+			using ResultType                         = detail::default_result_t<Sample>;
+			using FeatureType                        = RollingVariance<WindowSize>;
+			static constexpr std::size_t WINDOW_SIZE = WindowSize;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
 			constexpr void Push(Sample value) noexcept
 			{
-				const auto x = static_cast<result_type>(value);
+				const auto x = static_cast<ResultType>(value);
 
 				if (buffer_.full())
 				{
-					// Remove oldest value
-					const auto old_value  = static_cast<result_type>(buffer_.front());
-					sum_				 -= old_value;
-					sum_sq_				 -= old_value * old_value;
+					const auto removed = static_cast<ResultType>(buffer_.front());
+					sumX_              -= removed;
+					sumX2_             -= removed * removed;
 					buffer_.pop_front();
 				}
 
 				buffer_.push_back(value);
-				sum_	+= x;
-				sum_sq_ += x * x;
+				sumX_  += x;
+				sumX2_ += x * x;
 			}
 
 			template<typename Weight = Sample>
@@ -650,49 +630,40 @@ export namespace synodic::statistics
 				Push(value);
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
 				const auto n = buffer_.size();
 				if (n < 2)
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				const auto n_r	= static_cast<result_type>(n);
-				const auto mean = sum_ / n_r;
-				// Var = E[X²] - E[X]²
-				return (sum_sq_ / n_r - mean * mean) * n_r / (n_r - 1);
+
+				const auto mean     = sumX_ / static_cast<ResultType>(n);
+				const auto variance = sumX2_ / static_cast<ResultType>(n) - mean * mean;
+				return variance * static_cast<ResultType>(n) / static_cast<ResultType>(n - 1);
 			}
 
-			[[nodiscard]] constexpr auto mean() const noexcept -> result_type
-			{
-				if (buffer_.empty())
-				{
-					return result_type {};
-				}
-				return sum_ / static_cast<result_type>(buffer_.size());
-			}
-
-			[[nodiscard]] constexpr auto stddev() const noexcept -> result_type
-			{
-				return std::sqrt(result());
-			}
-
-			[[nodiscard]] constexpr auto window_full() const noexcept -> bool
+			[[nodiscard]] constexpr auto WindowFull() const noexcept -> bool
 			{
 				return buffer_.full();
 			}
 
-			constexpr void reset() noexcept
+			[[nodiscard]] constexpr auto CurrentWindowSize() const noexcept -> std::size_t
+			{
+				return buffer_.size();
+			}
+
+			constexpr void Reset() noexcept
 			{
 				buffer_.clear();
-				sum_	= result_type {};
-				sum_sq_ = result_type {};
+				sumX_  = ResultType{};
+				sumX2_ = ResultType{};
 			}
 
 		private:
-			FixedRingBuffer<Sample, WindowSize> buffer_ {};
-			result_type sum_ {};
-			result_type sum_sq_ {};
+			FixedRingBuffer<Sample, WindowSize> buffer_{};
+			ResultType sumX_{};
+			ResultType sumX2_{};
 		};
 	};
 
@@ -701,75 +672,97 @@ export namespace synodic::statistics
 	// ============================================================================
 
 	/**
-	 * @brief Feature tag for skewness (3rd standardized moment)
-	 * @details Measures asymmetry of the distribution
+	 * @brief Feature tag for Fisher-Pearson skewness coefficient
+	 * @details Requires Mean and Variance features for computation
 	 */
-	struct skewness
+	struct Skewness
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<Mean, Variance>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = skewness;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Skewness;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
-			/// Online algorithm for skewness (Terriberry's method)
 			constexpr void Push(Sample value) noexcept
 			{
-				const auto n1 = count_;
 				++count_;
-				const auto n = count_;
-
-				const auto x		= static_cast<result_type>(value);
-				const auto delta	= x - mean_;
-				const auto delta_n	= delta / static_cast<result_type>(n);
-				const auto delta_n2 = delta_n * delta_n;
-				const auto term1	= delta * delta_n * static_cast<result_type>(n1);
-
-				mean_ += delta_n;
-				m3_	  += term1 * delta_n * static_cast<result_type>(n - 2) - result_type {3} * delta_n * m2_;
-				m2_	  += term1;
+				const auto x = static_cast<ResultType>(value);
+				m1_          += x;
+				m2_          += x * x;
+				m3_          += x * x * x;
 			}
 
 			template<typename Weight = Sample>
-			constexpr void Push(Sample value, Weight) noexcept
+			constexpr void Push(Sample value, Weight weight) noexcept
 			{
-				Push(value);  // Simplified: ignore weight for skewness
+				const auto w = static_cast<ResultType>(weight);
+				const auto x = static_cast<ResultType>(value);
+				weightSum_   += w;
+				m1_          += w * x;
+				m2_          += w * x * x;
+				m3_          += w * x * x * x;
 			}
 
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
 			{
-				if (count_ < 3 || m2_ == result_type {})
+				if (count_ < 3)
 				{
-					return result_type {};
+					return ResultType{};
 				}
-				const auto n = static_cast<result_type>(count_);
-				return (std::sqrt(n * (n - 1)) / (n - 2)) * m3_ / std::pow(m2_, result_type {1.5});
+
+				const auto n    = static_cast<ResultType>(count_);
+				const auto mean = m1_ / n;
+				const auto m2   = m2_ / n - mean * mean;
+				const auto m3   = m3_ / n - 3.0 * mean * m2 - mean * mean * mean;
+
+				if (m2 == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				return m3 / std::pow(m2, ResultType{1.5});
 			}
 
-			[[nodiscard]] constexpr auto mean() const noexcept -> result_type
+			[[nodiscard]] constexpr auto WeightedResult() const noexcept -> ResultType
 			{
-				return mean_;
+				if (weightSum_ == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				const auto mean = m1_ / weightSum_;
+				const auto m2   = m2_ / weightSum_ - mean * mean;
+				const auto m3   = m3_ / weightSum_ - 3.0 * mean * m2 - mean * mean * mean;
+
+				if (m2 == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				return m3 / std::pow(m2, ResultType{1.5});
 			}
 
-			constexpr void reset() noexcept
+			constexpr void Reset() noexcept
 			{
-				mean_  = result_type {};
-				m2_	   = result_type {};
-				m3_	   = result_type {};
-				count_ = 0;
+				count_     = 0;
+				m1_        = ResultType{};
+				m2_        = ResultType{};
+				m3_        = ResultType{};
+				weightSum_ = ResultType{};
 			}
 
 		private:
-			result_type mean_ {};
-			result_type m2_ {};
-			result_type m3_ {};
-			std::size_t count_ {};
+			std::size_t count_{};
+			ResultType m1_{};
+			ResultType m2_{};
+			ResultType m3_{};
+			ResultType weightSum_{};
 		};
 	};
 
@@ -778,44 +771,125 @@ export namespace synodic::statistics
 	// ============================================================================
 
 	/**
-	 * @brief Feature tag for excess kurtosis (4th standardized moment - 3)
-	 * @details Measures "tailedness" of distribution. Normal distribution has kurtosis = 0.
+	 * @brief Feature tag for excess kurtosis (Fisher definition)
+	 * @details Measures tailedness of distribution
 	 */
-	struct kurtosis
+	struct Kurtosis
 	{
-		using dependencies = std::tuple<>;
+		using Dependencies = std::tuple<Mean, Variance>;
 
 		template<statistical_sample Sample>
-		class accumulator_type
+		class AccumulatorType
 		{
 		public:
-			using sample_type  = Sample;
-			using result_type  = detail::default_result_t<Sample>;
-			using feature_type = kurtosis;
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Kurtosis;
 
-			constexpr accumulator_type() noexcept = default;
+			constexpr AccumulatorType() noexcept = default;
 
-			/// Online algorithm for kurtosis
 			constexpr void Push(Sample value) noexcept
 			{
-				const auto n1 = count_;
 				++count_;
-				const auto n = count_;
-
-				const auto x		= static_cast<result_type>(value);
-				const auto delta	= x - mean_;
-				const auto delta_n	= delta / static_cast<result_type>(n);
-				const auto delta_n2 = delta_n * delta_n;
-				const auto term1	= delta * delta_n * static_cast<result_type>(n1);
-
-				mean_ += delta_n;
-				m4_	  += term1 * delta_n2 *
-						   (static_cast<result_type>(n * n) - result_type {3} * static_cast<result_type>(n) +
-							result_type {3}) +
-					   result_type {6} * delta_n2 * m2_ - result_type {4} * delta_n * m3_;
-				m3_ += term1 * delta_n * static_cast<result_type>(n - 2) - result_type {3} * delta_n * m2_;
-				m2_ += term1;
+				const auto x = static_cast<ResultType>(value);
+				m1_          += x;
+				m2_          += x * x;
+				m4_          += x * x * x * x;
 			}
+
+			template<typename Weight = Sample>
+			constexpr void Push(Sample value, Weight weight) noexcept
+			{
+				const auto w = static_cast<ResultType>(weight);
+				const auto x = static_cast<ResultType>(value);
+				weightSum_   += w;
+				m1_          += w * x;
+				m2_          += w * x * x;
+				m4_          += w * x * x * x * x;
+			}
+
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType
+			{
+				if (count_ < 4)
+				{
+					return ResultType{};
+				}
+
+				const auto n    = static_cast<ResultType>(count_);
+				const auto mean = m1_ / n;
+				const auto m2   = m2_ / n - mean * mean;
+				const auto m4   = m4_ / n - 4.0 * mean * (m2_ / n) + 6.0 * (mean * mean) * m2 -
+				                3.0 * (mean * mean * mean * mean);
+
+				if (m2 == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				return m4 / (m2 * m2) - 3.0;
+			}
+
+			[[nodiscard]] constexpr auto WeightedResult() const noexcept -> ResultType
+			{
+				if (weightSum_ == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				const auto mean = m1_ / weightSum_;
+				const auto m2   = m2_ / weightSum_ - mean * mean;
+				const auto m4   = m4_ / weightSum_ - 4.0 * mean * (m2_ / weightSum_) +
+				                6.0 * (mean * mean) * m2 - 3.0 * (mean * mean * mean * mean);
+
+				if (m2 == ResultType{})
+				{
+					return ResultType{};
+				}
+
+				return m4 / (m2 * m2) - 3.0;
+			}
+
+			constexpr void Reset() noexcept
+			{
+				count_     = 0;
+				m1_        = ResultType{};
+				m2_        = ResultType{};
+				m4_        = ResultType{};
+				weightSum_ = ResultType{};
+			}
+
+		private:
+			std::size_t count_{};
+			ResultType m1_{};
+			ResultType m2_{};
+			ResultType m4_{};
+			ResultType weightSum_{};
+		};
+	};
+
+	// ============================================================================
+	// Feature: Median (Piecewise Parabolic Distribution - P^2 Algorithm)
+	// ============================================================================
+
+	/**
+	 * @brief Feature tag for median estimation using P^2 algorithm
+	 * @details Space-efficient median estimation without storing all samples
+	 */
+	struct Median
+	{
+		using Dependencies = std::tuple<>;
+
+		template<statistical_sample Sample>
+		class AccumulatorType
+		{
+		public:
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Median;
+
+			constexpr AccumulatorType() noexcept = default;
+
+			constexpr void Push(Sample value) noexcept;
 
 			template<typename Weight = Sample>
 			constexpr void Push(Sample value, Weight) noexcept
@@ -823,38 +897,352 @@ export namespace synodic::statistics
 				Push(value);
 			}
 
-			/// Excess kurtosis (normal distribution = 0)
-			[[nodiscard]] constexpr auto result() const noexcept -> result_type
-			{
-				if (count_ < 4 || m2_ == result_type {})
-				{
-					return result_type {};
-				}
-				const auto n = static_cast<result_type>(count_);
-				return ((n + 1) * n * m4_) / ((n - 1) * (n - 2) * (n - 3) * m2_ * m2_) -
-					   result_type {3} * (n - 1) * (n - 1) / ((n - 2) * (n - 3));
-			}
-
-			[[nodiscard]] constexpr auto mean() const noexcept -> result_type
-			{
-				return mean_;
-			}
-
-			constexpr void reset() noexcept
-			{
-				mean_  = result_type {};
-				m2_	   = result_type {};
-				m3_	   = result_type {};
-				m4_	   = result_type {};
-				count_ = 0;
-			}
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType;
+			constexpr void Reset() noexcept;
 
 		private:
-			result_type mean_ {};
-			result_type m2_ {};
-			result_type m3_ {};
-			result_type m4_ {};
-			std::size_t count_ {};
+			std::array<ResultType, 5> q_{}; // Marker heights (quantile estimates)
+			std::array<std::size_t, 5> n_{}; // Marker positions
+			std::array<double, 5> np_{}; // Desired marker positions
+			static constexpr std::array<double, 5> dnp_ = {0.0, 0.25, 0.5, 0.75, 1.0}; // Desired increments
+			std::size_t count_{};
 		};
 	};
+
+	// P^2 algorithm implementation for Median
+	template<statistical_sample Sample>
+	constexpr void Median::AccumulatorType<Sample>::Push(Sample value) noexcept
+	{
+		const auto x = static_cast<ResultType>(value);
+		++count_;
+
+		if (count_ <= 5)
+		{
+			// Initialization phase: collect first 5 samples
+			q_[count_ - 1] = x;
+
+			if (count_ == 5)
+			{
+				// Sort the initial markers
+				std::sort(q_.begin(), q_.end());
+				// Initialize marker positions
+				for (std::size_t i = 0; i < 5; ++i)
+				{
+					n_[i]  = i + 1;
+					np_[i] = static_cast<double>(i + 1);
+				}
+			}
+		}
+		else
+		{
+			// Main P^2 algorithm
+			// Find cell k such that q[k-1] <= x < q[k]
+			int k;
+			if (x < q_[0])
+			{
+				q_[0] = x;
+				k     = 1;
+			}
+			else if (x >= q_[4])
+			{
+				q_[4] = x;
+				k     = 4;
+			}
+			else
+			{
+				k = 1;
+				while (k < 4 && x >= q_[k])
+				{
+					++k;
+				}
+			}
+
+			// Increment positions of markers k+1 through 5
+			for (int i = k; i < 5; ++i)
+			{
+				++n_[i];
+			}
+
+			// Update desired positions
+			for (std::size_t i = 0; i < 5; ++i)
+			{
+				np_[i] += dnp_[i];
+			}
+
+			// Adjust marker heights using P^2 formula
+			for (std::size_t i = 1; i < 4; ++i)
+			{
+				const double d = np_[i] - static_cast<double>(n_[i]);
+
+				if ((d >= 1.0 && static_cast<int>(n_[i + 1]) - static_cast<int>(n_[i]) > 1) ||
+				    (d <= -1.0 && static_cast<int>(n_[i - 1]) - static_cast<int>(n_[i]) < -1))
+				{
+					const int sign = d >= 0.0 ? 1 : -1;
+
+					// Try parabolic formula
+					const double ni   = static_cast<double>(n_[i]);
+					const double nim1 = static_cast<double>(n_[i - 1]);
+					const double nip1 = static_cast<double>(n_[i + 1]);
+
+					const double qp = q_[i] + sign / (nip1 - nim1) * (
+						                  (ni - nim1 + sign) * (q_[i + 1] - q_[i]) / (nip1 - ni) +
+						                  (nip1 - ni - sign) * (q_[i] - q_[i - 1]) / (ni - nim1)
+					                  );
+
+					// Check if parabolic estimate is valid
+					if (q_[i - 1] < qp && qp < q_[i + 1])
+					{
+						q_[i] = static_cast<ResultType>(qp);
+					}
+					else
+					{
+						// Use linear formula
+						q_[i] = q_[i] + sign * (q_[i + sign] - q_[i]) /
+						        static_cast<ResultType>(n_[i + sign] - n_[i]);
+					}
+
+					n_[i] += sign;
+				}
+			}
+		}
+	}
+
+	template<statistical_sample Sample>
+	constexpr auto Median::AccumulatorType<Sample>::Result() const noexcept -> ResultType
+	{
+		if (count_ == 0)
+		{
+			return ResultType{};
+		}
+
+		if (count_ < 5)
+		{
+			// Not enough samples for P^2, return simple median
+			std::array<ResultType, 5> sorted = q_;
+			std::sort(sorted.begin(), sorted.begin() + count_);
+			return sorted[count_ / 2];
+		}
+
+		return q_[2]; // Middle marker is the median estimate
+	}
+
+	template<statistical_sample Sample>
+	constexpr void Median::AccumulatorType<Sample>::Reset() noexcept
+	{
+		q_.fill(ResultType{});
+		n_.fill(0);
+		np_.fill(0.0);
+		count_ = 0;
+	}
+
+	// ============================================================================
+	// Feature: Percentile (using P^2 algorithm)
+	// ============================================================================
+
+	/**
+	 * @brief Feature tag for percentile estimation using P^2 algorithm
+	 * @tparam P The percentile value (0-100)
+	 * @tparam Markers Number of internal markers (must be >= 5 and odd)
+	 */
+	template<std::size_t P, std::size_t Markers = 5>
+	struct Percentile
+	{
+		static_assert(P >= 0 && P <= 100, "Percentile must be between 0 and 100");
+		static_assert(Markers >= 5, "Need at least 5 markers for P^2 algorithm");
+		static_assert(Markers % 2 == 1, "Markers must be odd for symmetric quantile estimation");
+
+		using Dependencies = std::tuple<>;
+
+		template<statistical_sample Sample>
+		class AccumulatorType
+		{
+		public:
+			using SampleType  = Sample;
+			using ResultType  = detail::default_result_t<Sample>;
+			using FeatureType = Percentile<P, Markers>;
+
+			static constexpr double TARGET_P = static_cast<double>(P) / 100.0;
+
+			constexpr AccumulatorType() noexcept
+			{
+				InitializeDesiredIncrements();
+			}
+
+			constexpr void Push(Sample value) noexcept;
+
+			template<typename Weight = Sample>
+			constexpr void Push(Sample value, Weight) noexcept
+			{
+				Push(value);
+			}
+
+			[[nodiscard]] constexpr auto Result() const noexcept -> ResultType;
+			constexpr void Reset() noexcept;
+
+		private:
+			constexpr void InitializeDesiredIncrements() noexcept
+			{
+				// Set up desired increments so markers converge to estimate the target percentile
+				// For 5 markers estimating percentile p:
+				// Marker 0: always tracks minimum (increment 0)
+				// Marker 1: tracks p/2
+				// Marker 2: tracks p (the target)
+				// Marker 3: tracks (1+p)/2
+				// Marker 4: always tracks maximum (increment 1)
+				constexpr double p = TARGET_P;
+				dnp_[0]            = 0.0;
+				dnp_[1]            = p / 2.0;
+				dnp_[2]            = p;
+				dnp_[3]            = (1.0 + p) / 2.0;
+				dnp_[4]            = 1.0;
+			}
+
+			std::array<ResultType, Markers> q_{};
+			std::array<std::size_t, Markers> n_{};
+			std::array<double, Markers> np_{};
+			std::array<double, Markers> dnp_{};
+			std::size_t count_{};
+		};
+	};
+
+	template<std::size_t P, std::size_t Markers>
+	template<statistical_sample Sample>
+	constexpr void Percentile<P, Markers>::AccumulatorType<Sample>::Push(Sample value) noexcept
+	{
+		const auto x = static_cast<ResultType>(value);
+		++count_;
+
+		if (count_ <= Markers)
+		{
+			// Initialization phase
+			q_[count_ - 1] = x;
+
+			if (count_ == Markers)
+			{
+				std::sort(q_.begin(), q_.end());
+				for (std::size_t i = 0; i < Markers; ++i)
+				{
+					n_[i] = i + 1;
+					// Initialize desired positions based on the target percentile
+					np_[i] = 1.0 + dnp_[i] * static_cast<double>(Markers - 1);
+				}
+			}
+		}
+		else
+		{
+			// Main P^2 algorithm
+			int k;
+			if (x < q_[0])
+			{
+				q_[0] = x;
+				k     = 1;
+			}
+			else if (x >= q_[Markers - 1])
+			{
+				q_[Markers - 1] = x;
+				k               = static_cast<int>(Markers) - 1;
+			}
+			else
+			{
+				k = 1;
+				while (k < static_cast<int>(Markers) - 1 && x >= q_[k])
+				{
+					++k;
+				}
+			}
+
+			for (int i = k; i < static_cast<int>(Markers); ++i)
+			{
+				++n_[i];
+			}
+
+			for (std::size_t i = 0; i < Markers; ++i)
+			{
+				np_[i] += dnp_[i];
+			}
+
+			for (std::size_t i = 1; i < Markers - 1; ++i)
+			{
+				const double d = np_[i] - static_cast<double>(n_[i]);
+
+				if ((d >= 1.0 && static_cast<int>(n_[i + 1]) - static_cast<int>(n_[i]) > 1) ||
+				    (d <= -1.0 && static_cast<int>(n_[i - 1]) - static_cast<int>(n_[i]) < -1))
+				{
+					const int sign = d >= 0.0 ? 1 : -1;
+
+					const double ni   = static_cast<double>(n_[i]);
+					const double nim1 = static_cast<double>(n_[i - 1]);
+					const double nip1 = static_cast<double>(n_[i + 1]);
+
+					const double qp = q_[i] + sign / (nip1 - nim1) * (
+						                  (ni - nim1 + sign) * (q_[i + 1] - q_[i]) / (nip1 - ni) +
+						                  (nip1 - ni - sign) * (q_[i] - q_[i - 1]) / (ni - nim1)
+					                  );
+
+					if (q_[i - 1] < qp && qp < q_[i + 1])
+					{
+						q_[i] = static_cast<ResultType>(qp);
+					}
+					else
+					{
+						q_[i] = q_[i] + sign * (q_[i + sign] - q_[i]) /
+						        static_cast<ResultType>(n_[i + sign] - n_[i]);
+					}
+
+					n_[i] += sign;
+				}
+			}
+		}
+	}
+
+	template<std::size_t P, std::size_t Markers>
+	template<statistical_sample Sample>
+	constexpr auto Percentile<P, Markers>::AccumulatorType<Sample>::Result() const noexcept -> ResultType
+	{
+		if (count_ == 0)
+		{
+			return ResultType{};
+		}
+
+		if (count_ < Markers)
+		{
+			// Not enough samples, use linear interpolation on sorted data
+			std::array<ResultType, Markers> sorted = q_;
+			std::sort(sorted.begin(), sorted.begin() + count_);
+
+			// Linear interpolation for percentile
+			const double pos        = TARGET_P * static_cast<double>(count_ - 1);
+			const std::size_t lower = static_cast<std::size_t>(pos);
+			const std::size_t upper = lower + 1 < count_ ? lower + 1 : lower;
+			const double frac       = pos - static_cast<double>(lower);
+
+			return sorted[lower] + static_cast<ResultType>(frac) * (sorted[upper] - sorted[lower]);
+		}
+
+		// Handle edge cases: P=0 returns minimum, P=100 returns maximum
+		if constexpr (P == 0)
+		{
+			return q_[0];
+		}
+		else if constexpr (P == 100)
+		{
+			return q_[Markers - 1];
+		}
+		else
+		{
+			// Return the middle marker which tracks the target percentile
+			return q_[2];
+		}
+	}
+
+	template<std::size_t P, std::size_t Markers>
+	template<statistical_sample Sample>
+	constexpr void Percentile<P, Markers>::AccumulatorType<Sample>::Reset() noexcept
+	{
+		q_.fill(ResultType{});
+		n_.fill(0);
+		np_.fill(0.0);
+		InitializeDesiredIncrements();
+		count_ = 0;
+	}
 }

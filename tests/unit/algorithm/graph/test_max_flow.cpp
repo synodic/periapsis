@@ -5,12 +5,12 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
-	using namespace synodic::graph;
-	using namespace synodic::algorithm::graph;
+	using namespace peri::graph;
+	using namespace peri::algorithm::graph;
 
 	// ============================================================================
 	// Max Flow Algorithm Tests
@@ -30,10 +30,10 @@ namespace
 		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
 		graph.add_edge(v1, v2, FlowEdge<int> {10, 0});
 
-		auto result = max_flow(graph, v0, v2);
+		auto result = MaxFlow(graph, v0, v2);
 
-		EXPECT_EQ(result.max_flow, 10);
-		EXPECT_TRUE(result.found_path);
+		EXPECT_EQ(result.maxFlow, 10);
+		EXPECT_TRUE(result.foundPath);
 	}
 
 	TEST(AlgorithmMaxFlow, Bottleneck)
@@ -50,9 +50,9 @@ namespace
 		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
 		graph.add_edge(v1, v2, FlowEdge<int> {5, 0});
 
-		auto result = max_flow(graph, v0, v2);
+		auto result = MaxFlow(graph, v0, v2);
 
-		EXPECT_EQ(result.max_flow, 5);
+		EXPECT_EQ(result.maxFlow, 5);
 	}
 
 	TEST(AlgorithmMaxFlow, ParallelPaths)
@@ -80,9 +80,9 @@ namespace
 		graph.add_edge(v1, v3, FlowEdge<int> {10, 0});
 		graph.add_edge(v2, v3, FlowEdge<int> {10, 0});
 
-		auto result = max_flow(graph, v0, v3);
+		auto result = MaxFlow(graph, v0, v3);
 
-		EXPECT_EQ(result.max_flow, 20);
+		EXPECT_EQ(result.maxFlow, 20);
 	}
 
 	TEST(AlgorithmMaxFlow, NoPath)
@@ -97,10 +97,10 @@ namespace
 
 		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
 
-		auto result = max_flow(graph, v0, v2);
+		auto result = MaxFlow(graph, v0, v2);
 
-		EXPECT_EQ(result.max_flow, 0);
-		EXPECT_FALSE(result.found_path);
+		EXPECT_EQ(result.maxFlow, 0);
+		EXPECT_FALSE(result.foundPath);
 	}
 
 	TEST(AlgorithmMaxFlow, ConstexprMaxFlow)
@@ -116,15 +116,15 @@ namespace
 			graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
 			graph.add_edge(v1, v2, FlowEdge<int> {7, 0});
 
-			return max_flow(graph, v0, v2);
+			return MaxFlow(graph, v0, v2);
 		};
 
 		constexpr auto result = compute_flow();
 
-		static_assert(result.max_flow == 7);
-		static_assert(result.found_path);
+		static_assert(result.maxFlow == 7);
+		static_assert(result.foundPath);
 
-		EXPECT_EQ(result.max_flow, 7);
+		EXPECT_EQ(result.maxFlow, 7);
 	}
 
 	TEST(AlgorithmMaxFlow, ClassicFlowNetwork)
@@ -147,11 +147,10 @@ namespace
 		graph.add_edge(v1, v3, FlowEdge<int> {12, 0});
 		graph.add_edge(v2, v3, FlowEdge<int> {14, 0});
 
-		auto result = max_flow(graph, v0, v3);
+		auto result = MaxFlow(graph, v0, v3);
 
 		// Max flow should be 26
-		EXPECT_EQ(result.max_flow, 26);
-		EXPECT_TRUE(result.found_path);
+		EXPECT_EQ(result.maxFlow, 26);
+		EXPECT_TRUE(result.foundPath);
 	}
-
-}  // namespace
+}

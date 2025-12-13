@@ -1,6 +1,6 @@
 [project]
 description = "Generic utilities and templates library."
-name = "synodic-template-library"
+name = "periapsis"
 
 license = { text = "MIT" }
 
@@ -14,14 +14,14 @@ dependencies = []
 requires-python = ">=3.14"
 
 [project.urls]
-homepage = "https://github.com/synodic/Synodic-Template-Library"
-repository = "https://github.com/synodic/Synodic-Template-Library"
+homepage = "https://github.com/synodic/periapsis"
+repository = "https://github.com/synodic/periapsis"
 
 [dependency-groups]
 build = ["cppython[cmake,conan,git]>=0.9.15.dev3"]
-lint = ["ruff>=0.14.9", "pyrefly>=0.45.2", "isort>=7.0.0"]
+lint = ["ruff>=0.14.10", "pyrefly>=0.46.1", "isort>=7.0.0"]
 test = ["pytest>=9.0.2", "pytest-cov>=7.0.0", "pytest-mock>=3.15.1"]
-docs = ["zensical>=0.0.11"]
+docs = ["zensical>=0.0.15"]
 config = ["copier>=9.11.0"]
 
 [tool.cppython]
@@ -49,15 +49,15 @@ preview = true
 [tool.ruff.lint]
 ignore = ["D206", "D300", "D415", "E111", "E114", "E117"]
 select = [
-	"D",   # pydocstyle
-	"F",   # Pyflakes
-	"I",   # isort
-	"PL",  # pylint
-	"UP",  # pyupgrade
-	"E",   # pycodestyle
-	"B",   # flake8-bugbear
-	"SIM", # flake8-simplify
-	"PT",  # flake8-pytest-style
+    "D",   # pydocstyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "PL",  # pylint
+    "UP",  # pyupgrade
+    "E",   # pycodestyle
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "PT",  # flake8-pytest-style
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -75,6 +75,8 @@ skip_empty = true
 build = "cppython build"
 test = "cppython test"
 serve = "zensical serve"
+post_install = "copier recopy --force --skip-answered"
+post_update = "copier recopy --force --skip-answered"
 
 [build-system]
 build-backend = "pdm.backend"

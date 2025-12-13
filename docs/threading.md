@@ -9,7 +9,7 @@ A managed object that exists statically for each thread. Provides a wrapper for 
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 // Thread-local data (API under development)
 ThreadLocal<MyData> data;
@@ -24,7 +24,7 @@ Concepts for `std::execution`-compatible schedulers.
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::executor;
+using namespace peri::executor;
 
 template<typename T>
 concept scheduler = /* ... */;  // Currently placeholder

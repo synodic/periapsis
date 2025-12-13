@@ -1,4 +1,4 @@
-export module synodic.library:algorithm.graph.max_flow;
+export module synodic.periapsis:algorithm.graph.max_flow;
 
 import :structure.graph.concepts;
 import :structure.graph.storage.static_storage;
@@ -7,22 +7,19 @@ import :container.fixed.ring_buffer;
 
 import std;
 
-export namespace synodic::algorithm::graph
+export namespace peri::algorithm::graph
 {
-	// Bring in constexpr container
-	using synodic::FixedRingBuffer;
-
 	/**
 	 * @brief Edge properties required for flow network algorithms.
 	 *        Capacity is the maximum flow allowed, flow is the current flow.
 	 */
-	template<typename T = int>
+	template<typename T> requires std::is_arithmetic_v<T>
 	struct FlowEdge
 	{
-		T capacity {};
-		T flow {};
+		T capacity = 0;
+		T flow     = 0;
 
-		[[nodiscard]] constexpr T residual() const noexcept
+		[[nodiscard]] constexpr T Residual() const noexcept
 		{
 			return capacity - flow;
 		}
@@ -33,66 +30,62 @@ export namespace synodic::algorithm::graph
 	/**
 	 * @brief Result of a max flow computation.
 	 */
-	template<typename T>
+	template<typename T> requires std::is_arithmetic_v<T>
 	struct MaxFlowResult
 	{
-		T max_flow {};
-		bool found_path {false};
+		T maxFlow      = 0;
+		bool foundPath = false;
 
 		constexpr bool operator==(const MaxFlowResult&) const = default;
 	};
 
 	/**
-	 * @brief Edmonds-Karp algorithm for maximum flow (BFS-based Ford-Fulkerson).
-	 *        Constexpr-compatible version for static graphs.
-	 *        Time complexity: O(V * E^2)
+	 * @brief Edmonds-Karp algorithm for maximum flow.
 	 *
-	 * @tparam MaxVertices Maximum number of vertices (for constexpr array allocation)
 	 * @tparam VertexProperty The vertex property type
-	 * @tparam EdgeProperty The edge property type (must have capacity/flow members)
+	 * @tparam EdgeProperty The edge property type
 	 * @tparam MaxV Maximum vertices in graph
 	 * @tparam MaxE Maximum edges in graph
-	 * @param graph The flow network (modified in place with flow values)
+	 * @param graph The flow network
 	 * @param source Source vertex
 	 * @param sink Sink vertex
 	 * @return The maximum flow value
 	 */
 	template<
-		std::size_t MaxVertices,
 		typename VertexProperty,
 		typename EdgeProperty,
 		std::size_t MaxV,
 		std::size_t MaxE>
-	constexpr auto max_flow(
-		synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>& graph,
-		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor source,
-		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor sink)
+	constexpr auto MaxFlow(
+		peri::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>& graph,
+		typename peri::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor source,
+		typename peri::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>::vertex_descriptor sink)
 		-> MaxFlowResult<decltype(std::declval<EdgeProperty>().capacity)>
 	{
-		using graph_type		= synodic::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>;
-		using vertex_descriptor = typename graph_type::vertex_descriptor;
-		using edge_descriptor	= typename graph_type::edge_descriptor;
-		using flow_type			= decltype(std::declval<EdgeProperty>().capacity);
+		using graph_type        = peri::graph::Graph<VertexProperty, EdgeProperty, MaxV, MaxE>;
+		using vertex_descriptor = graph_type::vertex_descriptor;
+		using edge_descriptor   = graph_type::edge_descriptor;
+		using flow_type         = decltype(std::declval<EdgeProperty>().capacity);
 
-		MaxFlowResult<flow_type> result {};
+		MaxFlowResult<flow_type> result{};
 
 		// Path reconstruction info
 		struct PathInfo
 		{
-			vertex_descriptor parent {};
-			edge_descriptor edge {};
-			bool is_forward {true};
-			bool visited {false};
+			vertex_descriptor parent{};
+			edge_descriptor edge{};
+			bool isForward = true;
+			bool visited   = false;
 		};
 
-		std::array<PathInfo, MaxVertices> parent {};
-		FixedRingBuffer<vertex_descriptor, MaxVertices> queue;
+		std::array<PathInfo, MaxV> parent{};
+		FixedRingBuffer<vertex_descriptor, MaxV> queue;
 
 		// BFS to find augmenting path
-		auto find_augmenting_path = [&]() constexpr -> bool
+		auto findAugmentingPath = [&]() constexpr -> bool
 		{
 			// Reset visited flags
-			for (std::size_t i = 0; i < MaxVertices; ++i)
+			for (std::size_t i = 0; i < MaxV; ++i)
 			{
 				parent[i].visited = false;
 			}
@@ -111,18 +104,18 @@ export namespace synodic::algorithm::graph
 					return true;
 				}
 
-				// Forward edges (u -> v with positive residual capacity)
+				// Forward edges
 				for (auto e: graph.out_edges(u))
 				{
 					auto v = graph.target(e);
-					if (not parent[v].visited and graph[e].residual() > 0)
+					if (not parent[v].visited and graph[e].Residual() > 0)
 					{
-						parent[v] = PathInfo {u, e, true, true};
+						parent[v] = PathInfo{u, e, true, true};
 						queue.push_back(v);
 					}
 				}
 
-				// Check all edges for reverse direction (v -> u where we can push flow back)
+				// Check all edges for reverse direction
 				// For graphs without bidirectional storage, we scan all edges
 				for (auto e: graph.edges())
 				{
@@ -131,7 +124,7 @@ export namespace synodic::algorithm::graph
 						auto v = graph.source(e);
 						if (not parent[v].visited and graph[e].flow > 0)
 						{
-							parent[v] = PathInfo {u, e, false, true};
+							parent[v] = PathInfo{u, e, false, true};
 							queue.push_back(v);
 						}
 					}
@@ -142,23 +135,23 @@ export namespace synodic::algorithm::graph
 		};
 
 		// Main loop: find augmenting paths and push flow
-		while (find_augmenting_path())
+		while (findAugmentingPath())
 		{
-			result.found_path = true;
+			result.foundPath = true;
 
 			// Find bottleneck capacity along the path
-			flow_type path_flow = std::numeric_limits<flow_type>::max();
+			flow_type pathFlow = std::numeric_limits<flow_type>::max();
 
 			for (auto v = sink; v != source;)
 			{
 				const auto& info = parent[v];
-				if (info.is_forward)
+				if (info.isForward)
 				{
-					path_flow = std::min(path_flow, graph[info.edge].residual());
+					pathFlow = std::min(pathFlow, graph[info.edge].Residual());
 				}
 				else
 				{
-					path_flow = std::min(path_flow, graph[info.edge].flow);
+					pathFlow = std::min(pathFlow, graph[info.edge].flow);
 				}
 				v = info.parent;
 			}
@@ -167,33 +160,20 @@ export namespace synodic::algorithm::graph
 			for (auto v = sink; v != source;)
 			{
 				const auto& info = parent[v];
-				if (info.is_forward)
+				if (info.isForward)
 				{
-					graph[info.edge].flow += path_flow;
+					graph[info.edge].flow += pathFlow;
 				}
 				else
 				{
-					graph[info.edge].flow -= path_flow;
+					graph[info.edge].flow -= pathFlow;
 				}
 				v = info.parent;
 			}
 
-			result.max_flow += path_flow;
+			result.maxFlow += pathFlow;
 		}
 
 		return result;
-	}
-
-	/**
-	 * @brief Helper to deduce MaxVertices from fixed-size graph.
-	 */
-	template<typename VertexProperty, typename EdgeProperty, std::size_t MaxVertices, std::size_t MaxEdges>
-		requires(MaxVertices != synodic::graph::detail::dynamic_extent)
-	constexpr auto max_flow(
-		synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>& graph,
-		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>::vertex_descriptor source,
-		typename synodic::graph::Graph<VertexProperty, EdgeProperty, MaxVertices, MaxEdges>::vertex_descriptor sink)
-	{
-		return max_flow<MaxVertices>(graph, source, sink);
 	}
 }

@@ -5,11 +5,11 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
-	using namespace synodic;
+	using namespace peri;
 
 	TEST(FixedRingBuffer, DefaultConstruction)
 	{
@@ -109,5 +109,4 @@ namespace
 		stack.pop();
 		EXPECT_EQ(stack.top(), 2);
 	}
-
-}  // namespace
+}

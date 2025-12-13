@@ -1,10 +1,10 @@
-export module synodic.library:type.concepts.container;
+export module synodic.periapsis:type.concepts.container;
 
 import :type.concepts.shared;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 	// A concept implementation of the named requirement 'Container' with Standard naming styles
 	//		This definition is devoid of backwards compatibility requirements

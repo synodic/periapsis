@@ -1,4 +1,4 @@
-export module synodic.library:structure.state_machine.runner;
+export module synodic.periapsis:structure.state_machine.runner;
 
 import :structure.graph.visitor;
 import :structure.state_machine.concepts;
@@ -6,13 +6,13 @@ import :structure.state_machine.state_machine;
 
 import std;
 
-export namespace synodic::state_machine
+export namespace peri::state_machine
 {
 	// ============================================================================
 	// Re-export AdvanceResult from graph for unified API
 	// ============================================================================
 
-	using synodic::graph::AdvanceResult;
+	using peri::graph::AdvanceResult;
 
 	// ============================================================================
 	// Process Result (FSM-specific, richer than AdvanceResult)
@@ -217,7 +217,7 @@ export namespace synodic::state_machine
 			return current_state_ && machine_->is_final_state(*current_state_);
 		}
 
-		/// Get reference to the underlying state machine
+		/// Get Proxy to the underlying state machine
 		[[nodiscard]] constexpr auto machine() const noexcept -> StateMachineType&
 		{
 			return *machine_;

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
 
 project(tests
-	DESCRIPTION "Test project for Synodic Template Library"
+	DESCRIPTION "Test project for Periapsis"
 	LANGUAGES CXX
 )
 
@@ -17,7 +17,7 @@ set_target_properties(tests
 
 target_link_libraries(tests
 	PRIVATE
-	synodic::synodic-template-library
+	synodic::periapsis
 	GTest::gtest
 	GTest::gtest_main
 )

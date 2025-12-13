@@ -9,7 +9,7 @@ A compile-time function to extract the Nth element from a parameter pack.
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 // Extract element at index N from variadic arguments
 auto second = nth_element<1>(10, 20, 30, 40);  // 20
@@ -33,7 +33,7 @@ An exception type for marking unimplemented functionality during development.
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 void future_feature() {
     throw NotImplementedException();

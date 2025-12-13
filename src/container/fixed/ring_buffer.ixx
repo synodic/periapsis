@@ -1,18 +1,12 @@
-export module synodic.library:container.fixed.ring_buffer;
+export module synodic.periapsis:container.fixed.ring_buffer;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 	/**
-	 * @brief A constexpr-capable, fixed-capacity ring buffer (circular buffer).
+	 * @brief A fixed capacity circular buffer.
 	 *        Provides the container interface required by std::queue and std::stack adapters.
-	 *
-	 *        Key features:
-	 *        - Fully constexpr (usable at compile-time)
-	 *        - O(1) push/pop at both ends
-	 *        - Zero heap allocation (uses std::array internally)
-	 *        - Compatible with std::queue<T, FixedRingBuffer<T, N>>
 	 *
 	 * @tparam T The element type
 	 * @tparam Capacity Maximum number of elements
@@ -26,13 +20,13 @@ export namespace synodic
 		// Container Type Definitions
 		// ========================================================================
 
-		using value_type	  = T;
-		using size_type		  = std::size_t;
+		using value_type      = T;
+		using size_type       = std::size_t;
 		using difference_type = std::ptrdiff_t;
-		using reference		  = T&;
+		using reference       = T&;
 		using const_reference = const T&;
-		using pointer		  = T*;
-		using const_pointer	  = const T*;
+		using pointer         = T*;
+		using const_pointer   = const T*;
 
 		// ========================================================================
 		// Construction
@@ -93,39 +87,39 @@ export namespace synodic
 
 		[[nodiscard]] constexpr reference back()
 		{
-			return data_[prev_index(tail_)];
+			return data_[PrevIndex(tail_)];
 		}
 
 		[[nodiscard]] constexpr const_reference back() const
 		{
-			return data_[prev_index(tail_)];
+			return data_[PrevIndex(tail_)];
 		}
 
-		[[nodiscard]] constexpr reference operator[](size_type pos)
+		[[nodiscard]] constexpr reference operator[](const size_type position)
 		{
-			return data_[(head_ + pos) % Capacity];
+			return data_[(head_ + position) % Capacity];
 		}
 
-		[[nodiscard]] constexpr const_reference operator[](size_type pos) const
+		[[nodiscard]] constexpr const_reference operator[](const size_type position) const
 		{
-			return data_[(head_ + pos) % Capacity];
+			return data_[(head_ + position) % Capacity];
 		}
 
 		// ========================================================================
-		// Modifiers - Back Operations (for queue-like usage)
+		// Modifiers - Back Operations
 		// ========================================================================
 
 		constexpr void push_back(const T& value)
 		{
 			data_[tail_] = value;
-			tail_		 = next_index(tail_);
+			tail_        = NextIndex(tail_);
 			++size_;
 		}
 
 		constexpr void push_back(T&& value)
 		{
 			data_[tail_] = std::move(value);
-			tail_		 = next_index(tail_);
+			tail_        = NextIndex(tail_);
 			++size_;
 		}
 
@@ -133,32 +127,32 @@ export namespace synodic
 		constexpr reference emplace_back(Args&&... args)
 		{
 			data_[tail_] = T(std::forward<Args>(args)...);
-			auto& ref	 = data_[tail_];
-			tail_		 = next_index(tail_);
+			auto& ref    = data_[tail_];
+			tail_        = NextIndex(tail_);
 			++size_;
 			return ref;
 		}
 
 		constexpr void pop_back()
 		{
-			tail_ = prev_index(tail_);
+			tail_ = PrevIndex(tail_);
 			--size_;
 		}
 
 		// ========================================================================
-		// Modifiers - Front Operations (for deque-like usage)
+		// Modifiers - Front Operations
 		// ========================================================================
 
 		constexpr void push_front(const T& value)
 		{
-			head_		 = prev_index(head_);
+			head_        = PrevIndex(head_);
 			data_[head_] = value;
 			++size_;
 		}
 
 		constexpr void push_front(T&& value)
 		{
-			head_		 = prev_index(head_);
+			head_        = PrevIndex(head_);
 			data_[head_] = std::move(value);
 			++size_;
 		}
@@ -166,7 +160,7 @@ export namespace synodic
 		template<typename... Args>
 		constexpr reference emplace_front(Args&&... args)
 		{
-			head_		 = prev_index(head_);
+			head_        = PrevIndex(head_);
 			data_[head_] = T(std::forward<Args>(args)...);
 			++size_;
 			return data_[head_];
@@ -174,7 +168,7 @@ export namespace synodic
 
 		constexpr void pop_front()
 		{
-			head_ = next_index(head_);
+			head_ = NextIndex(head_);
 			--size_;
 		}
 
@@ -228,19 +222,19 @@ export namespace synodic
 		}
 
 	private:
-		std::array<T, Capacity> data_ {};
-		size_type head_ {0};  // Index of first element
-		size_type tail_ {0};  // Index one past last element
-		size_type size_ {0};  // Current number of elements
+		std::array<T, Capacity> data_{};
+		size_type head_ = 0; // Index of first element
+		size_type tail_ = 0; // Index one past last element
+		size_type size_ = 0; // Current number of elements
 
-		[[nodiscard]] constexpr size_type next_index(size_type idx) const noexcept
+		[[nodiscard]] static constexpr size_type NextIndex(const size_type index) noexcept
 		{
-			return (idx + 1) % Capacity;
+			return (index + 1) % Capacity;
 		}
 
-		[[nodiscard]] constexpr size_type prev_index(size_type idx) const noexcept
+		[[nodiscard]] static constexpr size_type PrevIndex(const size_type index) noexcept
 		{
-			return (idx + Capacity - 1) % Capacity;
+			return (index + Capacity - 1) % Capacity;
 		}
 	};
 
@@ -249,7 +243,9 @@ export namespace synodic
 	// ============================================================================
 
 	template<typename T, std::size_t Capacity>
-	constexpr void swap(FixedRingBuffer<T, Capacity>& lhs, FixedRingBuffer<T, Capacity>& rhs)
+	constexpr void swap(
+		FixedRingBuffer<T, Capacity>& lhs,
+		FixedRingBuffer<T, Capacity>& rhs)
 		noexcept(noexcept(lhs.swap(rhs)))
 	{
 		lhs.swap(rhs);
@@ -260,15 +256,13 @@ export namespace synodic
 	// ============================================================================
 
 	/**
-	 * @brief A constexpr-capable queue using FixedRingBuffer as the underlying container.
-	 *        Example: FixedQueue<int, 64> queue;
+	 * @brief A queue using FixedRingBuffer as the underlying container.
 	 */
 	template<typename T, std::size_t Capacity>
 	using FixedQueue = std::queue<T, FixedRingBuffer<T, Capacity>>;
 
 	/**
-	 * @brief A constexpr-capable stack using FixedRingBuffer as the underlying container.
-	 *        Example: FixedStack<int, 64> stack;
+	 * @brief A stack using FixedRingBuffer as the underlying container.
 	 */
 	template<typename T, std::size_t Capacity>
 	using FixedStack = std::stack<T, FixedRingBuffer<T, Capacity>>;

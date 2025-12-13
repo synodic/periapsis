@@ -1,6 +1,6 @@
 # Statistics
 
-The Synodic Template Library provides a modern, constexpr-capable statistics accumulator framework inspired by Boost.Accumulators but redesigned for C++20/23.
+The Periapsis provides a modern, constexpr-capable statistics accumulator framework inspired by Boost.Accumulators but redesigned for C++20/23.
 
 ## Overview
 
@@ -15,8 +15,8 @@ The statistics module provides:
 ## Quick Start
 
 ```cpp
-import synodic.library;
-using namespace synodic::statistics;
+import synodic.periapsis;
+using namespace peri::statistics;
 
 // Basic usage
 Accumulator<double, mean, variance, min, max> stats;
@@ -26,7 +26,7 @@ stats.Push(3.0);
 
 auto m = stats.get<mean>().result();      // 2.0
 auto v = stats.get<variance>().result();  // 1.0 (sample variance)
-auto s = stats.get<variance>().stddev();  // 1.0
+auto s = stats.get<variance>().stdDev();  // 1.0
 ```
 
 ## Features
@@ -55,8 +55,8 @@ Accumulator<double, variance> stats;
 
 stats.get<variance>().result();              // Sample variance (N-1)
 stats.get<variance>().population_variance(); // Population variance (N)
-stats.get<variance>().stddev();              // Sample standard deviation
-stats.get<variance>().population_stddev();   // Population standard deviation
+stats.get<variance>().stdDev();              // Sample standard deviation
+stats.get<variance>().population_stdDev();   // Population standard deviation
 stats.get<variance>().mean();                // Also tracks mean internally
 ```
 
@@ -82,6 +82,47 @@ Accumulator<double, moment<1>, moment<2>, moment<3>> moments;
 // moment<1> = mean, moment<2> = mean of squares, etc.
 ```
 
+### Percentile / Quantile Estimation
+
+The `percentile<N>` feature provides approximate percentile estimation using the Extended P² algorithm that computes quantiles without storing observations:
+
+```cpp
+// Median (50th percentile) with default 5 markers
+Accumulator<double, median> med_stats;  // 'median' is alias for percentile<50>
+
+// High-accuracy median with 9 markers
+Accumulator<double, median_accurate> accurate_med;  // alias for percentile<50, 9>
+
+// Multiple percentiles
+Accumulator<double, percentile<25>, percentile<50>, percentile<75>> quartiles;
+
+// Custom marker count for better accuracy (must be odd, >= 5)
+Accumulator<double, percentile<95, 11>> high_accuracy_p95;
+
+for (double x : streaming_data) {
+    quartiles.Push(x);
+}
+
+auto q1 = quartiles.get<percentile<25>>().result();  // First quartile
+auto q2 = quartiles.get<percentile<50>>().result();  // Median
+auto q3 = quartiles.get<percentile<75>>().result();  // Third quartile
+
+// Also available: min/max from the percentile accumulator
+auto min_val = quartiles.get<percentile<50>>().minimum();
+auto max_val = quartiles.get<percentile<50>>().maximum();
+```
+
+The Extended P² algorithm:
+- **Memory**: O(MarkerCount) - constant regardless of observation count
+- **Time**: O(MarkerCount) per observation
+- **Accuracy**: Approximate; typically within 1-2% of true value after 100+ samples.
+  More markers provide finer granularity but similar asymptotic accuracy.
+- **Supports**: Any percentile from 0 to 100
+
+**References**:
+- Raj Jain and Imrich Chlamtac. 1985. The P2 algorithm for dynamic calculation of quantiles and histograms without storing observations. Commun. ACM 28, 10 (Oct. 1985), 1076–1085. https://doi.org/10.1145/4372.4378
+- Kimmo E. E. Raatikainen. 1987. Simultaneous estimation of several percentiles. Simulation 49, 4 (October 1, 1987), 159–164. https://doi.org/10.1177/003754978704900405
+
 ### Rolling/Moving Statistics
 
 Rolling statistics use `FixedRingBuffer` for O(1) updates:
@@ -93,7 +134,7 @@ for (double sample : streaming_data) {
     rolling.Push(sample);
 
     auto current_mean = rolling.get<rolling_mean<10>>().result();
-    auto current_std  = rolling.get<rolling_variance<10>>().stddev();
+    auto current_std  = rolling.get<rolling_variance<10>>().stdDev();
 
     if (rolling.get<rolling_mean<10>>().window_full()) {
         // Window is now fully populated
@@ -135,13 +176,13 @@ auto n = extract_count(stats);
 auto s = extract_sum(stats);
 auto m = extract_mean(stats);
 auto v = extract_variance(stats);
-auto sd = extract_stddev(stats);
+auto sd = extract_stdDev(stats);
 auto mn = extract_min(stats);   // std::optional
 auto mx = extract_max(stats);   // std::optional
 
 // Composite statistics
-auto cv = coefficient_of_variation(stats);  // stddev / mean
-auto se = standard_error(stats);            // stddev / sqrt(n)
+auto cv = coefficient_of_variation(stats);  // stdDev / mean
+auto se = standard_error(stats);            // stdDev / sqrt(n)
 auto r  = range(stats);                     // max - min
 ```
 
@@ -150,7 +191,7 @@ auto r  = range(stats);                     // max - min
 ```cpp
 auto s = summary(stats);
 // Returns StatsSummary<double> with:
-//   .count, .sum, .mean, .variance, .stddev, .min, .max
+//   .count, .sum, .mean, .variance, .stdDev, .min, .max
 ```
 
 ## Convenience Type Aliases
@@ -164,6 +205,12 @@ DistributionStats<double> dist;  // count, mean, variance, skewness, kurtosis
 
 // Rolling window statistics
 RollingStats<10, double> rolling;  // rolling_mean<10>, rolling_variance<10>
+
+// Statistics with median estimation (P² algorithm)
+MedianStats<double> med;  // count, mean, variance, median
+
+// Quartile statistics
+QuartileStats<double> quart;  // count, min, max, percentile<25>, percentile<50>, percentile<75>
 ```
 
 ## Constexpr Usage

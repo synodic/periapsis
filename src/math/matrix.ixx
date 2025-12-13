@@ -1,17 +1,10 @@
-/**
- * @brief Constexpr matrix types for graphics and general math
- * @details Provides Mat3, Mat4 with column-major storage (OpenGL/Vulkan convention),
- *          SIMD-ready alignment, and constexpr support throughout.
- *          Prepared for C++26 reflection and std::simd integration.
- */
-
-export module synodic.library:math.matrix;
+export module synodic.periapsis:math.matrix;
 
 import std;
 
 export import :math.vector;
 
-export namespace synodic::math
+export namespace peri::math
 {
 	// Forward declarations
 	template<std::floating_point T>
@@ -36,8 +29,8 @@ export namespace synodic::math
 	{
 		using value_type					   = T;
 		using column_type					   = Vec3<T>;
-		static constexpr std::size_t columns_v = 3;
-		static constexpr std::size_t rows_v	   = 3;
+		static constexpr std::size_t COLUMNS_V = 3;
+		static constexpr std::size_t ROWS_V	   = 3;
 
 		// Column-major storage: columns[0] is first column
 		column_type columns[3];
@@ -68,18 +61,8 @@ export namespace synodic::math
 		{
 		}
 
-		// Element constructor (column-major order)
-		constexpr Mat3(
-			T m00,
-			T m10,
-			T m20,	// Column 0
-			T m01,
-			T m11,
-			T m21,	// Column 1
-			T m02,
-			T m12,
-			T m22  // Column 2
-			) noexcept :
+		// Element constructor
+		constexpr Mat3(T m00, T m10, T m20, T m01, T m11, T m21, T m02, T m12, T m22) noexcept :
 			columns {
 				column_type {m00, m10, m20},
 				column_type {m01, m11, m21},
@@ -108,41 +91,41 @@ export namespace synodic::math
 		}
 
 		// Element access (column, row)
-		[[nodiscard]] constexpr auto at(std::size_t col, std::size_t row) noexcept -> T&
+		[[nodiscard]] constexpr auto At(std::size_t col, std::size_t row) noexcept -> T&
 		{
 			return columns[col][row];
 		}
 
-		[[nodiscard]] constexpr auto at(std::size_t col, std::size_t row) const noexcept -> const T&
+		[[nodiscard]] constexpr auto At(std::size_t col, std::size_t row) const noexcept -> const T&
 		{
 			return columns[col][row];
 		}
 
 		// Data access for interop (column-major flat array)
-		[[nodiscard]] constexpr auto data() noexcept -> T*
+		[[nodiscard]] constexpr auto Data() noexcept -> T*
 		{
-			return columns[0].data();
+			return columns[0].Data();
 		}
 
-		[[nodiscard]] constexpr auto data() const noexcept -> const T*
+		[[nodiscard]] constexpr auto Data() const noexcept -> const T*
 		{
-			return columns[0].data();
+			return columns[0].Data();
 		}
 
 		// Row extraction
-		[[nodiscard]] constexpr auto row(std::size_t r) const noexcept -> Vec3<T>
+		[[nodiscard]] constexpr auto Row(std::size_t r) const noexcept -> Vec3<T>
 		{
 			return Vec3<T> {columns[0][r], columns[1][r], columns[2][r]};
 		}
 
 		// Identity matrix
-		[[nodiscard]] static constexpr auto identity() noexcept -> Mat3
+		[[nodiscard]] static constexpr auto Identity() noexcept -> Mat3
 		{
 			return Mat3 {};
 		}
 
 		// Zero matrix
-		[[nodiscard]] static constexpr auto zero() noexcept -> Mat3
+		[[nodiscard]] static constexpr auto Zero() noexcept -> Mat3
 		{
 			return Mat3 {T {0}};
 		}
@@ -241,7 +224,7 @@ export namespace synodic::math
 	}
 
 	// ============================================================================
-	// Mat4 - 4x4 Matrix (Column-Major)
+	// Mat4 - 4x4 Matrix
 	// ============================================================================
 
 	/**
@@ -255,8 +238,8 @@ export namespace synodic::math
 	{
 		using value_type					   = T;
 		using column_type					   = Vec4<T>;
-		static constexpr std::size_t columns_v = 4;
-		static constexpr std::size_t rows_v	   = 4;
+		static constexpr std::size_t COLUMNS_V = 4;
+		static constexpr std::size_t ROWS_V	   = 4;
 
 		// Column-major storage
 		column_type columns[4];
@@ -304,25 +287,24 @@ export namespace synodic::math
 		{
 		}
 
-		// Element constructor (column-major order)
+		// Element constructor
 		constexpr Mat4(
 			T m00,
 			T m10,
 			T m20,
-			T m30,	// Column 0
+			T m30,
 			T m01,
 			T m11,
 			T m21,
-			T m31,	// Column 1
+			T m31,
 			T m02,
 			T m12,
 			T m22,
-			T m32,	// Column 2
+			T m32,
 			T m03,
 			T m13,
 			T m23,
-			T m33  // Column 3
-			) noexcept :
+			T m33) noexcept :
 			columns {
 				column_type {m00, m10, m20, m30},
 				column_type {m01, m11, m21, m31},
@@ -356,47 +338,47 @@ export namespace synodic::math
 		}
 
 		// Element access (column, row)
-		[[nodiscard]] constexpr auto at(std::size_t col, std::size_t row) noexcept -> T&
+		[[nodiscard]] constexpr auto At(std::size_t col, std::size_t row) noexcept -> T&
 		{
 			return columns[col][row];
 		}
 
-		[[nodiscard]] constexpr auto at(std::size_t col, std::size_t row) const noexcept -> const T&
+		[[nodiscard]] constexpr auto At(std::size_t col, std::size_t row) const noexcept -> const T&
 		{
 			return columns[col][row];
 		}
 
 		// Data access for interop
-		[[nodiscard]] constexpr auto data() noexcept -> T*
+		[[nodiscard]] constexpr auto Data() noexcept -> T*
 		{
-			return columns[0].data();
+			return columns[0].Data();
 		}
 
-		[[nodiscard]] constexpr auto data() const noexcept -> const T*
+		[[nodiscard]] constexpr auto Data() const noexcept -> const T*
 		{
-			return columns[0].data();
+			return columns[0].Data();
 		}
 
 		// Row extraction
-		[[nodiscard]] constexpr auto row(std::size_t r) const noexcept -> Vec4<T>
+		[[nodiscard]] constexpr auto Row(std::size_t r) const noexcept -> Vec4<T>
 		{
 			return Vec4<T> {columns[0][r], columns[1][r], columns[2][r], columns[3][r]};
 		}
 
 		// Extract upper-left 3x3
-		[[nodiscard]] constexpr auto upper3x3() const noexcept -> Mat3<T>
+		[[nodiscard]] constexpr auto Upper3x3() const noexcept -> Mat3<T>
 		{
 			return Mat3<T> {columns[0].xyz(), columns[1].xyz(), columns[2].xyz()};
 		}
 
 		// Identity matrix
-		[[nodiscard]] static constexpr auto identity() noexcept -> Mat4
+		[[nodiscard]] static constexpr auto Identity() noexcept -> Mat4
 		{
 			return Mat4 {};
 		}
 
 		// Zero matrix
-		[[nodiscard]] static constexpr auto zero() noexcept -> Mat4
+		[[nodiscard]] static constexpr auto Zero() noexcept -> Mat4
 		{
 			return Mat4 {T {0}};
 		}
@@ -514,7 +496,7 @@ export namespace synodic::math
 	}
 
 	// ============================================================================
-	// Matrix Operations (Free Functions - ADL friendly)
+	// Matrix Operations
 	// ============================================================================
 
 	/**
@@ -523,7 +505,7 @@ export namespace synodic::math
 	template<std::floating_point T>
 	[[nodiscard]] constexpr auto Transpose(const Mat3<T>& m) noexcept -> Mat3<T>
 	{
-		return Mat3<T> {m.row(0), m.row(1), m.row(2)};
+		return Mat3<T> {m.Row(0), m.Row(1), m.Row(2)};
 	}
 
 	/**
@@ -532,7 +514,7 @@ export namespace synodic::math
 	template<std::floating_point T>
 	[[nodiscard]] constexpr auto Transpose(const Mat4<T>& m) noexcept -> Mat4<T>
 	{
-		return Mat4<T> {m.row(0), m.row(1), m.row(2), m.row(3)};
+		return Mat4<T> {m.Row(0), m.Row(1), m.Row(2), m.Row(3)};
 	}
 
 	/**
@@ -570,19 +552,19 @@ export namespace synodic::math
 	template<std::floating_point T>
 	[[nodiscard]] constexpr auto Inverse(const Mat3<T>& m) noexcept -> Mat3<T>
 	{
-		const T det		= Determinant(m);
-		const T inv_det = T {1} / det;
+		const T det	   = Determinant(m);
+		const T invDet = T {1} / det;
 
 		Mat3<T> result;
-		result[0][0] = (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * inv_det;
-		result[0][1] = (m[2][1] * m[0][2] - m[0][1] * m[2][2]) * inv_det;
-		result[0][2] = (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * inv_det;
-		result[1][0] = (m[2][0] * m[1][2] - m[1][0] * m[2][2]) * inv_det;
-		result[1][1] = (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * inv_det;
-		result[1][2] = (m[1][0] * m[0][2] - m[0][0] * m[1][2]) * inv_det;
-		result[2][0] = (m[1][0] * m[2][1] - m[2][0] * m[1][1]) * inv_det;
-		result[2][1] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]) * inv_det;
-		result[2][2] = (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * inv_det;
+		result[0][0] = (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * invDet;
+		result[0][1] = (m[2][1] * m[0][2] - m[0][1] * m[2][2]) * invDet;
+		result[0][2] = (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * invDet;
+		result[1][0] = (m[2][0] * m[1][2] - m[1][0] * m[2][2]) * invDet;
+		result[1][1] = (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * invDet;
+		result[1][2] = (m[1][0] * m[0][2] - m[0][0] * m[1][2]) * invDet;
+		result[2][0] = (m[1][0] * m[2][1] - m[2][0] * m[1][1]) * invDet;
+		result[2][1] = (m[2][0] * m[0][1] - m[0][0] * m[2][1]) * invDet;
+		result[2][2] = (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * invDet;
 		return result;
 	}
 
@@ -628,17 +610,17 @@ export namespace synodic::math
 		Vec4<T> inv2 {vec0 * fac1 - vec1 * fac3 + vec3 * fac5};
 		Vec4<T> inv3 {vec0 * fac2 - vec1 * fac4 + vec2 * fac5};
 
-		Vec4<T> sign_a {+T {1}, -T {1}, +T {1}, -T {1}};
-		Vec4<T> sign_b {-T {1}, +T {1}, -T {1}, +T {1}};
+		Vec4<T> signA {+T {1}, -T {1}, +T {1}, -T {1}};
+		Vec4<T> signB {-T {1}, +T {1}, -T {1}, +T {1}};
 
-		Mat4<T> inv {inv0 * sign_a, inv1 * sign_b, inv2 * sign_a, inv3 * sign_b};
+		Mat4<T> inv {inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB};
 
 		Vec4<T> row0 {inv[0][0], inv[1][0], inv[2][0], inv[3][0]};
 		Vec4<T> col0 {m[0][0], m[0][1], m[0][2], m[0][3]};
-		T det	  = Dot(col0, row0);
-		T inv_det = T {1} / det;
+		T det	 = Dot(col0, row0);
+		T invDet = T {1} / det;
 
-		return inv * inv_det;
+		return inv * invDet;
 	}
 
 	// ============================================================================
@@ -723,22 +705,22 @@ export namespace synodic::math
 
 	/**
 	 * @brief Create a perspective projection matrix (right-handed, zero-to-one depth)
-	 * @param fov_y Vertical field of view in radians
+	 * @param fovY Vertical field of view in radians
 	 * @param aspect Aspect ratio (width / height)
-	 * @param near_plane Near clipping plane distance
-	 * @param far_plane Far clipping plane distance
+	 * @param nearPlane Near clipping plane distance
+	 * @param farPlane Far clipping plane distance
 	 */
 	template<std::floating_point T>
-	[[nodiscard]] constexpr auto Perspective(T fov_y, T aspect, T near_plane, T far_plane) noexcept -> Mat4<T>
+	[[nodiscard]] constexpr auto Perspective(T fovY, T aspect, T nearPlane, T farPlane) noexcept -> Mat4<T>
 	{
-		const T tan_half_fov = std::tan(fov_y / T {2});
+		const T tanHalfFov = std::tan(fovY / T {2});
 
 		Mat4<T> result {T {0}};
-		result[0][0] = T {1} / (aspect * tan_half_fov);
-		result[1][1] = T {1} / tan_half_fov;
-		result[2][2] = far_plane / (near_plane - far_plane);
+		result[0][0] = T {1} / (aspect * tanHalfFov);
+		result[1][1] = T {1} / tanHalfFov;
+		result[2][2] = farPlane / (nearPlane - farPlane);
 		result[2][3] = -T {1};
-		result[3][2] = -(far_plane * near_plane) / (far_plane - near_plane);
+		result[3][2] = -(farPlane * nearPlane) / (farPlane - nearPlane);
 		return result;
 	}
 
@@ -746,25 +728,15 @@ export namespace synodic::math
 	 * @brief Create an orthographic projection matrix (right-handed, zero-to-one depth)
 	 */
 	template<std::floating_point T>
-	[[nodiscard]] constexpr auto Ortho(T left, T right, T bottom, T top, T near_plane, T far_plane) noexcept -> Mat4<T>
+	[[nodiscard]] constexpr auto Ortho(T left, T right, T bottom, T top, T nearPlane, T farPlane) noexcept -> Mat4<T>
 	{
 		Mat4<T> result {};
 		result[0][0] = T {2} / (right - left);
 		result[1][1] = T {2} / (top - bottom);
-		result[2][2] = -T {1} / (far_plane - near_plane);
+		result[2][2] = -T {1} / (farPlane - nearPlane);
 		result[3][0] = -(right + left) / (right - left);
 		result[3][1] = -(top + bottom) / (top - bottom);
-		result[3][2] = -near_plane / (far_plane - near_plane);
+		result[3][2] = -nearPlane / (farPlane - nearPlane);
 		return result;
 	}
-
-	// ============================================================================
-	// Type Aliases
-	// ============================================================================
-
-	using mat3	= Mat3<float>;
-	using mat4	= Mat4<float>;
-	using dmat3 = Mat3<double>;
-	using dmat4 = Mat4<double>;
-
-}  // namespace synodic::math
+}

@@ -1,18 +1,10 @@
-/**
- * @brief Geometric primitives with storage abstraction
- *
- * Provides Ray, Plane, AABB with pluggable storage backends.
- * Users can provide optimized overloads via ADL for custom storage types.
- * Prepared for C++26 reflection and std::simd integration.
- */
-
-export module synodic.library:math.geometry;
+export module synodic.periapsis:math.geometry;
 
 import std;
 
 export import :math.vector;
 
-export namespace synodic::math
+export namespace peri::math
 {
 	// ============================================================================
 	// Ray
@@ -27,7 +19,7 @@ export namespace synodic::math
 	{
 		using value_type = T;
 
-		Vec3<T> origin {};
+		Vec3<T> origin;
 		Vec3<T> direction {T {0}, T {0}, T {-1}};  // Default: looking down -Z
 
 		constexpr Ray() noexcept = default;
@@ -38,7 +30,9 @@ export namespace synodic::math
 		{
 		}
 
-		// Get point along ray at parameter t
+		/**
+		 * @brief Get point along ray at parameter t
+		 */
 		[[nodiscard]] constexpr auto At(T t) const noexcept -> Vec3<T>
 		{
 			return origin + direction * t;
@@ -141,29 +135,29 @@ export namespace synodic::math
 	{
 		using value_type = T;
 
-		Vec4<T> coeffs {T {0}, T {1}, T {0}, T {0}};  // Default: y = 0
+		Vec4<T> coefficients {T {0}, T {1}, T {0}, T {0}};	// Default: y = 0
 
 		constexpr PlaneCoefficients() noexcept = default;
 
-		constexpr explicit PlaneCoefficients(const Vec4<T>& coeffs) noexcept :
-			coeffs {coeffs}
+		constexpr explicit PlaneCoefficients(const Vec4<T>& coefficients) noexcept :
+			coefficients {coefficients}
 		{
 		}
 
 		constexpr PlaneCoefficients(T a, T b, T c, T d) noexcept :
-			coeffs {a, b, c, d}
+			coefficients {a, b, c, d}
 		{
 		}
 
 		// Unified interface
 		[[nodiscard]] constexpr auto Normal() const noexcept -> Vec3<T>
 		{
-			return coeffs.xyz();
+			return coefficients.xyz();
 		}
 
 		[[nodiscard]] constexpr auto Distance() const noexcept -> T
 		{
-			return -coeffs.w;
+			return -coefficients.w;
 		}
 
 		[[nodiscard]] constexpr auto Point() const noexcept -> Vec3<T>
@@ -202,12 +196,11 @@ export namespace synodic::math
 		// Forward storage constructors
 		template<typename... Args>
 			requires std::constructible_from<Storage, Args...>
-		constexpr Plane(Args&&... args) noexcept :
+		constexpr explicit(false) Plane(Args&&... args) noexcept :
 			storage {std::forward<Args>(args)...}
 		{
 		}
 
-		// Unified interface (delegates to storage)
 		[[nodiscard]] constexpr auto Normal() const noexcept
 		{
 			return storage.Normal();
@@ -244,11 +237,11 @@ export namespace synodic::math
 	};
 
 	// ============================================================================
-	// Plane Operations (ADL-friendly overloads)
+	// Plane Operations
 	// ============================================================================
 
 	/**
-	 * @brief Signed distance from point to plane (generic)
+	 * @brief Signed distance from point to plane
 	 */
 	template<typename Storage>
 	[[nodiscard]] constexpr auto
@@ -266,7 +259,7 @@ export namespace synodic::math
 		-> T
 	{
 		// Can use single dot4 with SIMD
-		return Dot(plane.storage.coeffs, Vec4<T> {point, T {1}});
+		return Dot(plane.storage.coefficients, Vec4<T> {point, T {1}});
 	}
 
 	/**
@@ -398,12 +391,11 @@ export namespace synodic::math
 		// Forward storage constructors
 		template<typename... Args>
 			requires std::constructible_from<Storage, Args...>
-		constexpr AABB(Args&&... args) noexcept :
+		constexpr explicit(false) AABB(Args&&... args) noexcept :
 			storage {std::forward<Args>(args)...}
 		{
 		}
 
-		// Unified interface
 		[[nodiscard]] constexpr auto Min() const noexcept
 		{
 			return storage.Min();
@@ -424,7 +416,7 @@ export namespace synodic::math
 			return storage.Extents();
 		}
 
-		// Size (full extent, not half)
+		// Size. Full extent, not half
 		[[nodiscard]] constexpr auto Size() const noexcept
 		{
 			return Extents() * value_type {2};
@@ -482,13 +474,14 @@ export namespace synodic::math
 	};
 
 	// ============================================================================
-	// AABB Operations (ADL-friendly overloads)
+	// AABB Operations
 	// ============================================================================
 
 	/**
-	 * @brief Check if point is inside AABB (generic)
+	 * @brief Check if point is inside AABB
 	 */
 	template<aabb_storage Storage>
+		requires(!std::same_as<Storage, AABBCenterExtents<typename Storage::value_type>>)
 	[[nodiscard]] constexpr auto
 		Contains(const AABB<Storage>& box, const Vec3<typename Storage::value_type>& point) noexcept -> bool
 	{
@@ -499,22 +492,57 @@ export namespace synodic::math
 	}
 
 	/**
-	 * @brief Check if two AABBs intersect (generic)
+	 * @brief Check if point is inside AABB - optimized for AABBCenterExtents
+	 * @details Uses absolute value check instead of computing min/max bounds
+	 */
+	template<std::floating_point T>
+	[[nodiscard]] constexpr auto Contains(const AABB<AABBCenterExtents<T>>& box, const Vec3<T>& point) noexcept -> bool
+	{
+		const auto diff = point - box.storage.center;
+		const auto& ext = box.storage.extents;
+		return std::abs(diff.x) <= ext.x && std::abs(diff.y) <= ext.y && std::abs(diff.z) <= ext.z;
+	}
+
+	/**
+	 * @brief Check if two AABBs intersect
 	 */
 	template<aabb_storage StorageA, aabb_storage StorageB>
 	[[nodiscard]] constexpr auto Intersects(const AABB<StorageA>& a, const AABB<StorageB>& b) noexcept -> bool
 	{
-		const auto a_min = a.Min();
-		const auto a_max = a.Max();
-		const auto b_min = b.Min();
-		const auto b_max = b.Max();
+		const auto aMin = a.Min();
+		const auto aMax = a.Max();
+		const auto bMin = b.Min();
+		const auto bMax = b.Max();
 
-		return a_min.x <= b_max.x && a_max.x >= b_min.x && a_min.y <= b_max.y && a_max.y >= b_min.y &&
-			   a_min.z <= b_max.z && a_max.z >= b_min.z;
+		return aMin.x <= bMax.x && aMax.x >= bMin.x && aMin.y <= bMax.y && aMax.y >= bMin.y && aMin.z <= bMax.z &&
+			   aMax.z >= bMin.z;
 	}
 
 	/**
-	 * @brief Ray-AABB intersection test (generic)
+	 * @brief Pre-computed inverse ray direction for repeated intersection tests
+	 * @details Avoids repeated division in tight loops.
+	 *          Size: 6 floats (24 bytes) or 6 doubles (48 bytes).
+	 */
+	template<std::floating_point T>
+	struct RayInverse
+	{
+		Vec3<T> origin {};
+		Vec3<T> inv_direction {};
+
+		constexpr RayInverse() noexcept = default;
+
+		constexpr explicit RayInverse(const Ray<T>& ray) noexcept :
+			origin {ray.origin},
+			inv_direction {T {1} / ray.direction.x, T {1} / ray.direction.y, T {1} / ray.direction.z}
+		{
+		}
+	};
+
+	/**
+	 * @brief Ray-AABB intersection test
+	 * @details Uses the slab method with proper handling of zero direction components.
+	 *          When direction component is zero, division produces +/-inf which
+	 *          correctly handles rays parallel to slab boundaries.
 	 * @return Optional containing t parameter if hit, empty otherwise
 	 */
 	template<aabb_storage Storage, std::floating_point T>
@@ -523,50 +551,70 @@ export namespace synodic::math
 		const auto mn = box.Min();
 		const auto mx = box.Max();
 		const auto& o = ray.origin;
-		const auto& d = ray.direction;
 
-		T tmin = (mn.x - o.x) / d.x;
-		T tmax = (mx.x - o.x) / d.x;
-		if (tmin > tmax)
-		{
-			std::swap(tmin, tmax);
-		}
+		// Pre-compute inverse direction. inf is fine, handles parallel rays correctly
+		const Vec3<T> invD {T {1} / ray.direction.x, T {1} / ray.direction.y, T {1} / ray.direction.z};
 
-		T tymin = (mn.y - o.y) / d.y;
-		T tymax = (mx.y - o.y) / d.y;
-		if (tymin > tymax)
-		{
-			std::swap(tymin, tymax);
-		}
+		// Compute slab intersections
+		T t1   = (mn.x - o.x) * invD.x;
+		T t2   = (mx.x - o.x) * invD.x;
+		T tMin = std::min(t1, t2);
+		T tMax = std::max(t1, t2);
 
-		if (tmin > tymax || tymin > tmax)
-		{
-			return std::nullopt;
-		}
+		t1	 = (mn.y - o.y) * invD.y;
+		t2	 = (mx.y - o.y) * invD.y;
+		tMin = std::max(tMin, std::min(t1, t2));
+		tMax = std::min(tMax, std::max(t1, t2));
 
-		tmin = std::max(tmin, tymin);
-		tmax = std::min(tmax, tymax);
+		t1	 = (mn.z - o.z) * invD.z;
+		t2	 = (mx.z - o.z) * invD.z;
+		tMin = std::max(tMin, std::min(t1, t2));
+		tMax = std::min(tMax, std::max(t1, t2));
 
-		T tzmin = (mn.z - o.z) / d.z;
-		T tzmax = (mx.z - o.z) / d.z;
-		if (tzmin > tzmax)
-		{
-			std::swap(tzmin, tzmax);
-		}
-
-		if (tmin > tzmax || tzmin > tmax)
+		// Check for valid intersection: tMax >= tMin and tMax >= 0
+		if (tMax < tMin || tMax < T {0})
 		{
 			return std::nullopt;
 		}
 
-		tmin = std::max(tmin, tzmin);
+		// Return entry point (or 0 if inside box)
+		return tMin >= T {0} ? tMin : T {0};
+	}
 
-		if (tmin < T {0})
+	/**
+	 * @brief Ray-AABB intersection with pre-computed inverse direction
+	 * @details Optimized for BVH traversal where the same ray tests many boxes
+	 */
+	template<aabb_storage Storage, std::floating_point T>
+	[[nodiscard]] constexpr auto Intersects(const AABB<Storage>& box, const RayInverse<T>& ray) noexcept
+		-> std::optional<T>
+	{
+		const auto mn	 = box.Min();
+		const auto mx	 = box.Max();
+		const auto& o	 = ray.origin;
+		const auto& invD = ray.inv_direction;
+
+		T t1   = (mn.x - o.x) * invD.x;
+		T t2   = (mx.x - o.x) * invD.x;
+		T tMin = std::min(t1, t2);
+		T tMax = std::max(t1, t2);
+
+		t1	 = (mn.y - o.y) * invD.y;
+		t2	 = (mx.y - o.y) * invD.y;
+		tMin = std::max(tMin, std::min(t1, t2));
+		tMax = std::min(tMax, std::max(t1, t2));
+
+		t1	 = (mn.z - o.z) * invD.z;
+		t2	 = (mx.z - o.z) * invD.z;
+		tMin = std::max(tMin, std::min(t1, t2));
+		tMax = std::min(tMax, std::max(t1, t2));
+
+		if (tMax < tMin || tMax < T {0})
 		{
 			return std::nullopt;
 		}
 
-		return tmin;
+		return tMin >= T {0} ? tMin : T {0};
 	}
 
 	/**
@@ -576,7 +624,7 @@ export namespace synodic::math
 	[[nodiscard]] constexpr auto Merge(const AABB<StorageA>& a, const AABB<StorageB>& b) noexcept
 		-> AABB<AABBMinMax<typename StorageA::value_type>>
 	{
-		using T = typename StorageA::value_type;
+		using T = StorageA::value_type;
 		return AABB<AABBMinMax<T>> {math::Min(a.Min(), b.Min()), math::Max(a.Max(), b.Max())};
 	}
 
@@ -588,12 +636,12 @@ export namespace synodic::math
 		Expand(const AABB<Storage>& box, const Vec3<typename Storage::value_type>& point) noexcept
 		-> AABB<AABBMinMax<typename Storage::value_type>>
 	{
-		using T = typename Storage::value_type;
+		using T = Storage::value_type;
 		return AABB<AABBMinMax<T>> {math::Min(box.Min(), point), math::Max(box.Max(), point)};
 	}
 
 	/**
-	 * @brief Compute surface area of AABB (useful for BVH)
+	 * @brief Compute surface area of AABB
 	 */
 	template<aabb_storage Storage>
 	[[nodiscard]] constexpr auto SurfaceArea(const AABB<Storage>& box) noexcept -> typename Storage::value_type
@@ -623,15 +671,20 @@ export namespace synodic::math
 	template<typename Storage, std::floating_point T>
 	[[nodiscard]] constexpr auto Intersects(const Plane<Storage>& plane, const Ray<T>& ray) noexcept -> std::optional<T>
 	{
-		const T denom = Dot(plane.Normal(), ray.direction);
+		// Use machine epsilon scaled by typical values for robust parallel detection
+		constexpr T epsilon = T {128} * std::numeric_limits<T>::epsilon();
+
+		const auto normal	= plane.Normal();
+		const T denominator = Dot(normal, ray.direction);
 
 		// Ray parallel to plane
-		if (std::abs(denom) < T {0.0001})
+		if (std::abs(denominator) < epsilon)
 		{
 			return std::nullopt;
 		}
 
-		const T t = (plane.Distance() - Dot(plane.Normal(), ray.origin)) / denom;
+		// Reuse normal instead of calling plane.Normal() twice
+		const T t = (plane.Distance() - Dot(normal, ray.origin)) / denominator;
 
 		// Intersection behind ray origin
 		if (t < T {0})
@@ -643,21 +696,23 @@ export namespace synodic::math
 	}
 
 	// ============================================================================
-	// Type Aliases
+	// Template Aliases
 	// ============================================================================
 
-	// Ray
-	using ray  = Ray<float>;
-	using dray = Ray<double>;
+	// Plane with different storage backends
+	template<std::floating_point T>
+	using NormalPlane = Plane<PlaneNormalDistance<T>>;
 
-	// Plane with default storage
-	using plane		   = Plane<PlaneNormalDistance<float>>;
-	using dplane	   = Plane<PlaneNormalDistance<double>>;
-	using plane_coeffs = Plane<PlaneCoefficients<float>>;
+	template<std::floating_point T>
+	using PointPlane = Plane<PlanePointNormal<T>>;
 
-	// AABB with default storage
-	using aabb		  = AABB<AABBMinMax<float>>;
-	using daabb		  = AABB<AABBMinMax<double>>;
-	using aabb_center = AABB<AABBCenterExtents<float>>;
+	template<std::floating_point T>
+	using CoeffsPlane = Plane<PlaneCoefficients<T>>;
 
-}  // namespace synodic::math
+	// AABB with different storage backends
+	template<std::floating_point T>
+	using BoundsAABB = AABB<AABBMinMax<T>>;
+
+	template<std::floating_point T>
+	using CenterAABB = AABB<AABBCenterExtents<T>>;
+}

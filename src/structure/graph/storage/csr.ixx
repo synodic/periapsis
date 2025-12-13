@@ -1,28 +1,14 @@
-export module synodic.library:structure.graph.storage.csr;
+export module synodic.periapsis:structure.graph.storage.csr;
 
 import :structure.graph.concepts;
 
 import std;
 
-export namespace synodic::graph::storage
+export namespace peri::graph::storage
 {
 	/**
 	 * @brief Compressed Sparse Row (CSR) graph storage for immutable, cache-friendly graphs.
-	 *        Ideal for graphs loaded via #embed where topology is fixed at compile-time
-	 *        but properties may be updated at runtime.
-	 *
-	 *        Memory layout:
-	 *        - row_offsets_: [V+1] array where row_offsets_[v] is start of v's edges
-	 *        - col_indices_: [E] array of target vertex indices (contiguous per source)
-	 *        - Vertex properties: [V] array indexed by vertex descriptor
-	 *        - Edge properties: [E] array indexed by edge descriptor
-	 *
-	 *        Performance characteristics:
-	 *        - O(1) vertex property access
-	 *        - O(1) edge property access
-	 *        - O(1) out-degree query
-	 *        - O(degree) iteration over out-edges (cache-friendly sequential access)
-	 *        - O(log V) source vertex lookup from edge (rare operation)
+	 *        Ideal for graphs where topology is fixed at compile-time but properties may be updated at runtime.
 	 *
 	 * @tparam VertexProperty Type stored per vertex
 	 * @tparam EdgeProperty Type stored per edge
@@ -34,8 +20,8 @@ export namespace synodic::graph::storage
 		typename VertexProperty,
 		typename EdgeProperty,
 		template<typename...> typename VertexContainer = std::vector,
-		template<typename...> typename EdgeContainer   = std::vector,
-		std::unsigned_integral IndexType			   = std::size_t>
+		template<typename...> typename EdgeContainer = std::vector,
+		std::unsigned_integral IndexType = std::size_t>
 	class CSRStorage
 	{
 	public:
@@ -43,20 +29,20 @@ export namespace synodic::graph::storage
 		// Type Definitions
 		// ========================================================================
 
-		using vertex_descriptor	   = IndexType;
-		using edge_descriptor	   = IndexType;
+		using vertex_descriptor    = IndexType;
+		using edge_descriptor      = IndexType;
 		using vertices_size_type   = IndexType;
-		using edges_size_type	   = IndexType;
-		using degree_size_type	   = IndexType;
+		using edges_size_type      = IndexType;
+		using degree_size_type     = IndexType;
 		using vertex_property_type = VertexProperty;
 		using edge_property_type   = EdgeProperty;
 
 		// Compile-time properties
-		static constexpr bool is_directed					= true;
-		static constexpr bool allows_parallel_edges			= true;
-		static constexpr bool is_constexpr_capable			= false;  // Uses std::vector
+		static constexpr bool is_directed                   = true;
+		static constexpr bool allows_parallel_edges         = true;
+		static constexpr bool is_constexpr_capable          = false; // Uses std::vector
 		static constexpr bool has_stable_vertex_descriptors = true;
-		static constexpr bool has_stable_edge_descriptors	= true;
+		static constexpr bool has_stable_edge_descriptors   = true;
 
 		// Rebind to different property types
 		template<typename VP, typename EP>
@@ -73,10 +59,10 @@ export namespace synodic::graph::storage
 		};
 
 		using VertexPropsStorage =
-			std::conditional_t<std::same_as<VertexProperty, void>, Empty, VertexContainer<VertexProperty>>;
+		std::conditional_t<std::same_as<VertexProperty, void>, Empty, VertexContainer<VertexProperty>>;
 
 		using EdgePropsStorage =
-			std::conditional_t<std::same_as<EdgeProperty, void>, Empty, EdgeContainer<EdgeProperty>>;
+		std::conditional_t<std::same_as<EdgeProperty, void>, Empty, EdgeContainer<EdgeProperty>>;
 
 		[[no_unique_address]] VertexPropsStorage vertex_properties_;
 		[[no_unique_address]] EdgePropsStorage edge_properties_;
@@ -99,8 +85,8 @@ export namespace synodic::graph::storage
 		 */
 		template<std::ranges::input_range EdgeRange>
 			requires std::
-				same_as<std::ranges::range_value_t<EdgeRange>, std::pair<vertex_descriptor, vertex_descriptor>>
-			CSRStorage(vertices_size_type num_vertices, EdgeRange&& edges) :
+			same_as<std::ranges::range_value_t<EdgeRange>, std::pair<vertex_descriptor, vertex_descriptor>>
+		CSRStorage(vertices_size_type num_vertices, EdgeRange&& edges) :
 			row_offsets_(num_vertices + 1, 0)
 		{
 			// Count edges per vertex
@@ -144,7 +130,7 @@ export namespace synodic::graph::storage
 		 */
 		template<std::ranges::input_range VertexPropRange, std::ranges::input_range EdgeRange>
 			requires(not std::same_as<VertexProperty, void>) and (not std::same_as<EdgeProperty, void>) and
-					std::convertible_to<std::ranges::range_value_t<VertexPropRange>, VertexProperty>
+			        std::convertible_to<std::ranges::range_value_t<VertexPropRange>, VertexProperty>
 		CSRStorage(vertices_size_type num_vertices, VertexPropRange&& vertex_props, EdgeRange&& edges) :
 			row_offsets_(num_vertices + 1, 0)
 		{
@@ -175,8 +161,8 @@ export namespace synodic::graph::storage
 			auto current_offset = row_offsets_;
 			for (const auto& edge: edges)
 			{
-				auto idx			  = current_offset[std::get<0>(edge)]++;
-				col_indices_[idx]	  = std::get<1>(edge);
+				auto idx              = current_offset[std::get<0>(edge)]++;
+				col_indices_[idx]     = std::get<1>(edge);
 				edge_properties_[idx] = std::get<2>(edge);
 			}
 		}
@@ -192,7 +178,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] auto vertices() const noexcept
 		{
-			return std::views::iota(vertex_descriptor {0}, num_vertices());
+			return std::views::iota(vertex_descriptor{0}, num_vertices());
 		}
 
 		// ========================================================================
@@ -206,7 +192,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] auto edges() const noexcept
 		{
-			return std::views::iota(edge_descriptor {0}, num_edges());
+			return std::views::iota(edge_descriptor{0}, num_edges());
 		}
 
 		// ========================================================================
@@ -243,7 +229,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] auto adjacent_vertices(vertex_descriptor v) const noexcept
 		{
-			return std::span {col_indices_.data() + row_offsets_[v], col_indices_.data() + row_offsets_[v + 1]};
+			return std::span{col_indices_.data() + row_offsets_[v], col_indices_.data() + row_offsets_[v + 1]};
 		}
 
 		// ========================================================================

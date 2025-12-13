@@ -35,9 +35,9 @@ visitor.advance();     runner.advance(event);
 ### Dynamic State Machine (Default)
 
 ```cpp
-import synodic.library;
+import synodic.periapsis;
 
-using namespace synodic::state_machine;
+using namespace peri::state_machine;
 
 // Dynamic state machine - growable at runtime
 StateMachine<int> sm;  // int events, no state/transition data
@@ -54,7 +54,7 @@ sm.set_initial_state(locked);
 ### Fixed-Size Constexpr State Machine
 
 ```cpp
-using namespace synodic::state_machine;
+using namespace peri::state_machine;
 
 constexpr auto make_turnstile() {
     StateMachine<int, void, void, 2, 4> sm;  // Max 2 states, 4 transitions
@@ -314,9 +314,9 @@ state_machine_storage (base)
 ## Example: Traffic Light Controller
 
 ```cpp
-import synodic.library;
+import synodic.periapsis;
 
-using namespace synodic::state_machine;
+using namespace peri::state_machine;
 
 enum class Event { Timer, Emergency, Reset };
 

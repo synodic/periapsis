@@ -1,8 +1,8 @@
-export module synodic.library:thread.local;
+export module synodic.periapsis:thread.local;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 	// A managed object that exists statically for each thread
 	template<typename T>

@@ -5,9 +5,9 @@ set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 
 set(CMAKE_CXX_MODULE_STD ON)
 
-project(synodic-template-library
+project(periapsis
 	VERSION 0.1.0
-	DESCRIPTION "Synodic Template Library"
+	DESCRIPTION "A supplementary C++ standard library collection"
 	LANGUAGES CXX
 )
 
@@ -17,10 +17,10 @@ option(BUILD_TESTING "Build the tests verifying GTest functionality" ON)
 find_package(GTest REQUIRED)
 
 # Provide a namespaced alias
-add_library(synodic-template-library STATIC)
-add_library(synodic::synodic-template-library ALIAS synodic-template-library)
+add_library(periapsis STATIC)
+add_library(synodic::periapsis ALIAS periapsis)
 
-set_target_properties(synodic-template-library
+set_target_properties(periapsis
 	PROPERTIES
 	LINKER_LANGUAGE CXX
 	CXX_STANDARD 23
@@ -28,10 +28,10 @@ set_target_properties(synodic-template-library
 	CXX_EXTENSIONS NO
 )
 
-target_compile_features(synodic-template-library PUBLIC cxx_std_23)
+target_compile_features(periapsis PUBLIC cxx_std_23)
 
 # Link dependencies
-target_link_libraries(synodic-template-library)
+target_link_libraries(periapsis)
 
 add_subdirectory(
 	src
@@ -60,24 +60,24 @@ include(CMakePackageConfigHelpers)
 
 # Generate package config files
 write_basic_package_version_file(
-	synodic-template-libraryConfigVersion.cmake
+	periapsisConfigVersion.cmake
 	VERSION ${PROJECT_VERSION}
 	COMPATIBILITY SameMajorVersion
 )
 
 configure_package_config_file(
-	tool/cmake/synodic-template-libraryConfig.cmake.in
-	synodic-template-libraryConfig.cmake
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+	tool/cmake/periapsisConfig.cmake.in
+	periapsisConfig.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/periapsis
 )
 
-install(TARGETS synodic-template-library
-	EXPORT synodic-template-libraryTargets
+install(TARGETS periapsis
+	EXPORT periapsisTargets
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 
-	FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+	FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/periapsis
 )
 
 # Create empty include directory to satisfy CMake's exported target requirements
@@ -85,15 +85,15 @@ install(TARGETS synodic-template-library
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Export and package configuration
-install(EXPORT synodic-template-libraryTargets
-	FILE synodic-template-libraryTargets.cmake
+install(EXPORT periapsisTargets
+	FILE periapsisTargets.cmake
 	NAMESPACE synodic::
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/periapsis
 )
 
 install(
 	FILES
-	${CMAKE_CURRENT_BINARY_DIR}/synodic-template-libraryConfig.cmake
-	${CMAKE_CURRENT_BINARY_DIR}/synodic-template-libraryConfigVersion.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/synodic-template-library
+	${CMAKE_CURRENT_BINARY_DIR}/periapsisConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/periapsisConfigVersion.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/periapsis
 )

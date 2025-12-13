@@ -1,10 +1,10 @@
-export module synodic.library:structure.graph.storage.static_storage;
+export module synodic.periapsis:structure.graph.storage.static_storage;
 
 import :structure.graph.concepts;
 
 import std;
 
-export namespace synodic::graph::storage
+export namespace peri::graph::storage
 {
 	/**
 	 * @brief A constexpr-capable graph storage using fixed-size arrays.
@@ -30,23 +30,23 @@ export namespace synodic::graph::storage
 		// Type Definitions
 		// ========================================================================
 
-		using vertex_descriptor	   = IndexType;
-		using edge_descriptor	   = IndexType;
+		using vertex_descriptor    = IndexType;
+		using edge_descriptor      = IndexType;
 		using vertices_size_type   = IndexType;
-		using edges_size_type	   = IndexType;
-		using degree_size_type	   = IndexType;
+		using edges_size_type      = IndexType;
+		using degree_size_type     = IndexType;
 		using vertex_property_type = VertexProperty;
 		using edge_property_type   = EdgeProperty;
 
 		// Compile-time properties
-		static constexpr bool is_directed					= true;
-		static constexpr bool allows_parallel_edges			= true;
-		static constexpr bool is_constexpr_capable			= true;
-		static constexpr bool has_stable_vertex_descriptors = true;	 // Indices don't move
-		static constexpr bool has_stable_edge_descriptors	= true;
+		static constexpr bool is_directed                   = true;
+		static constexpr bool allows_parallel_edges         = true;
+		static constexpr bool is_constexpr_capable          = true;
+		static constexpr bool has_stable_vertex_descriptors = true; // Indices don't move
+		static constexpr bool has_stable_edge_descriptors   = true;
 
 		static constexpr vertices_size_type max_vertices = static_cast<vertices_size_type>(MaxVertices);
-		static constexpr edges_size_type max_edges		 = static_cast<edges_size_type>(MaxEdges);
+		static constexpr edges_size_type max_edges       = static_cast<edges_size_type>(MaxEdges);
 
 		// Rebind to different property types
 		template<typename VP, typename EP>
@@ -56,8 +56,8 @@ export namespace synodic::graph::storage
 		// CSR-style storage for O(1) vertex lookup and cache-friendly edge iteration
 		//	row_offsets_[v] gives the start index in targets_ for vertex v's out-edges
 		//	row_offsets_[v+1] - row_offsets_[v] gives out-degree
-		std::array<edges_size_type, MaxVertices + 1> row_offsets_ {};
-		std::array<vertex_descriptor, MaxEdges> targets_ {};
+		std::array<edges_size_type, MaxVertices + 1> row_offsets_{};
+		std::array<vertex_descriptor, MaxEdges> targets_{};
 
 		// Property storage (conditionally empty for no_property via [[no_unique_address]])
 		struct EmptyVertexProps
@@ -74,17 +74,17 @@ export namespace synodic::graph::storage
 			std::array<VertexProperty, MaxVertices>>;
 
 		using EdgePropsStorage =
-			std::conditional_t<std::same_as<EdgeProperty, void>, EmptyEdgeProps, std::array<EdgeProperty, MaxEdges>>;
+		std::conditional_t<std::same_as<EdgeProperty, void>, EmptyEdgeProps, std::array<EdgeProperty, MaxEdges>>;
 
-		[[no_unique_address]] VertexPropsStorage vertex_properties_ {};
-		[[no_unique_address]] EdgePropsStorage edge_properties_ {};
+		[[no_unique_address]] VertexPropsStorage vertex_properties_{};
+		[[no_unique_address]] EdgePropsStorage edge_properties_{};
 
-		vertices_size_type num_vertices_ {0};
-		edges_size_type num_edges_ {0};
+		vertices_size_type num_vertices_{0};
+		edges_size_type num_edges_{0};
 
 		// Boundary vertices for subgraph composition (indices into vertex array)
-		std::array<vertex_descriptor, MaxVertices> boundary_ {};
-		vertices_size_type num_boundary_ {0};
+		std::array<vertex_descriptor, MaxVertices> boundary_{};
+		vertices_size_type num_boundary_{0};
 
 	public:
 		// ========================================================================
@@ -104,7 +104,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] constexpr auto vertices() const noexcept
 		{
-			return std::views::iota(vertex_descriptor {0}, num_vertices_);
+			return std::views::iota(vertex_descriptor{0}, num_vertices_);
 		}
 
 		constexpr auto add_vertex() -> vertex_descriptor
@@ -114,8 +114,8 @@ export namespace synodic::graph::storage
 				// In constexpr context, this will cause a compile error
 				// At runtime, this is undefined behavior (could add assert)
 			}
-			auto v				= num_vertices_++;
-			row_offsets_[v + 1] = row_offsets_[v];	// Initialize with no edges
+			auto v              = num_vertices_++;
+			row_offsets_[v + 1] = row_offsets_[v]; // Initialize with no edges
 			return v;
 		}
 
@@ -123,7 +123,7 @@ export namespace synodic::graph::storage
 			requires(not std::same_as<VertexProperty, void>) and std::constructible_from<VertexProperty, Args...>
 		constexpr auto add_vertex(Args&&... args) -> vertex_descriptor
 		{
-			auto v				  = add_vertex();
+			auto v                = add_vertex();
 			vertex_properties_[v] = VertexProperty(std::forward<Args>(args)...);
 			return v;
 		}
@@ -138,10 +138,10 @@ export namespace synodic::graph::storage
 		{
 			if (num_edges_ >= max_edges)
 			{
-				return {edge_descriptor {}, false};
+				return {edge_descriptor{}, false};
 			}
 
-			auto edge_idx	   = num_edges_++;
+			auto edge_idx      = num_edges_++;
 			targets_[edge_idx] = target;
 
 			// Update row offsets for all vertices after source
@@ -155,7 +155,10 @@ export namespace synodic::graph::storage
 
 		template<typename... Args>
 			requires(not std::same_as<EdgeProperty, void>) and std::constructible_from<EdgeProperty, Args...>
-		constexpr auto add_edge(vertex_descriptor source, vertex_descriptor target, Args&&... args)
+		constexpr auto add_edge(
+			vertex_descriptor source,
+			vertex_descriptor target,
+			Args&&... args)
 			-> std::pair<edge_descriptor, bool>
 		{
 			auto [edge, inserted] = add_edge(source, target);
@@ -173,7 +176,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] constexpr auto edges() const noexcept
 		{
-			return std::views::iota(edge_descriptor {0}, num_edges_);
+			return std::views::iota(edge_descriptor{0}, num_edges_);
 		}
 
 		// ========================================================================
@@ -211,10 +214,10 @@ export namespace synodic::graph::storage
 		[[nodiscard]] constexpr auto adjacent_vertices(vertex_descriptor v) const noexcept
 		{
 			return std::views::iota(row_offsets_[v], row_offsets_[v + 1]) | std::views::transform(
-																				[this](edge_descriptor e)
-																				{
-																					return targets_[e];
-																				});
+				       [this](edge_descriptor e)
+				       {
+					       return targets_[e];
+				       });
 		}
 
 		// ========================================================================
@@ -257,7 +260,7 @@ export namespace synodic::graph::storage
 
 		[[nodiscard]] constexpr auto boundary_vertices() const noexcept
 		{
-			return std::span {boundary_.data(), num_boundary_};
+			return std::span{boundary_.data(), num_boundary_};
 		}
 
 		[[nodiscard]] constexpr auto num_boundary_vertices() const noexcept -> vertices_size_type

@@ -23,11 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export module synodic.library:type.concepts.shared;
+export module synodic.periapsis:type.concepts.shared;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 	// Verifies that the given type is the same as its decayed type
 	template<typename T>

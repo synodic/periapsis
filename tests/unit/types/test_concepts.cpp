@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
@@ -27,21 +27,20 @@ namespace
 
 	TEST(Container, Clearable)
 	{
-		static_assert(synodic::clearable_container<Deque>);
-		static_assert(synodic::clearable_container<ForwardList>);
-		static_assert(synodic::clearable_container<List>);
-		static_assert(synodic::clearable_container<Map>);
-		static_assert(synodic::clearable_container<MultiMap>);
-		static_assert(synodic::clearable_container<Set>);
-		static_assert(synodic::clearable_container<MultiSet>);
-		static_assert(synodic::clearable_container<String>);
-		static_assert(synodic::clearable_container<UnorderedMap>);
-		static_assert(synodic::clearable_container<UnorderedMultiMap>);
-		static_assert(synodic::clearable_container<UnorderedSet>);
-		static_assert(synodic::clearable_container<UnorderedMultiSet>);
-		static_assert(synodic::clearable_container<Vector>);
+		static_assert(peri::clearable_container<Deque>);
+		static_assert(peri::clearable_container<ForwardList>);
+		static_assert(peri::clearable_container<List>);
+		static_assert(peri::clearable_container<Map>);
+		static_assert(peri::clearable_container<MultiMap>);
+		static_assert(peri::clearable_container<Set>);
+		static_assert(peri::clearable_container<MultiSet>);
+		static_assert(peri::clearable_container<String>);
+		static_assert(peri::clearable_container<UnorderedMap>);
+		static_assert(peri::clearable_container<UnorderedMultiMap>);
+		static_assert(peri::clearable_container<UnorderedSet>);
+		static_assert(peri::clearable_container<UnorderedMultiSet>);
+		static_assert(peri::clearable_container<Vector>);
 
-		static_assert(not synodic::clearable_container<Array>);
+		static_assert(not peri::clearable_container<Array>);
 	}
-
-}  // namespace
+}

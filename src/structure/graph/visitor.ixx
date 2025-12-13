@@ -1,10 +1,10 @@
-export module synodic.library:structure.graph.visitor;
+export module synodic.periapsis:structure.graph.visitor;
 
 import :structure.graph.concepts;
 
 import std;
 
-export namespace synodic::graph
+export namespace peri::graph
 {
 	/**
 	 * @brief Result of attempting to advance a visitor

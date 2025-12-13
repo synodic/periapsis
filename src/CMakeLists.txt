@@ -1,8 +1,9 @@
-target_sources(synodic-template-library
+target_sources(periapsis
 	PUBLIC
 	FILE_SET CXX_MODULES
 	FILES
 	"library.ixx"
+	"exception.ixx"
 )
 
 add_subdirectory(
@@ -11,10 +12,6 @@ add_subdirectory(
 
 add_subdirectory(
 	"container"
-)
-
-add_subdirectory(
-	"exception"
 )
 
 add_subdirectory(

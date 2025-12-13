@@ -1,6 +1,6 @@
-export module synodic.library:function.executor;
+export module synodic.periapsis:function.executor;
 
-export namespace synodic::executor
+export namespace peri::executor
 {
 	template<typename T>
 	concept scheduler = true;

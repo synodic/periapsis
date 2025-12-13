@@ -1,5 +1,5 @@
 target_sources(tests
-PRIVATE
+	PRIVATE
 	test_queue.cpp
 )
 
@@ -9,4 +9,7 @@ add_subdirectory(
 
 add_subdirectory(
 	lockfree
+)
+add_subdirectory(
+	dynamic
 )

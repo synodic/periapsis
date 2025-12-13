@@ -1,14 +1,14 @@
-# Synodic Template Library
+# Periapsis
 
 A modern C++23 template library with modules support.
 
 ## Overview
 
-The Synodic Template Library provides high-performance, concept-constrained data structures and algorithms with first-class support for compile-time evaluation.
+The Periapsis provides high-performance, concept-constrained data structures and algorithms with first-class support for compile-time evaluation.
 
 **Key Features:**
 
-- C++23 modules (`import synodic.library;`)
+- C++23 modules (`import synodic.periapsis;`)
 - Extensive use of concepts for clear constraints
 - Constexpr-capable containers and algorithms
 - Storage abstraction patterns (like `std::allocator_traits`)
@@ -71,9 +71,9 @@ The Synodic Template Library provides high-performance, concept-constrained data
 ## Quick Start
 
 ```cpp
-import synodic.library;
+import synodic.periapsis;
 
-using namespace synodic;
+using namespace peri;
 
 // Constexpr queue
 constexpr auto sum = []() constexpr {
@@ -85,7 +85,7 @@ constexpr auto sum = []() constexpr {
 static_assert(sum == 3);
 
 // Compile-time graph with unified API
-using namespace synodic::graph;
+using namespace peri::graph;
 
 constexpr auto build_graph() {
     Graph<void, void, 4, 4> g;  // Fixed-size, constexpr capable
@@ -111,7 +111,7 @@ auto process(const C& c) { /* ... */ }
 ## Module Structure
 
 ```
-synodic.library
+synodic.periapsis
 ├── :container.fixed.ring_buffer      - FixedRingBuffer, FixedQueue, FixedStack
 ├── :container.sparse.*               - BitMap, HashMap, HashSet, Vector
 ├── :container.lockfree.spsc_queue    - SPSCQueue

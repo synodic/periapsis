@@ -1,8 +1,8 @@
-export module synodic.library:type.concepts.sequence_container;
+export module synodic.periapsis:type.concepts.sequence_container;
 
 import :type.concepts.container;
 
-export namespace synodic
+export namespace peri
 {
 	// A concept implementation of the named requirement 'SequenceContainer' with Standard naming styles
 	//		This definition is devoid of backwards compatibility requirements

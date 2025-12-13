@@ -4,16 +4,15 @@
 
 #include <gtest/gtest.h>
 
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
-	namespace test = synodic::executor;
+	namespace test = peri::executor;
 
 	// Placeholder test - executor tests to be added
 	TEST(Executor, Placeholder)
 	{
 		EXPECT_TRUE(true);
 	}
-
-}  // namespace
+}

@@ -1,8 +1,8 @@
-export module synodic.library:structure.graph.concepts;
+export module synodic.periapsis:structure.graph.concepts;
 
 import std;
 
-export namespace synodic::graph
+export namespace peri::graph
 {
 	// ============================================================================
 	// Descriptor Types

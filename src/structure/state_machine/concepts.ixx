@@ -1,8 +1,8 @@
-export module synodic.library:structure.state_machine.concepts;
+export module synodic.periapsis:structure.state_machine.concepts;
 
 import std;
 
-export namespace synodic::state_machine
+export namespace peri::state_machine
 {
 	// ============================================================================
 	// Core State Machine Types

@@ -1,6 +1,6 @@
 # Algorithms
 
-Graph and other algorithms provided by the Synodic Template Library.
+Graph and other algorithms provided by the Periapsis.
 
 ## Graph Algorithms
 
@@ -11,9 +11,9 @@ A constexpr-compatible maximum flow algorithm using the Edmonds-Karp method (BFS
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::graph;
-using namespace synodic::graph::storage;
-using namespace synodic::algorithm::graph;
+using namespace peri::graph;
+using namespace peri::graph::storage;
+using namespace peri::algorithm::graph;
 
 // Create a flow network
 Graph<StaticStorage<void, FlowEdge<int>, 6, 10>> network;

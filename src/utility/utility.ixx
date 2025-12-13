@@ -1,8 +1,8 @@
-export module synodic.library:utility;
+export module synodic.periapsis:utility;
 
 import std;
 
-namespace synodic
+namespace peri
 {
 	// TODO: Don't export with module
 	template<std::size_t Size>

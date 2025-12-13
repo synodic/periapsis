@@ -1,6 +1,6 @@
 # Containers
 
-The Synodic Template Library provides several specialized container types organized by category.
+The Periapsis provides several specialized container types organized by category.
 
 ## Fixed-Capacity Containers
 
@@ -11,7 +11,7 @@ A constexpr-capable, fixed-capacity ring buffer (circular buffer) that can be us
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 // Direct usage
 FixedRingBuffer<int, 64> buffer;
@@ -75,7 +75,7 @@ A fixed-capacity associative container using a bitset for presence tracking. Fas
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::sparse;
+using namespace peri::sparse;
 
 BitMap<MyData, 64> map;  // 64 slots
 
@@ -98,7 +98,7 @@ A sparse hash map implementation using open addressing with quadratic probing.
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::sparse;
+using namespace peri::sparse;
 
 HashMap<std::string, int> map;
 map["key"] = 42;
@@ -114,7 +114,7 @@ A sparse hash set implementation (work in progress).
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::sparse;
+using namespace peri::sparse;
 
 HashSet<int> set;
 // API under development
@@ -127,7 +127,7 @@ A sparse vector using block-based storage with bitmap tracking.
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::sparse;
+using namespace peri::sparse;
 
 Vector<MyData, 8> vec;  // Block size of 8
 vec.Insert(100, MyData{...});  // Insert at index 100
@@ -143,7 +143,7 @@ A single-producer, single-consumer lock-free queue adapter. Provides atomic acce
 ```cpp
 #include <synodic/library>
 
-using namespace synodic::lockfree;
+using namespace peri::lockfree;
 
 // Wrap a container (e.g., std::vector with fixed capacity)
 std::vector<int> storage(1024);

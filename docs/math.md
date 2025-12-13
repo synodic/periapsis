@@ -1,6 +1,6 @@
 # Math
 
-The Synodic Template Library provides constexpr-capable, SIMD-ready vector and matrix types for graphics programming and general mathematical computation.
+The Periapsis provides constexpr-capable, SIMD-ready vector and matrix types for graphics programming and general mathematical computation.
 
 ## Vector Types
 
@@ -24,10 +24,10 @@ struct MyPackedAABB {
     using value_type = float;
     // ... compressed representation
 
-    constexpr auto get_min() const noexcept -> vec3;
-    constexpr auto get_max() const noexcept -> vec3;
-    constexpr auto get_center() const noexcept -> vec3;
-    constexpr auto get_extents() const noexcept -> vec3;
+    constexpr auto get_min() const noexcept -> Vec3<float>;
+    constexpr auto get_max() const noexcept -> Vec3<float>;
+    constexpr auto get_center() const noexcept -> Vec3<float>;
+    constexpr auto get_extents() const noexcept -> Vec3<float>;
 };
 
 // Your optimized intersection (found via ADL)

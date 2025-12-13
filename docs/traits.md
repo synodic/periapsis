@@ -9,7 +9,7 @@ A metafunction that deduces the parameter types of the shortest constructor for 
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 struct MyStruct {
     int a;

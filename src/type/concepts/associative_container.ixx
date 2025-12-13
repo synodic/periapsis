@@ -1,10 +1,10 @@
-export module synodic.library:type.concepts.associative_container;
+export module synodic.periapsis:type.concepts.associative_container;
 
 import :type.concepts.container;
 
 import std;
 
-export namespace synodic
+export namespace peri
 {
 	// A concept implementation of the named requirement 'AssociativeContainer' with Standard naming styles
 	//		This definition is devoid of backwards compatibility requirements

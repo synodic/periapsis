@@ -1,11 +1,11 @@
-export module synodic.library:structure.state_machine.storage.dynamic_storage;
+export module synodic.periapsis:structure.state_machine.storage.dynamic_storage;
 
 import :structure.state_machine.concepts;
 import :structure.state_machine.storage.static_storage;
 
 import std;
 
-export namespace synodic::state_machine::storage
+export namespace peri::state_machine::storage
 {
 	/**
 	 * @brief Dynamic state machine storage supporting runtime state/transition add/remove.

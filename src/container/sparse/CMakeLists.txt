@@ -1,9 +1,7 @@
-target_sources(synodic-template-library
+target_sources(periapsis
 	PUBLIC
 	FILE_SET CXX_MODULES
 	FILES
-	"bit_map.ixx"
-	"hash_map.ixx"
-	"hash_set.ixx"
-	"vector.ixx"
+	"bit_vector.ixx"
+	"index_vector.ixx"
 )

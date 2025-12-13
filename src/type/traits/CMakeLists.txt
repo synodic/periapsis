@@ -1,6 +1,6 @@
-target_sources(synodic-template-library
+target_sources(periapsis
 	PUBLIC
-		FILE_SET CXX_MODULES
-		FILES
-			"traits.ixx"
+	FILE_SET CXX_MODULES
+	FILES
+	"traits.ixx"
 )

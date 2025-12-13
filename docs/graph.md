@@ -15,9 +15,9 @@ The graph library is designed around three key principles:
 ### Dynamic Graph (Default)
 
 ```cpp
-import synodic.library;
+import synodic.periapsis;
 
-using namespace synodic::graph;
+using namespace peri::graph;
 
 // Dynamic graph with properties - growable at runtime
 Graph<NodeData, EdgeWeight> graph;
@@ -36,7 +36,7 @@ for (auto e : graph.out_edges(v0)) {
 ### Fixed-Size Constexpr Graph
 
 ```cpp
-using namespace synodic::graph;
+using namespace peri::graph;
 
 struct TaskData { std::string_view name; };
 
@@ -105,7 +105,7 @@ This unified interface enables:
 The `Visitor` class separates traversal state from graph structure and satisfies the `visitor` concept:
 
 ```cpp
-using namespace synodic::graph;
+using namespace peri::graph;
 
 Graph<NodeData, EdgeWeight> graph;
 // ... build graph ...
@@ -248,7 +248,7 @@ graph_storage (base)
 Constexpr-compatible maximum flow algorithm:
 
 ```cpp
-using namespace synodic::algorithm::graph;
+using namespace peri::algorithm::graph;
 
 Graph<void, FlowEdge<int>, 6, 10> network;
 // ... build flow network ...

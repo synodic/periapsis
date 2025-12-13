@@ -1,21 +1,23 @@
-export module synodic.library;
+export module synodic.periapsis;
 
 // Type partitions
 export import :type.concepts.shared;
+export import :type.concepts.algebraic;
 export import :type.concepts.container;
 export import :type.concepts.associative_container;
 export import :type.concepts.sequence_container;
 export import :type.traits;
 
 // Container partitions
-export import :container.sparse.bit_map;
-export import :container.sparse.hash_map;
-export import :container.sparse.hash_set;
-export import :container.sparse.vector;
+export import :container.sparse.bit_vector;
+export import :container.sparse.index_vector;
 export import :container.lockfree.spsc_queue;
+export import :container.fixed.bitset;
 export import :container.fixed.ring_buffer;
+export import :container.dynamic.bitset;
 
 // Structure partitions
+export import :structure.tree.fenwick;
 export import :structure.graph.concepts;
 export import :structure.graph.storage_traits;
 export import :structure.graph.storage.static_storage;
@@ -35,7 +37,7 @@ export import :structure.state_machine.runner;
 export import :function.executor;
 
 // Exception partitions
-export import :exception.not_implemented;
+export import :exception;
 
 // String partitions
 export import :string.hash_string;

@@ -1,23 +1,11 @@
-/**
- * @file accumulator.ixx
- * @brief Composable statistical accumulator container
- *
- * @details The Accumulator is a compile-time composable container that
- *          aggregates multiple statistical accumulators. It provides:
- *          - Unified sample accumulation across all features
- *          - Type-safe feature extraction via get<Feature>()
- *          - Support for weighted samples through the same API
- *          - Full constexpr capability for compile-time statistics
- */
-
-export module synodic.library:statistics.accumulator;
+export module synodic.periapsis:statistics.accumulator;
 
 import :statistics.concepts;
 import :statistics.features;
 
 import std;
 
-export namespace synodic::statistics
+export namespace peri::statistics
 {
 	// ============================================================================
 	// Implementation Details
@@ -29,23 +17,23 @@ export namespace synodic::statistics
 		 * @brief Find the index of a feature type in a parameter pack
 		 */
 		template<typename Target, typename... Features>
-		struct feature_index;
+		struct FeatureIndex;
 
 		template<typename Target, typename First, typename... Rest>
-		struct feature_index<Target, First, Rest...>
+		struct FeatureIndex<Target, First, Rest...>
 		{
-			static constexpr std::size_t value =
-				std::is_same_v<Target, First> ? 0 : 1 + feature_index<Target, Rest...>::value;
+			static constexpr std::size_t VALUE =
+				std::is_same_v<Target, First> ? 0 : 1 + FeatureIndex<Target, Rest...>::VALUE;
 		};
 
 		template<typename Target>
-		struct feature_index<Target>
+		struct FeatureIndex<Target>
 		{
-			static constexpr std::size_t value = 0;	 // Will cause compile error if used
+			static constexpr std::size_t VALUE = 0; // Will cause compile error if used
 		};
 
 		template<typename Target, typename... Features>
-		inline constexpr std::size_t feature_index_v = feature_index<Target, Features...>::value;
+		inline constexpr std::size_t feature_index_v = FeatureIndex<Target, Features...>::VALUE;
 
 		/**
 		 * @brief Check if a feature is in the parameter pack
@@ -77,10 +65,10 @@ export namespace synodic::statistics
 	class Accumulator
 	{
 	public:
-		using sample_type = Sample;
-		using features	  = std::tuple<Features...>;
+		using SampleType = Sample;
+		using features    = std::tuple<Features...>;
 
-		static constexpr std::size_t feature_count = sizeof...(Features);
+		static constexpr std::size_t FEATURE_COUNT = sizeof...(Features);
 
 		// ========================================================================
 		// Construction
@@ -99,9 +87,9 @@ export namespace synodic::statistics
 		constexpr void Push(Sample value) noexcept
 		{
 			std::apply(
-				[value](auto&... accs)
+				[value](auto&... accumulators)
 				{
-					(accs.Push(value), ...);
+					(accumulators.Push(value), ...);
 				},
 				accumulators_);
 		}
@@ -115,9 +103,9 @@ export namespace synodic::statistics
 		constexpr void Push(Sample value, Weight weight) noexcept
 		{
 			std::apply(
-				[value, weight](auto&... accs)
+				[value, weight](auto&... accumulators)
 				{
-					(accs.Push(value, weight), ...);
+					(accumulators.Push(value, weight), ...);
 				},
 				accumulators_);
 		}
@@ -128,7 +116,7 @@ export namespace synodic::statistics
 		 */
 		template<std::ranges::input_range Range>
 			requires std::convertible_to<std::ranges::range_value_t<Range>, Sample>
-		constexpr void accumulate(Range&& range)
+		constexpr void Accumulate(Range&& range)
 		{
 			for (auto&& value: range)
 			{
@@ -143,16 +131,16 @@ export namespace synodic::statistics
 		 */
 		template<std::ranges::input_range ValueRange, std::ranges::input_range WeightRange>
 			requires std::convertible_to<std::ranges::range_value_t<ValueRange>, Sample>
-		constexpr void accumulate(ValueRange&& values, WeightRange&& weights)
+		constexpr void Accumulate(ValueRange&& values, WeightRange&& weights)
 		{
-			auto value_it  = std::ranges::begin(values);
-			auto weight_it = std::ranges::begin(weights);
+			auto valueIt  = std::ranges::begin(values);
+			auto weightIt = std::ranges::begin(weights);
 
-			while (value_it != std::ranges::end(values) && weight_it != std::ranges::end(weights))
+			while (valueIt != std::ranges::end(values) && weightIt != std::ranges::end(weights))
 			{
-				Push(*value_it, *weight_it);
-				++value_it;
-				++weight_it;
+				Push(*valueIt, *weightIt);
+				++valueIt;
+				++weightIt;
 			}
 		}
 
@@ -167,7 +155,7 @@ export namespace synodic::statistics
 		 */
 		template<typename Feature>
 			requires detail::has_feature_v<Feature, Features...>
-		[[nodiscard]] constexpr auto get() noexcept -> auto&
+		[[nodiscard]] constexpr auto Get() noexcept -> auto&
 		{
 			return std::get<detail::feature_index_v<Feature, Features...>>(accumulators_);
 		}
@@ -177,7 +165,7 @@ export namespace synodic::statistics
 		 */
 		template<typename Feature>
 			requires detail::has_feature_v<Feature, Features...>
-		[[nodiscard]] constexpr auto get() const noexcept -> const auto&
+		[[nodiscard]] constexpr auto Get() const noexcept -> const auto&
 		{
 			return std::get<detail::feature_index_v<Feature, Features...>>(accumulators_);
 		}
@@ -186,7 +174,7 @@ export namespace synodic::statistics
 		 * @brief Check if this set contains a specific feature
 		 */
 		template<typename Feature>
-		[[nodiscard]] static constexpr auto has() noexcept -> bool
+		[[nodiscard]] static constexpr auto Has() noexcept -> bool
 		{
 			return detail::has_feature_v<Feature, Features...>;
 		}
@@ -198,18 +186,18 @@ export namespace synodic::statistics
 		/**
 		 * @brief Reset all accumulators to their initial state
 		 */
-		constexpr void reset() noexcept
+		constexpr void Reset() noexcept
 		{
 			std::apply(
-				[](auto&... accs)
+				[](auto&... accumulators)
 				{
-					(accs.reset(), ...);
+					(accumulators.Reset(), ...);
 				},
 				accumulators_);
 		}
 
 	private:
-		std::tuple<typename Features::template accumulator_type<Sample>...> accumulators_ {};
+		std::tuple<typename Features::template AccumulatorType<Sample>...> accumulators_{};
 	};
 
 	// ============================================================================
@@ -220,17 +208,36 @@ export namespace synodic::statistics
 	 * @brief Common accumulator for basic descriptive statistics
 	 */
 	template<statistical_sample Sample = double>
-	using BasicStats = Accumulator<Sample, count, sum, min, max, mean, variance>;
+	using BasicStats = Accumulator<Sample, Count, Sum, Min, Max, Mean, Variance>;
 
 	/**
 	 * @brief Accumulator for distribution shape analysis
 	 */
 	template<statistical_sample Sample = double>
-	using DistributionStats = Accumulator<Sample, count, mean, variance, skewness, kurtosis>;
+	using DistributionStats = Accumulator<Sample, Count, Mean, Variance, Skewness, Kurtosis>;
 
 	/**
 	 * @brief Rolling statistics with configurable window size
 	 */
 	template<std::size_t WindowSize, statistical_sample Sample = double>
-	using RollingStats = Accumulator<Sample, rolling_mean<WindowSize>, rolling_variance<WindowSize>>;
+	using RollingStats = Accumulator<Sample, RollingMean<WindowSize>, RollingVariance<WindowSize>>;
+
+	/**
+	 * @brief Statistics including median estimation
+	 */
+	template<statistical_sample Sample = double>
+	using MedianStats = Accumulator<Sample, Count, Mean, Variance, Median>;
+
+	/**
+	 * @brief Statistics with quartiles (25th, 50th, 75th percentiles)
+	 */
+	template<statistical_sample Sample = double>
+	using QuartileStats = Accumulator<Sample, Count, Min, Max, Percentile<25>, Percentile<50>, Percentile<75>>;
+
+	/**
+	 * @brief High-accuracy quartile statistics using 9 markers per percentile
+	 */
+	template<statistical_sample Sample = double>
+	using QuartileStatsAccurate =
+	Accumulator<Sample, Count, Min, Max, Percentile<25, 9>, Percentile<50, 9>, Percentile<75, 9>>;
 }

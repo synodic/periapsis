@@ -1,6 +1,6 @@
 # Strings
 
-String utilities provided by the Synodic Template Library.
+String utilities provided by the Periapsis.
 
 ## HashString
 
@@ -9,14 +9,14 @@ A compile-time string hashing class using the FNV-1a algorithm. Provides O(1) st
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 // Construction
 HashString str("hello");
 constexpr HashString constStr("world");
 
 // User-defined literal
-using namespace synodic;
+using namespace peri;
 auto hashed = "hello"_hashed;
 
 // Comparison (O(1) via hash)

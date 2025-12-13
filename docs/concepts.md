@@ -1,13 +1,13 @@
 # Concepts
 
-The Synodic Template Library provides a comprehensive set of C++20 concepts for constraining templates, particularly around container requirements.
+The Periapsis provides a comprehensive set of C++20 concepts for constraining templates, particularly around container requirements.
 
 ## Shared Concepts
 
 Basic utility concepts used throughout the library.
 
 ```cpp
-namespace synodic {
+namespace peri {
     // Type is same as its decayed form
     template<typename T>
     concept decayed = std::same_as<T, std::decay_t<T>>;
@@ -34,7 +34,7 @@ Concepts implementing the C++ named requirements for containers.
 ### Base Container
 
 ```cpp
-namespace synodic {
+namespace peri {
     // The standard Container named requirement
     template<typename T>
     concept container = /* see requirements */;
@@ -66,7 +66,7 @@ namespace synodic {
 ### Sequence Containers
 
 ```cpp
-namespace synodic {
+namespace peri {
     // The SequenceContainer named requirement
     template<typename T>
     concept sequence_container = container<T> and /* has front() */;
@@ -114,7 +114,7 @@ namespace synodic {
 ### Associative Containers
 
 ```cpp
-namespace synodic {
+namespace peri {
     // The AssociativeContainer named requirement
     template<typename T>
     concept associative_container = container<T> and /* has key_type, find, count, etc. */;
@@ -174,7 +174,7 @@ container
 ```cpp
 #include <synodic/library>
 
-using namespace synodic;
+using namespace peri;
 
 // Constrain a function to work with any random access container
 template<random_access_container Container>

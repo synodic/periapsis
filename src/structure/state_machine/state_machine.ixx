@@ -1,4 +1,4 @@
-export module synodic.library:structure.state_machine.state_machine;
+export module synodic.periapsis:structure.state_machine.state_machine;
 
 import :structure.state_machine.concepts;
 import :structure.state_machine.storage.static_storage;
@@ -6,7 +6,7 @@ import :structure.state_machine.storage.dynamic_storage;
 
 import std;
 
-export namespace synodic::state_machine
+export namespace peri::state_machine
 {
 	// ============================================================================
 	// Storage Selection Helper

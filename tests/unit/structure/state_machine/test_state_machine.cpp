@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 import std;
-import synodic.library;
+import synodic.periapsis;
 
 namespace
 {
@@ -39,8 +39,8 @@ namespace
 
 	TEST(StateMachineStaticStorage, ConstexprConstruction)
 	{
-		using namespace synodic::state_machine;
-		using namespace synodic::state_machine::storage;
+		using namespace peri::state_machine;
+		using namespace peri::state_machine::storage;
 
 		// Verify constexpr construction works
 		constexpr auto make_sm = []() constexpr
@@ -71,7 +71,7 @@ namespace
 
 	TEST(StateMachineStaticStorage, StateProperties)
 	{
-		using namespace synodic::state_machine::storage;
+		using namespace peri::state_machine::storage;
 
 		StaticStorage<int, StateData, void, 4, 4> storage;
 		auto s0 = storage.add_state(StateData {10});
@@ -83,7 +83,7 @@ namespace
 
 	TEST(StateMachineStaticStorage, TransitionLookup)
 	{
-		using namespace synodic::state_machine::storage;
+		using namespace peri::state_machine::storage;
 
 		constexpr auto make_sm = []() constexpr
 		{
@@ -120,7 +120,7 @@ namespace
 
 	TEST(StateMachineStaticStorage, InitialFinalStates)
 	{
-		using namespace synodic::state_machine::storage;
+		using namespace peri::state_machine::storage;
 
 		StaticStorage<int, void, void, 4, 4> storage;
 		auto s0 = storage.add_state();
@@ -143,7 +143,7 @@ namespace
 
 	TEST(StateMachine, ConstexprStateMachine)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		// Build a complete constexpr state machine
 		constexpr auto make_turnstile = []() constexpr
@@ -155,9 +155,9 @@ namespace
 			auto unlocked = sm.add_state();
 
 			// Events: 0 = coin, 1 = push
-			sm.add_transition(locked, unlocked, 0);	 // coin unlocks
-			sm.add_transition(unlocked, locked, 1);	 // push locks
-			sm.add_transition(locked, locked, 1);  // push while locked stays locked
+			sm.add_transition(locked, unlocked, 0);	   // coin unlocks
+			sm.add_transition(unlocked, locked, 1);	   // push locks
+			sm.add_transition(locked, locked, 1);	   // push while locked stays locked
 			sm.add_transition(unlocked, unlocked, 0);  // coin while unlocked stays unlocked
 
 			sm.set_initial_state(locked);
@@ -177,7 +177,7 @@ namespace
 
 	TEST(StateMachine, ConstexprTraversal)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		// Build and traverse a state machine entirely at compile-time
 		constexpr auto traverse_turnstile = []() constexpr
@@ -188,15 +188,15 @@ namespace
 			auto unlocked = sm.add_state();
 
 			// Events: 0 = coin, 1 = push
-			sm.add_transition(locked, unlocked, 0);	 // coin unlocks
-			sm.add_transition(unlocked, locked, 1);	 // push locks
-			sm.add_transition(locked, locked, 1);  // push while locked stays locked
+			sm.add_transition(locked, unlocked, 0);	   // coin unlocks
+			sm.add_transition(unlocked, locked, 1);	   // push locks
+			sm.add_transition(locked, locked, 1);	   // push while locked stays locked
 			sm.add_transition(unlocked, unlocked, 0);  // coin while unlocked stays unlocked
 
 			sm.set_initial_state(locked);
 
 			// Create runner and traverse at compile-time
-			synodic::state_machine::Runner runner {sm};
+			peri::state_machine::Runner runner {sm};
 			runner.start();
 
 			// Initial state should be locked (0)
@@ -248,7 +248,7 @@ namespace
 
 	TEST(StateMachine, RuntimeEventProcessing)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		// Create a simple traffic light state machine
 		SimpleStaticStateMachine<3, 3> sm;
@@ -265,7 +265,7 @@ namespace
 		sm.set_initial_state(red);
 
 		// Use Runner for execution
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 
 		EXPECT_EQ(runner.current_state(), red);
@@ -290,7 +290,7 @@ namespace
 
 	TEST(StateMachine, FinalStateBehavior)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		SimpleStaticStateMachine<3, 2> sm;
 
@@ -304,7 +304,7 @@ namespace
 		sm.set_initial_state(start);
 		sm.set_final_state(end);
 
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 		runner.process(1);	// start -> middle
 		runner.process(2);	// middle -> end
@@ -318,7 +318,7 @@ namespace
 
 	TEST(StateMachine, GuardFunctions)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		SimpleStaticStateMachine<2, 2> sm;
 
@@ -330,7 +330,7 @@ namespace
 
 		sm.set_initial_state(s0);
 
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 
 		int guard_call_count = 0;
@@ -364,7 +364,7 @@ namespace
 
 	TEST(StateMachine, GuardAndAction)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		SimpleStaticStateMachine<2, 1> sm;
 
@@ -374,7 +374,7 @@ namespace
 		sm.add_transition(s0, s1, 1);
 		sm.set_initial_state(s0);
 
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 
 		bool action_called = false;
@@ -384,7 +384,7 @@ namespace
 			[](auto)
 			{
 				return true;
-			},	// Guard
+			},						// Guard
 			[&action_called](auto)	// Action
 			{
 				action_called = true;
@@ -397,7 +397,7 @@ namespace
 
 	TEST(StateMachine, CanProcessCheck)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		SimpleStaticStateMachine<2, 1> sm;
 
@@ -407,7 +407,7 @@ namespace
 		sm.add_transition(s0, s1, 1);
 		sm.set_initial_state(s0);
 
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 
 		EXPECT_TRUE(runner.can_process(1));
@@ -421,7 +421,7 @@ namespace
 
 	TEST(StateMachine, NotStartedBehavior)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		SimpleStaticStateMachine<2, 1> sm;
 
@@ -432,7 +432,7 @@ namespace
 		sm.set_initial_state(s0);
 
 		// Create runner but don't call start()
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		EXPECT_FALSE(runner.is_running());
 
 		auto result = runner.process(1);
@@ -445,7 +445,7 @@ namespace
 
 	TEST(StateMachineDynamicStorage, BasicConstruction)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		DynamicStateMachine<int> sm;
 
@@ -463,7 +463,7 @@ namespace
 
 	TEST(StateMachineDynamicStorage, RuntimeStateRemoval)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		DynamicStateMachine<int> sm;
 
@@ -485,7 +485,7 @@ namespace
 
 	TEST(StateMachineDynamicStorage, RuntimeTransitionRemoval)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		DynamicStateMachine<int> sm;
 
@@ -504,7 +504,7 @@ namespace
 
 	TEST(StateMachineDynamicStorage, StateDataAccess)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		DynamicStateMachine<int, StateData> sm;
 
@@ -521,7 +521,7 @@ namespace
 
 	TEST(StateMachineDynamicStorage, TypedEvents)
 	{
-		using namespace synodic::state_machine;
+		using namespace peri::state_machine;
 
 		DynamicStateMachine<Event, StateData> sm;
 
@@ -537,7 +537,7 @@ namespace
 
 		sm.set_initial_state(idle);
 
-		synodic::state_machine::Runner runner {sm};
+		peri::state_machine::Runner runner {sm};
 		runner.start();
 
 		EXPECT_EQ(runner.current_state(), idle);
@@ -554,5 +554,4 @@ namespace
 		runner.process(Event::Stop);
 		EXPECT_EQ(runner.current_state(), idle);
 	}
-
-}  // namespace
+}

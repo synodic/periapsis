@@ -1,7 +1,5 @@
 target_sources(tests
-PRIVATE
-	test_vector.cpp
-	test_hash_map.cpp
-	test_hash_set.cpp
-	"test_bit_map.cpp"
+	PRIVATE
+	test_bit_vector.cpp
+	test_index_vector.cpp
 )
