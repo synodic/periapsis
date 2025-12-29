@@ -66,7 +66,7 @@ export namespace peri::sparse
 		constexpr SetBitIterator operator++(int) noexcept
 		{
 			SetBitIterator tmp = *this;
-			++(*this);
+			++*this;
 			return tmp;
 		}
 
@@ -286,7 +286,7 @@ export namespace peri::sparse
 			const block_type block = GetBlock(blockIndex);
 			// Handle the case where bitIndex + 1 == BITS_PER_BLOCK (would cause shift overflow)
 			const block_type mask =
-				(bitIndex + 1 == BITS_PER_BLOCK) ? ~block_type {0} : (block_type {1} << (bitIndex + 1)) - 1;
+				bitIndex + 1 == BITS_PER_BLOCK ? ~block_type {0} : (block_type {1} << (bitIndex + 1)) - 1;
 			result += static_cast<size_type>(std::popcount(block & mask));
 
 			return result;
@@ -351,11 +351,11 @@ export namespace peri::sparse
 
 			// Find the (remaining+1)-th set bit within the block using countr_zero
 			// This is O(remaining) but remaining is bounded by BITS_PER_BLOCK
-			block_type block		  = GetBlock(blockIndex);
-			const size_type basePos	  = blockIndex * BITS_PER_BLOCK;
-			const size_type maxBits	  = std::min(BITS_PER_BLOCK, size() - basePos);
-			const block_type sizeMask = (maxBits == BITS_PER_BLOCK) ? ~block_type {0} : (block_type {1} << maxBits) - 1;
-			block &= sizeMask;
+			block_type block          = GetBlock(blockIndex);
+			const size_type basePos   = blockIndex * BITS_PER_BLOCK;
+			const size_type maxBits   = std::min(BITS_PER_BLOCK, size() - basePos);
+			const block_type sizeMask = maxBits == BITS_PER_BLOCK ? ~block_type {0} : (block_type {1} << maxBits) - 1;
+			block                     &= sizeMask;
 
 			// Iterate: find lowest set bit, decrement remaining, clear that bit
 			while (remaining > 0 && block != 0)

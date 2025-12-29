@@ -10,63 +10,66 @@ export namespace peri::graph
 	{
 		// Detection idiom for optional storage members
 		template<typename S, typename = void>
-		struct has_vertex_property_type : std::false_type
+		struct HasVertexPropertyType : std::false_type
 		{
 		};
 
 		template<typename S>
-		struct has_vertex_property_type<S, std::void_t<typename S::vertex_property_type>> : std::true_type
+		struct HasVertexPropertyType<S, std::void_t<typename S::VertexPropertyType>> : std::true_type
 		{
 		};
 
 		template<typename S, typename = void>
-		struct has_edge_property_type : std::false_type
+		struct HasEdgePropertyType : std::false_type
 		{
 		};
 
 		template<typename S>
-		struct has_edge_property_type<S, std::void_t<typename S::edge_property_type>> : std::true_type
+		struct HasEdgePropertyType<S, std::void_t<typename S::EdgePropertyType>> : std::true_type
 		{
 		};
 
 		template<typename S>
-		consteval bool get_is_directed() noexcept
+		consteval bool GetIsDirected() noexcept
 		{
-			if constexpr (requires {
-							  { S::is_directed } -> std::convertible_to<bool>;
-						  })
+			if constexpr (requires
 			{
-				return S::is_directed;
+				{ S::IS_DIRECTED } -> std::convertible_to<bool>;
+			})
+			{
+				return S::IS_DIRECTED;
 			}
 			else
 			{
-				return true;  // Default to directed
+				return true; // Default to directed
 			}
 		}
 
 		template<typename S>
-		consteval bool get_allows_parallel_edges() noexcept
+		consteval bool GetAllowsParallelEdges() noexcept
 		{
-			if constexpr (requires {
-							  { S::allows_parallel_edges } -> std::convertible_to<bool>;
-						  })
+			if constexpr (requires
 			{
-				return S::allows_parallel_edges;
+				{ S::ALLOWS_PARALLEL_EDGES } -> std::convertible_to<bool>;
+			})
+			{
+				return S::ALLOWS_PARALLEL_EDGES;
 			}
 			else
 			{
-				return true;  // Default to allowing parallel edges
+				return true; // Default to allowing parallel edges
 			}
 		}
 
 		template<typename S>
-		consteval bool get_is_constexpr_capable() noexcept
+		consteval bool GetIsConstexprCapable() noexcept
 		{
-			if constexpr (requires {
-							  { S::is_constexpr_capable } -> std::convertible_to<bool>;
-						  })
+			if constexpr (requires
 			{
-				return S::is_constexpr_capable;
+				{ S::IS_CONSTEXPR_CAPABLE } -> std::convertible_to<bool>;
+			})
+			{
+				return S::IS_CONSTEXPR_CAPABLE;
 			}
 			else
 			{
@@ -75,13 +78,14 @@ export namespace peri::graph
 		}
 
 		template<typename S>
-		consteval bool get_has_stable_vertex_descriptors() noexcept
+		consteval bool GetHasStableVertexDescriptors() noexcept
 		{
-			if constexpr (requires {
-							  { S::has_stable_vertex_descriptors } -> std::convertible_to<bool>;
-						  })
+			if constexpr (requires
 			{
-				return S::has_stable_vertex_descriptors;
+				{ S::HAS_STABLE_VERTEX_DESCRIPTORS } -> std::convertible_to<bool>;
+			})
+			{
+				return S::HAS_STABLE_VERTEX_DESCRIPTORS;
 			}
 			else
 			{
@@ -90,13 +94,14 @@ export namespace peri::graph
 		}
 
 		template<typename S>
-		consteval bool get_has_stable_edge_descriptors() noexcept
+		consteval bool GetHasStableEdgeDescriptors() noexcept
 		{
-			if constexpr (requires {
-							  { S::has_stable_edge_descriptors } -> std::convertible_to<bool>;
-						  })
+			if constexpr (requires
 			{
-				return S::has_stable_edge_descriptors;
+				{ S::HAS_STABLE_EDGE_DESCRIPTORS } -> std::convertible_to<bool>;
+			})
+			{
+				return S::HAS_STABLE_EDGE_DESCRIPTORS;
 			}
 			else
 			{
@@ -112,58 +117,53 @@ export namespace peri::graph
 	 * @tparam Storage The graph storage type to query
 	 */
 	template<graph_storage Storage>
-	struct storage_traits
+	struct StorageTraits
 	{
-		using storage_type = Storage;
+		using StorageType = Storage;
 
 		// Required types (must be provided by storage)
-		using vertex_descriptor	 = typename Storage::vertex_descriptor;
-		using edge_descriptor	 = typename Storage::edge_descriptor;
-		using vertices_size_type = typename Storage::vertices_size_type;
-		using edges_size_type	 = typename Storage::edges_size_type;
-		using degree_size_type	 = typename Storage::degree_size_type;
+		using VertexDescriptor = Storage::VertexDescriptor;
+		using EdgeDescriptor   = Storage::EdgeDescriptor;
+		using VerticesSizeType = Storage::VerticesSizeType;
+		using EdgesSizeType    = Storage::EdgesSizeType;
+		using DegreeSizeType   = Storage::DegreeSizeType;
 
 		// Optional property types (void if not provided)
-		using vertex_property_type = std::conditional_t<
-			detail::has_vertex_property_type<Storage>::value,
-			typename Storage::vertex_property_type,
-			void>;
+		using VertexPropertyType = std::
+		conditional_t<detail::HasVertexPropertyType<Storage>::value, typename Storage::VertexPropertyType, void>;
 
-		using edge_property_type = std::
-			conditional_t<detail::has_edge_property_type<Storage>::value, typename Storage::edge_property_type, void>;
+		using EdgePropertyType =
+		std::conditional_t<detail::HasEdgePropertyType<Storage>::value, typename Storage::EdgePropertyType, void>;
 
 		// Compile-time properties with defaults
-		static constexpr bool is_directed			= detail::get_is_directed<Storage>();
-		static constexpr bool allows_parallel_edges = detail::get_allows_parallel_edges<Storage>();
-		static constexpr bool is_constexpr_capable	= detail::get_is_constexpr_capable<Storage>();
+		static constexpr bool IS_DIRECTED           = detail::GetIsDirected<Storage>();
+		static constexpr bool ALLOWS_PARALLEL_EDGES = detail::GetAllowsParallelEdges<Storage>();
 
 		// Descriptor stability (important for external handle storage)
 		//	Stable descriptors remain valid after add/remove operations
-		static constexpr bool has_stable_vertex_descriptors = detail::get_has_stable_vertex_descriptors<Storage>();
-		static constexpr bool has_stable_edge_descriptors	= detail::get_has_stable_edge_descriptors<Storage>();
+		static constexpr bool HAS_STABLE_VERTEX_DESCRIPTORS = detail::GetHasStableVertexDescriptors<Storage>();
+		static constexpr bool HAS_STABLE_EDGE_DESCRIPTORS   = detail::GetHasStableEdgeDescriptors<Storage>();
 
 		// Capability flags derived from concepts
-		static constexpr bool supports_vertex_list		 = vertex_list_storage<Storage>;
-		static constexpr bool supports_edge_list		 = edge_list_storage<Storage>;
-		static constexpr bool supports_incidence		 = incidence_storage<Storage>;
-		static constexpr bool supports_bidirectional	 = bidirectional_storage<Storage>;
-		static constexpr bool supports_adjacency		 = adjacency_storage<Storage>;
-		static constexpr bool is_mutable				 = mutable_storage<Storage>;
-		static constexpr bool supports_vertex_properties = vertex_property_storage<Storage>;
-		static constexpr bool supports_edge_properties	 = edge_property_storage<Storage>;
-		static constexpr bool is_composable				 = composable_storage<Storage>;
+		static constexpr bool SUPPORTS_VERTEX_LIST       = vertex_list_storage<Storage>;
+		static constexpr bool SUPPORTS_EDGE_LIST         = edge_list_storage<Storage>;
+		static constexpr bool SUPPORTS_INCIDENCE         = incidence_storage<Storage>;
+		static constexpr bool SUPPORTS_BIDIRECTIONAL     = bidirectional_storage<Storage>;
+		static constexpr bool SUPPORTS_ADJACENCY         = adjacency_storage<Storage>;
+		static constexpr bool IS_MUTABLE                 = mutable_storage<Storage>;
+		static constexpr bool SUPPORTS_VERTEX_PROPERTIES = vertex_property_storage<Storage>;
+		static constexpr bool SUPPORTS_EDGE_PROPERTIES   = edge_property_storage<Storage>;
+		static constexpr bool IS_COMPOSABLE              = composable_storage<Storage>;
 
 		// Rebind to different property types (if storage supports it)
 		template<typename VertexProp, typename EdgeProp>
-		using rebind_storage = std::conditional_t<requires {
-			typename Storage::template rebind<VertexProp, EdgeProp>;
-		}, typename Storage::template rebind<VertexProp, EdgeProp>, Storage>;
+		using RebindStorage = Storage::template Rebind<VertexProp, EdgeProp>;
 	};
 
 	/**
 	 * @brief Tag type indicating no property associated with vertices or edges
 	 */
-	struct no_property
+	struct NoProperty
 	{
 	};
 }

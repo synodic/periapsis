@@ -29,29 +29,28 @@ export namespace peri::graph::storage
 		// Type Definitions
 		// ========================================================================
 
-		using vertex_descriptor    = IndexType;
-		using edge_descriptor      = IndexType;
-		using vertices_size_type   = IndexType;
-		using edges_size_type      = IndexType;
-		using degree_size_type     = IndexType;
-		using vertex_property_type = VertexProperty;
-		using edge_property_type   = EdgeProperty;
+		using VertexDescriptor   = IndexType;
+		using EdgeDescriptor     = IndexType;
+		using VerticesSizeType   = IndexType;
+		using EdgesSizeType      = IndexType;
+		using DegreeSizeType     = IndexType;
+		using VertexPropertyType = VertexProperty;
+		using EdgePropertyType   = EdgeProperty;
 
 		// Compile-time properties
-		static constexpr bool is_directed                   = true;
-		static constexpr bool allows_parallel_edges         = true;
-		static constexpr bool is_constexpr_capable          = false; // Uses std::vector
-		static constexpr bool has_stable_vertex_descriptors = true;
-		static constexpr bool has_stable_edge_descriptors   = true;
+		static constexpr bool IS_DIRECTED                   = true;
+		static constexpr bool ALLOWS_PARALLEL_EDGES         = true;
+		static constexpr bool HAS_STABLE_VERTEX_DESCRIPTORS = true;
+		static constexpr bool HAS_STABLE_EDGE_DESCRIPTORS   = true;
 
 		// Rebind to different property types
 		template<typename VP, typename EP>
-		using rebind = CSRStorage<VP, EP, VertexContainer, EdgeContainer, IndexType>;
+		using Rebind = CSRStorage<VP, EP, VertexContainer, EdgeContainer, IndexType>;
 
 	private:
 		// CSR structure arrays
-		VertexContainer<edges_size_type> row_offsets_;
-		EdgeContainer<vertex_descriptor> col_indices_;
+		VertexContainer<EdgesSizeType> rowOffsets_;
+		EdgeContainer<VertexDescriptor> colIndices_;
 
 		// Property storage (conditionally present)
 		struct Empty
@@ -64,8 +63,8 @@ export namespace peri::graph::storage
 		using EdgePropsStorage =
 		std::conditional_t<std::same_as<EdgeProperty, void>, Empty, EdgeContainer<EdgeProperty>>;
 
-		[[no_unique_address]] VertexPropsStorage vertex_properties_;
-		[[no_unique_address]] EdgePropsStorage edge_properties_;
+		[[no_unique_address]] VertexPropsStorage vertexProperties_;
+		[[no_unique_address]] EdgePropsStorage edgeProperties_;
 
 	public:
 		// ========================================================================
@@ -73,97 +72,96 @@ export namespace peri::graph::storage
 		// ========================================================================
 
 		CSRStorage() :
-			row_offsets_(1, 0)
+			rowOffsets_(1, 0)
 		{
 		}
 
 		/**
 		 * @brief Construct CSR from sorted edge list.
 		 *        Edges must be sorted by source vertex.
-		 * @param num_vertices Number of vertices in the graph
+		 * @param numVertices Number of vertices in the graph
 		 * @param edges Range of (source, target) pairs, sorted by source
 		 */
 		template<std::ranges::input_range EdgeRange>
-			requires std::
-			same_as<std::ranges::range_value_t<EdgeRange>, std::pair<vertex_descriptor, vertex_descriptor>>
-		CSRStorage(vertices_size_type num_vertices, EdgeRange&& edges) :
-			row_offsets_(num_vertices + 1, 0)
+			requires std::same_as<std::ranges::range_value_t<EdgeRange>, std::pair<VertexDescriptor, VertexDescriptor>>
+		CSRStorage(VerticesSizeType numVertices, EdgeRange&& edges) :
+			rowOffsets_(numVertices + 1, 0)
 		{
 			// Count edges per vertex
 			for (const auto& [src, _]: edges)
 			{
-				++row_offsets_[src + 1];
+				++rowOffsets_[src + 1];
 			}
 
 			// Prefix sum to get offsets
-			for (vertices_size_type v = 1; v <= num_vertices; ++v)
+			for (VerticesSizeType v = 1; v <= numVertices; ++v)
 			{
-				row_offsets_[v] += row_offsets_[v - 1];
+				rowOffsets_[v] += rowOffsets_[v - 1];
 			}
 
 			// Allocate edge storage
-			col_indices_.resize(row_offsets_[num_vertices]);
+			colIndices_.resize(rowOffsets_[numVertices]);
 
 			// Fill column indices (using temporary offset copy)
-			auto current_offset = row_offsets_;
+			auto currentOffset = rowOffsets_;
 			for (const auto& [src, tgt]: edges)
 			{
-				col_indices_[current_offset[src]++] = tgt;
+				colIndices_[currentOffset[src]++] = tgt;
 			}
 
 			// Allocate property storage
 			if constexpr (not std::same_as<VertexProperty, void>)
 			{
-				vertex_properties_.resize(num_vertices);
+				vertexProperties_.resize(numVertices);
 			}
 			if constexpr (not std::same_as<EdgeProperty, void>)
 			{
-				edge_properties_.resize(col_indices_.size());
+				edgeProperties_.resize(colIndices_.size());
 			}
 		}
 
 		/**
 		 * @brief Construct CSR with properties from sorted edge list.
-		 * @param num_vertices Number of vertices
-		 * @param vertex_props Vertex properties (indexed by vertex descriptor)
+		 * @param numVertices Number of vertices
+		 * @param vertexProps Vertex properties (indexed by vertex descriptor)
 		 * @param edges Range of (source, target, edge_property) tuples, sorted by source
 		 */
 		template<std::ranges::input_range VertexPropRange, std::ranges::input_range EdgeRange>
 			requires(not std::same_as<VertexProperty, void>) and (not std::same_as<EdgeProperty, void>) and
 			        std::convertible_to<std::ranges::range_value_t<VertexPropRange>, VertexProperty>
-		CSRStorage(vertices_size_type num_vertices, VertexPropRange&& vertex_props, EdgeRange&& edges) :
-			row_offsets_(num_vertices + 1, 0)
+		CSRStorage(VerticesSizeType numVertices, VertexPropRange&& vertexProps, EdgeRange&& edges) :
+			rowOffsets_(numVertices + 1, 0)
 		{
 			// Copy vertex properties
-			vertex_properties_.reserve(num_vertices);
-			for (auto&& prop: vertex_props)
+			vertexProperties_.reserve(numVertices);
+			for (auto&& prop: vertexProps)
 			{
-				vertex_properties_.push_back(std::forward<decltype(prop)>(prop));
+				vertexProperties_.push_back(std::forward<decltype(prop)>(prop));
 			}
 
 			// Count edges per vertex
 			for (const auto& edge: edges)
 			{
-				++row_offsets_[std::get<0>(edge) + 1];
+				++rowOffsets_[std::get<0>(edge) + 1];
 			}
 
 			// Prefix sum
-			for (vertices_size_type v = 1; v <= num_vertices; ++v)
+			for (VerticesSizeType v = 1; v <= numVertices; ++v)
 			{
-				row_offsets_[v] += row_offsets_[v - 1];
+				rowOffsets_[v] += rowOffsets_[v - 1];
 			}
 
 			// Allocate
-			col_indices_.resize(row_offsets_[num_vertices]);
-			edge_properties_.resize(row_offsets_[num_vertices]);
+			colIndices_.resize(rowOffsets_[numVertices]);
+			edgeProperties_.resize(rowOffsets_[numVertices]);
 
 			// Fill
-			auto current_offset = row_offsets_;
+			auto currentOffset = rowOffsets_;
 			for (const auto& edge: edges)
 			{
-				auto idx              = current_offset[std::get<0>(edge)]++;
-				col_indices_[idx]     = std::get<1>(edge);
-				edge_properties_[idx] = std::get<2>(edge);
+				auto idx             = currentOffset[std::get<0>(edge)]++;
+				colIndices_[idx]     = std::get<1>(edge);
+				edgeProperties_[idx] = std::get<2>(edge);
 			}
 		}
 
@@ -171,119 +169,169 @@ export namespace peri::graph::storage
 		// Vertex Operations
 		// ========================================================================
 
-		[[nodiscard]] auto num_vertices() const noexcept -> vertices_size_type
+		[[nodiscard]] auto NumVertices() const noexcept -> VerticesSizeType
 		{
-			return static_cast<vertices_size_type>(row_offsets_.size() - 1);
+			return static_cast<VerticesSizeType>(rowOffsets_.size() - 1);
 		}
 
-		[[nodiscard]] auto vertices() const noexcept
+		[[nodiscard]] auto Vertices() const noexcept
 		{
-			return std::views::iota(vertex_descriptor{0}, num_vertices());
+			return std::views::iota(VertexDescriptor{0}, NumVertices());
 		}
 
 		// ========================================================================
 		// Edge Operations
 		// ========================================================================
 
-		[[nodiscard]] auto num_edges() const noexcept -> edges_size_type
+		[[nodiscard]] auto NumEdges() const noexcept -> EdgesSizeType
 		{
-			return static_cast<edges_size_type>(col_indices_.size());
+			return static_cast<EdgesSizeType>(colIndices_.size());
 		}
 
-		[[nodiscard]] auto edges() const noexcept
+		[[nodiscard]] auto Edges() const noexcept
 		{
-			return std::views::iota(edge_descriptor{0}, num_edges());
+			return std::views::iota(EdgeDescriptor{0}, NumEdges());
 		}
 
 		// ========================================================================
 		// Incidence (Out-Edge Traversal) - O(1) access, cache-friendly iteration
 		// ========================================================================
 
-		[[nodiscard]] auto out_degree(vertex_descriptor v) const noexcept -> degree_size_type
+		[[nodiscard]] auto OutDegree(VertexDescriptor v) const noexcept -> DegreeSizeType
 		{
-			return static_cast<degree_size_type>(row_offsets_[v + 1] - row_offsets_[v]);
+			return static_cast<DegreeSizeType>(rowOffsets_[v + 1] - rowOffsets_[v]);
 		}
 
-		[[nodiscard]] auto out_edges(vertex_descriptor v) const noexcept
+		[[nodiscard]] auto OutEdges(VertexDescriptor v) const noexcept
 		{
 			return std::views::iota(
-				static_cast<edge_descriptor>(row_offsets_[v]),
-				static_cast<edge_descriptor>(row_offsets_[v + 1]));
+				static_cast<EdgeDescriptor>(rowOffsets_[v]),
+				static_cast<EdgeDescriptor>(rowOffsets_[v + 1]));
 		}
 
-		[[nodiscard]] auto source(edge_descriptor e) const noexcept -> vertex_descriptor
+		[[nodiscard]] auto Source(EdgeDescriptor e) const noexcept -> VertexDescriptor
 		{
-			// Binary search in row_offsets to find owning vertex
-			auto it = std::ranges::upper_bound(row_offsets_, e);
-			return static_cast<vertex_descriptor>(std::distance(row_offsets_.begin(), it) - 1);
+			// Binary search in rowOffsets_ to find owning vertex
+			auto it = std::ranges::upper_bound(rowOffsets_, e);
+			return static_cast<VertexDescriptor>(std::distance(rowOffsets_.begin(), it) - 1);
 		}
 
-		[[nodiscard]] auto target(edge_descriptor e) const noexcept -> vertex_descriptor
+		[[nodiscard]] auto Target(EdgeDescriptor e) const noexcept -> VertexDescriptor
 		{
-			return col_indices_[e];
+			return colIndices_[e];
 		}
 
 		// ========================================================================
-		// Adjacency (Direct Neighbor Access)
+		// Adjacency: Direct Neighbor Access
 		// ========================================================================
 
-		[[nodiscard]] auto adjacent_vertices(vertex_descriptor v) const noexcept
+		[[nodiscard]] auto AdjacentVertices(VertexDescriptor v) const noexcept
 		{
-			return std::span{col_indices_.data() + row_offsets_[v], col_indices_.data() + row_offsets_[v + 1]};
+			return std::span{colIndices_.data() + rowOffsets_[v], colIndices_.data() + rowOffsets_[v + 1]};
 		}
 
 		// ========================================================================
 		// Property Access - O(1) via descriptor index
 		// ========================================================================
 
-		[[nodiscard]] decltype(auto) operator[](vertex_descriptor v)
+		[[nodiscard]] decltype(auto) operator[](VertexDescriptor v)
 			requires(not std::same_as<VertexProperty, void>)
 		{
-			return (vertex_properties_[v]);
+			return vertexProperties_[v];
 		}
 
-		[[nodiscard]] decltype(auto) operator[](vertex_descriptor v) const
+		[[nodiscard]] decltype(auto) operator[](VertexDescriptor v) const
 			requires(not std::same_as<VertexProperty, void>)
 		{
-			return (vertex_properties_[v]);
+			return vertexProperties_[v];
 		}
 
-		[[nodiscard]] decltype(auto) operator[](edge_descriptor e)
+		[[nodiscard]] decltype(auto) operator[](EdgeDescriptor e)
 			requires(not std::same_as<EdgeProperty, void>)
 		{
-			return (edge_properties_[e]);
+			return edgeProperties_[e];
 		}
 
-		[[nodiscard]] decltype(auto) operator[](edge_descriptor e) const
+		[[nodiscard]] decltype(auto) operator[](EdgeDescriptor e) const
 			requires(not std::same_as<EdgeProperty, void>)
 		{
-			return (edge_properties_[e]);
+			return edgeProperties_[e];
+		}
+
+		// Named property accessors (avoid ambiguity when VertexDescriptor == EdgeDescriptor)
+		[[nodiscard]] decltype(auto) vertex_property(VertexDescriptor v)
+			requires(not std::same_as<VertexProperty, void>)
+		{
+			return vertexProperties_[v];
+		}
+
+		[[nodiscard]] decltype(auto) vertex_property(VertexDescriptor v) const
+			requires(not std::same_as<VertexProperty, void>)
+		{
+			return vertexProperties_[v];
+		}
+
+		[[nodiscard]] decltype(auto) edge_property(EdgeDescriptor e)
+			requires(not std::same_as<EdgeProperty, void>)
+		{
+			return edgeProperties_[e];
+		}
+
+		[[nodiscard]] decltype(auto) edge_property(EdgeDescriptor e) const
+			requires(not std::same_as<EdgeProperty, void>)
+		{
+			return edgeProperties_[e];
+		}
+
+		// PascalCase named property accessors
+		[[nodiscard]] decltype(auto) VertexProperty(VertexDescriptor v)
+			requires(not std::same_as<VertexProperty, void>)
+		{
+			return vertexProperties_[v];
+		}
+
+		[[nodiscard]] decltype(auto) VertexProperty(VertexDescriptor v) const
+			requires(not std::same_as<VertexProperty, void>)
+		{
+			return vertexProperties_[v];
+		}
+
+		[[nodiscard]] decltype(auto) EdgeProperty(EdgeDescriptor e)
+			requires(not std::same_as<EdgeProperty, void>)
+		{
+			return edgeProperties_[e];
+		}
+
+		[[nodiscard]] decltype(auto) EdgeProperty(EdgeDescriptor e) const
+			requires(not std::same_as<EdgeProperty, void>)
+		{
+			return edgeProperties_[e];
 		}
 
 		// ========================================================================
 		// Raw Data Access (for serialization, #embed loading)
 		// ========================================================================
 
-		[[nodiscard]] auto row_offsets_data() const noexcept
+		[[nodiscard]] auto RowOffsetsData() const noexcept
 		{
-			return row_offsets_.data();
+			return rowOffsets_.data();
 		}
 
-		[[nodiscard]] auto col_indices_data() const noexcept
+		[[nodiscard]] auto ColIndicesData() const noexcept
 		{
-			return col_indices_.data();
+			return colIndices_.data();
 		}
 
-		[[nodiscard]] auto vertex_properties_data() const noexcept
+		[[nodiscard]] auto VertexPropertiesData() const noexcept
 			requires(not std::same_as<VertexProperty, void>)
 		{
-			return vertex_properties_.data();
+			return vertexProperties_.data();
 		}
 
-		[[nodiscard]] auto edge_properties_data() const noexcept
+		[[nodiscard]] auto EdgePropertiesData() const noexcept
 			requires(not std::same_as<EdgeProperty, void>)
 		{
-			return edge_properties_.data();
+			return edgeProperties_.data();
 		}
 	};
 

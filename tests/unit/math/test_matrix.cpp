@@ -237,4 +237,4 @@ namespace
 	{
 		static_assert(alignof(Mat4<float>) == 16);
 	}
-}  // namespace
+}

@@ -7,85 +7,45 @@
 import std;
 import synodic.periapsis;
 
-struct TestStruct
-{
-};
-
-class TestClass
-{
-public:
-	TestClass(std::vector<int> parameter1, TestStruct parameter2, int parameter3) :
-		data1_(std::move(parameter1)),
-		data2_(parameter2),
-		data3_(parameter3)
-	{
-	}
-
-	[[nodiscard]] int GetData3() const
-	{
-		return data3_;
-	}
-
-private:
-	std::vector<int> data1_;
-	TestStruct data2_;
-	int data3_;
-};
-
-class ConstTestClass
-{
-public:
-	ConstTestClass(const std::vector<int> parameter1, const TestStruct parameter2, const int parameter3) :
-		data1_(parameter1),
-		data2_(parameter2),
-		data3_(parameter3)
-	{
-	}
-
-private:
-	const std::vector<int> data1_;
-	const TestStruct data2_;
-	const int data3_;
-};
-
-class ReferenceTestClass
-{
-public:
-	ReferenceTestClass(std::vector<int>& parameter1, TestStruct& parameter2, int& parameter3) :
-		data1_(parameter1),
-		data2_(parameter2),
-		data3_(parameter3)
-	{
-	}
-
-private:
-	std::vector<int>& data1_;
-	TestStruct& data2_;
-	int& data3_;
-};
-
-class PointerTestClass
-{
-public:
-	PointerTestClass(std::vector<int>* parameter1, TestStruct* parameter2, int* parameter3) :
-		data1_(parameter1),
-		data2_(parameter2),
-		data3_(parameter3)
-	{
-	}
-
-private:
-	std::vector<int>* data1_;
-	TestStruct* data2_;
-	int* data3_;
-};
-
 namespace
 {
-	// Tests are commented out in the original - keeping as placeholder
-	TEST(TypeTraits, Placeholder)
+	TEST(TypeTraits, MinimalUnsignedType_Boundaries)
 	{
-		// Type trait tests to be implemented
+		static_assert(std::is_same_v<peri::MinimalUnsignedType<0>, std::uint8_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint8_t>::max()>, std::uint8_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint8_t>::max() + 1>, std::uint16_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint16_t>::max()>, std::uint16_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint16_t>::max() + 1>, std::uint32_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint32_t>::max()>, std::uint32_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalUnsignedType<std::numeric_limits<std::uint32_t>::max() + 1ULL>, std::uint64_t>);
+		EXPECT_TRUE(true);
+	}
+
+	TEST(TypeTraits, MinimalSignedType_Boundaries)
+	{
+		static_assert(std::is_same_v<peri::MinimalSignedType<0>, std::int8_t>);
+		static_assert(std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int8_t>::max()>, std::int8_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int8_t>::max() + 1>, std::int16_t>);
+		static_assert(std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int16_t>::max()>, std::int16_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int16_t>::max() + 1>, std::int32_t>);
+		static_assert(std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int32_t>::max()>, std::int32_t>);
+		static_assert(
+			std::is_same_v<peri::MinimalSignedType<std::numeric_limits<std::int32_t>::max() + 1ULL>, std::int64_t>);
+		EXPECT_TRUE(true);
+	}
+
+	TEST(TypeTraits, MinimalIntegerType_BackwardCompatibility)
+	{
+		static_assert(std::is_same_v<peri::MinimalIntegerType<0>, peri::MinimalUnsignedType<0>>);
+		static_assert(std::is_same_v<peri::MinimalIntegerType<256>, peri::MinimalUnsignedType<256>>);
 		EXPECT_TRUE(true);
 	}
 }

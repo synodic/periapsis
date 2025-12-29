@@ -2,7 +2,7 @@ export module synodic.periapsis:structure.tree.fenwick;
 
 import std;
 import :type.concepts.algebraic;
-import :type.concepts.shared;
+import :type.concepts.core;
 
 export namespace peri::structure
 {
@@ -16,7 +16,7 @@ export namespace peri::structure
 	 * @tparam Container The backing storage container type
 	 */
 	template<typename T, typename Container>
-		requires peri::semigroup<T> && peri::decayed<Container> && std::ranges::contiguous_range<Container>
+		requires peri::semigroup<T> and peri::decayed<Container> and std::ranges::contiguous_range<Container>
 	class Fenwick
 	{
 	public:
@@ -145,7 +145,7 @@ export namespace peri::structure
 			}
 
 			T result = T();
-			for (size_type i = index + 1; i > 0; i -= i & (-i))
+			for (size_type i = index + 1; i > 0; i -= i & -i)
 			{
 				result = result + tree_[i - 1];
 			}
@@ -170,7 +170,7 @@ export namespace peri::structure
 				return prefix(right);
 			}
 
-			return prefix(right) + (prefix(left - 1) * T(-1));
+			return prefix(right) + prefix(left - 1) * T(-1);
 		}
 
 		/**

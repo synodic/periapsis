@@ -23,5 +23,9 @@ add_subdirectory(
 )
 
 add_subdirectory(
+	thread
+)
+
+add_subdirectory(
 	types
 )

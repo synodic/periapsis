@@ -1,11 +1,7 @@
 export module synodic.periapsis;
 
 // Type partitions
-export import :type.concepts.shared;
 export import :type.concepts.algebraic;
-export import :type.concepts.container;
-export import :type.concepts.associative_container;
-export import :type.concepts.sequence_container;
 export import :type.traits;
 
 // Container partitions
@@ -23,15 +19,18 @@ export import :structure.graph.storage_traits;
 export import :structure.graph.storage.static_storage;
 export import :structure.graph.storage.csr;
 export import :structure.graph.storage.adjacency_list;
+export import :structure.graph.storage.bidirectional_fixed;
+export import :structure.graph.storage.undirected_fixed;
+export import :structure.graph.storage.undirected_adjacency_list;
 export import :structure.graph.graph;
 export import :structure.graph.visitor;
 
-// State Machine partitions
-export import :structure.state_machine.concepts;
-export import :structure.state_machine.storage.static_storage;
-export import :structure.state_machine.storage.dynamic_storage;
-export import :structure.state_machine.state_machine;
-export import :structure.state_machine.runner;
+// Automata partitions
+export import :structure.automata.concepts;
+export import :structure.automata.storage.static_storage;
+export import :structure.automata.storage.dynamic_storage;
+export import :structure.automata.state_machine;
+export import :structure.automata.runner;
 
 // Function partitions
 export import :function.executor;

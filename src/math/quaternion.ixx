@@ -246,7 +246,7 @@ export namespace peri::math
 		const Vec3<T> qv  = q.Vector();
 		const Vec3<T> uv  = Cross(qv, v);
 		const Vec3<T> uuv = Cross(qv, uv);
-		return v + ((uv * q.w) + uuv) * T {2};
+		return v + (uv * q.w + uuv) * T {2};
 	}
 
 	// ============================================================================

@@ -22,13 +22,13 @@ namespace
 		//   0 --10--> 1 --10--> 2
 		// Max flow from 0 to 2 should be 10
 
-		Graph<void, FlowEdge<int>, 4, 4> graph;
-		auto v0 = graph.add_vertex();
-		auto v1 = graph.add_vertex();
-		auto v2 = graph.add_vertex();
+		Graph<void, FlowEdge<int>, Fixed<4, 4>> graph;
+		auto v0 = graph.AddVertex();
+		auto v1 = graph.AddVertex();
+		auto v2 = graph.AddVertex();
 
-		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
-		graph.add_edge(v1, v2, FlowEdge<int> {10, 0});
+		graph.AddEdge(v0, v1, FlowEdge<int> {10, 0});
+		graph.AddEdge(v1, v2, FlowEdge<int> {10, 0});
 
 		auto result = MaxFlow(graph, v0, v2);
 
@@ -42,13 +42,13 @@ namespace
 		//   0 --10--> 1 --5--> 2
 		// Max flow should be limited by bottleneck = 5
 
-		Graph<void, FlowEdge<int>, 4, 4> graph;
-		auto v0 = graph.add_vertex();
-		auto v1 = graph.add_vertex();
-		auto v2 = graph.add_vertex();
+		Graph<void, FlowEdge<int>, Fixed<4, 4>> graph;
+		auto v0 = graph.AddVertex();
+		auto v1 = graph.AddVertex();
+		auto v2 = graph.AddVertex();
 
-		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
-		graph.add_edge(v1, v2, FlowEdge<int> {5, 0});
+		graph.AddEdge(v0, v1, FlowEdge<int> {10, 0});
+		graph.AddEdge(v1, v2, FlowEdge<int> {5, 0});
 
 		auto result = MaxFlow(graph, v0, v2);
 
@@ -69,16 +69,16 @@ namespace
 		//       2
 		// Max flow = 20 (10 through each path)
 
-		Graph<void, FlowEdge<int>, 8, 8> graph;
-		auto v0 = graph.add_vertex();
-		auto v1 = graph.add_vertex();
-		auto v2 = graph.add_vertex();
-		auto v3 = graph.add_vertex();
+		Graph<void, FlowEdge<int>, Fixed<8, 8>> graph;
+		auto v0 = graph.AddVertex();
+		auto v1 = graph.AddVertex();
+		auto v2 = graph.AddVertex();
+		auto v3 = graph.AddVertex();
 
-		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
-		graph.add_edge(v0, v2, FlowEdge<int> {10, 0});
-		graph.add_edge(v1, v3, FlowEdge<int> {10, 0});
-		graph.add_edge(v2, v3, FlowEdge<int> {10, 0});
+		graph.AddEdge(v0, v1, FlowEdge<int> {10, 0});
+		graph.AddEdge(v0, v2, FlowEdge<int> {10, 0});
+		graph.AddEdge(v1, v3, FlowEdge<int> {10, 0});
+		graph.AddEdge(v2, v3, FlowEdge<int> {10, 0});
 
 		auto result = MaxFlow(graph, v0, v3);
 
@@ -90,12 +90,12 @@ namespace
 		// Disconnected graph: no path from 0 to 2
 		//   0 -> 1    2 (isolated)
 
-		Graph<void, FlowEdge<int>, 4, 4> graph;
-		auto v0 = graph.add_vertex();
-		auto v1 = graph.add_vertex();
-		auto v2 = graph.add_vertex();
+		Graph<void, FlowEdge<int>, Fixed<4, 4>> graph;
+		auto v0 = graph.AddVertex();
+		auto v1 = graph.AddVertex();
+		auto v2 = graph.AddVertex();
 
-		graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
+		graph.AddEdge(v0, v1, FlowEdge<int> {10, 0});
 
 		auto result = MaxFlow(graph, v0, v2);
 
@@ -108,13 +108,13 @@ namespace
 		// Verify the algorithm works at compile-time
 		constexpr auto compute_flow = []() constexpr
 		{
-			Graph<void, FlowEdge<int>, 4, 4> graph;
-			auto v0 = graph.add_vertex();
-			auto v1 = graph.add_vertex();
-			auto v2 = graph.add_vertex();
+			Graph<void, FlowEdge<int>, Fixed<4, 4>> graph;
+			auto v0 = graph.AddVertex();
+			auto v1 = graph.AddVertex();
+			auto v2 = graph.AddVertex();
 
-			graph.add_edge(v0, v1, FlowEdge<int> {10, 0});
-			graph.add_edge(v1, v2, FlowEdge<int> {7, 0});
+			graph.AddEdge(v0, v1, FlowEdge<int> {10, 0});
+			graph.AddEdge(v1, v2, FlowEdge<int> {7, 0});
 
 			return MaxFlow(graph, v0, v2);
 		};
@@ -135,17 +135,17 @@ namespace
 		//   1 --10--> 2
 		// Max flow from 0 to 3
 
-		Graph<void, FlowEdge<int>, 8, 8> graph;
-		auto v0 = graph.add_vertex();
-		auto v1 = graph.add_vertex();
-		auto v2 = graph.add_vertex();
-		auto v3 = graph.add_vertex();
+		Graph<void, FlowEdge<int>, Fixed<8, 8>> graph;
+		auto v0 = graph.AddVertex();
+		auto v1 = graph.AddVertex();
+		auto v2 = graph.AddVertex();
+		auto v3 = graph.AddVertex();
 
-		graph.add_edge(v0, v1, FlowEdge<int> {16, 0});
-		graph.add_edge(v0, v2, FlowEdge<int> {13, 0});
-		graph.add_edge(v1, v2, FlowEdge<int> {10, 0});
-		graph.add_edge(v1, v3, FlowEdge<int> {12, 0});
-		graph.add_edge(v2, v3, FlowEdge<int> {14, 0});
+		graph.AddEdge(v0, v1, FlowEdge<int> {16, 0});
+		graph.AddEdge(v0, v2, FlowEdge<int> {13, 0});
+		graph.AddEdge(v1, v2, FlowEdge<int> {10, 0});
+		graph.AddEdge(v1, v3, FlowEdge<int> {12, 0});
+		graph.AddEdge(v2, v3, FlowEdge<int> {14, 0});
 
 		auto result = MaxFlow(graph, v0, v3);
 

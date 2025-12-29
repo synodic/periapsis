@@ -30,22 +30,23 @@ namespace
 
 	TEST(SPSCQueue, StorageType)
 	{
-		// Verifies that the expected, supported standard containers fulfill the queue storage concept
+		// Verifies that containers with size(), operator[], and reverse iterators satisfy the concept
+		static_assert(peri::lockfree::spsc_queue_container<Array>);
 		static_assert(peri::lockfree::spsc_queue_container<Deque>);
-		static_assert(peri::lockfree::spsc_queue_container<List>);
+		static_assert(peri::lockfree::spsc_queue_container<String>);
 		static_assert(peri::lockfree::spsc_queue_container<Vector>);
 
-		static_assert(not peri::lockfree::spsc_queue_container<Array>);
+		// Containers without operator[] or reverse iterators do not satisfy the concept
 		static_assert(not peri::lockfree::spsc_queue_container<ForwardList>);
+		static_assert(not peri::lockfree::spsc_queue_container<List>);
 		static_assert(not peri::lockfree::spsc_queue_container<Map>);
 		static_assert(not peri::lockfree::spsc_queue_container<MultiMap>);
-		static_assert(not peri::lockfree::spsc_queue_container<Set>);
 		static_assert(not peri::lockfree::spsc_queue_container<MultiSet>);
-		static_assert(not peri::lockfree::spsc_queue_container<String>);
+		static_assert(not peri::lockfree::spsc_queue_container<Set>);
 		static_assert(not peri::lockfree::spsc_queue_container<UnorderedMap>);
 		static_assert(not peri::lockfree::spsc_queue_container<UnorderedMultiMap>);
-		static_assert(not peri::lockfree::spsc_queue_container<UnorderedSet>);
 		static_assert(not peri::lockfree::spsc_queue_container<UnorderedMultiSet>);
+		static_assert(not peri::lockfree::spsc_queue_container<UnorderedSet>);
 	}
 
 	// ========================================================================

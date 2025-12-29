@@ -4,31 +4,10 @@ import std;
 
 namespace peri
 {
-	// TODO: Don't export with module
-	template<std::size_t Size>
-	struct Any
+	export template<std::size_t N>
+	constexpr decltype(auto) nth_element(auto&&... args)
+		requires(N < sizeof...(args))
 	{
-		template<typename T>
-		constexpr Any(T);
-	};
-
-	template<std::size_t Size>
-	template<typename T>
-	constexpr Any<Size>::Any(T)
-	{
+		return std::get<N>(std::forward_as_tuple(std::forward<decltype(args)>(args)...));
 	}
-
-	export template<auto N>
-	constexpr auto nth_element(auto... args)
-	{
-		return [&]<std::size_t... Ns>(std::index_sequence<Ns...>)
-		{
-			return [](Any<Ns>..., auto nth, auto...)
-			{
-				return nth;
-			}(args...);
-		}
-		(std::make_index_sequence<N> {});
-	}
-
 }

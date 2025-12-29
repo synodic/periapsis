@@ -1,8 +1,6 @@
 export module synodic.periapsis:container.lockfree.spsc_queue;
 
 import :exception;
-import :type.concepts.container;
-import :type.concepts.sequence_container;
 
 import std;
 
@@ -12,13 +10,26 @@ export namespace peri::lockfree
 	template<typename T>
 	concept spsc_queue_type = std::is_nothrow_constructible_v<T> and std::is_nothrow_destructible_v<T>;
 
-	// Defines the set of containers that SPSCQueue supports
+	// Defines the set of containers that SPSCQueue supports.
+	// Requires only what SPSCQueue actually uses: size(), operator[], and reverse iterators.
 	template<typename T>
-	concept spsc_queue_container = inplace_constructing_sequence_container<T>;
+	concept spsc_queue_container = requires(T& c, const T& cc, typename T::size_type i) {
+		typename T::value_type;
+		typename T::size_type;
+		typename T::reference;
+		typename T::const_reference;
+		typename T::iterator;
+		typename T::reverse_iterator;
+		typename T::const_reverse_iterator;
+		{ cc.size() } -> std::same_as<typename T::size_type>;
+		{ c[i] } -> std::same_as<typename T::reference>;
+		{ cc[i] } -> std::same_as<typename T::const_reference>;
+		{ c.begin() } -> std::same_as<typename T::iterator>;
+	};
 
 	// Convenience concept for identifying SPSCQueue backing containers
 	template<typename T, typename ValueType>
-	concept spsc_queue_container_of = container_of<T, ValueType> && spsc_queue_container<T>;
+	concept spsc_queue_container_of = spsc_queue_container<T> and std::same_as<typename T::value_type, ValueType>;
 
 	/**
 	 * @brief An adapter for containers that enforces single producer, single consumer atomic access. This queue is an
@@ -26,10 +37,10 @@ export namespace peri::lockfree
 	 *		internal size tracking of the container is wasted. If you need memory efficiency for the queue itself this
 	 *		is not the type to use. However, this design allows the extraction the underlying container into a
 	 *		single-threaded context.
-	 * 
+	 *
 	 *		Note: This is a circular buffer implementation where one slot is reserved to distinguish between empty
 	 *		and full states. Therefore, a queue with capacity N can store at most N-1 elements.
-	 * 
+	 *
 	 * @tparam T The type to store
 	 * @tparam Container The container for storage backing
 	 */
@@ -37,15 +48,15 @@ export namespace peri::lockfree
 	class SPSCQueue
 	{
 	public:
-		using container_type         = Container;
-		using value_type             = Container::value_type;
-		using size_type              = Container::size_type;
-		using difference_type        = Container::difference_type;
-		using reference              = Container::reference;
-		using const_reference        = Container::const_reference;
-		using iterator               = Container::iterator;
-		using const_iterator         = Container::const_iterator;
-		using reverse_iterator       = Container::reverse_iterator;
+		using container_type		 = Container;
+		using value_type			 = Container::value_type;
+		using size_type				 = Container::size_type;
+		using difference_type		 = Container::difference_type;
+		using reference				 = Container::reference;
+		using const_reference		 = Container::const_reference;
+		using iterator				 = Container::iterator;
+		using const_iterator		 = Container::const_iterator;
+		using reverse_iterator		 = Container::reverse_iterator;
 		using const_reverse_iterator = Container::const_reverse_iterator;
 
 		// ========================================================================
@@ -72,7 +83,7 @@ export namespace peri::lockfree
 		{
 		}
 
-		constexpr SPSCQueue(const SPSCQueue& other)     = delete;
+		constexpr SPSCQueue(const SPSCQueue& other)		= delete;
 		constexpr SPSCQueue(SPSCQueue&& other) noexcept = delete;
 
 		// ========================================================================
@@ -85,7 +96,7 @@ export namespace peri::lockfree
 		// Assignment
 		// ========================================================================
 
-		constexpr SPSCQueue& operator=(const SPSCQueue& other)     = delete;
+		constexpr SPSCQueue& operator=(const SPSCQueue& other)	   = delete;
 		constexpr SPSCQueue& operator=(SPSCQueue&& other) noexcept = delete;
 
 		// ========================================================================
@@ -102,10 +113,10 @@ export namespace peri::lockfree
 		{
 			std::rotate(container_.begin(), container_.begin(), container_.begin());
 
-			capacity_         = 0;
-			writeIndex_       = 0;
+			capacity_		  = 0;
+			writeIndex_		  = 0;
 			cachedReadIndex_  = 0;
-			readIndex_        = 0;
+			readIndex_		  = 0;
 			cachedWriteIndex_ = 0;
 
 			return std::move(container_);
@@ -159,7 +170,7 @@ export namespace peri::lockfree
 		constexpr bool try_push(const T& value)
 		{
 			const auto writeIndex = writeIndex_.load(std::memory_order_relaxed);
-			auto nextWriteIdx     = writeIndex + 1;
+			auto nextWriteIdx	  = writeIndex + 1;
 			if (nextWriteIdx == capacity_)
 			{
 				nextWriteIdx = 0;
@@ -183,7 +194,7 @@ export namespace peri::lockfree
 		constexpr bool try_push(T&& value)
 		{
 			const auto writeIndex = writeIndex_.load(std::memory_order_relaxed);
-			auto nextWriteIdx     = writeIndex + 1;
+			auto nextWriteIdx	  = writeIndex + 1;
 			if (nextWriteIdx == capacity_)
 			{
 				nextWriteIdx = 0;
@@ -251,7 +262,7 @@ export namespace peri::lockfree
 		constexpr bool try_emplace(Args&&... args)
 		{
 			const auto writeIndex = writeIndex_.load(std::memory_order_relaxed);
-			auto nextWriteIdx     = writeIndex + 1;
+			auto nextWriteIdx	  = writeIndex + 1;
 			if (nextWriteIdx == capacity_)
 			{
 				nextWriteIdx = 0;
@@ -306,9 +317,7 @@ export namespace peri::lockfree
 	SPSCQueue(Container) -> SPSCQueue<typename Container::value_type, Container>;
 
 	template<typename InputIt>
-	SPSCQueue(
-		InputIt,
-		InputIt) -> SPSCQueue<
+	SPSCQueue(InputIt, InputIt) -> SPSCQueue<
 		typename std::iterator_traits<InputIt>::value_type::value_type,
 		typename std::iterator_traits<InputIt>::value_type>;
 }

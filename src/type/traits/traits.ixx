@@ -4,104 +4,44 @@ import std;
 
 namespace peri
 {
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// RepresentationDeduction
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// ConstructorParameters
-	// TODO: Remove when reflection is available
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	template<typename T, size_t N>
-	struct Tag
+	namespace detail
 	{
-		// Returns the type associated with the tag
-		friend auto GetType(Tag<T, N>);
+		template<std::size_t N, typename... Ts>
+		struct MinimalIntegerImpl;
 
-		// Returns the ID of the tag
-		consteval friend size_t GetID(Tag<T, N>);
-	};
-
-	// The definitions of the friend functions elevating their scope. Prevent multiple
-	// instantiations by requiring the types
-	//		to be different
-	template<typename T, typename U, size_t N>
-		requires(!std::is_same_v<T, U>)
-	struct FriendType
-	{
-		friend auto GetType(Tag<T, N>)
+		template<std::size_t N>
+		struct MinimalIntegerImpl<N>
 		{
-			return U();
-		}
+			using Type = void; // No suitable type found
+		};
 
-		consteval friend size_t GetID(Tag<T, N>)
+		template<std::size_t N, typename T, typename... Rest>
+		struct MinimalIntegerImpl<N, T, Rest...>
 		{
-			return 0;
-		}
-	};
-
-	template<typename T, size_t N>
-	struct TypeConversion
-	{
-		// Conversion helper
-		template<typename U, size_t = sizeof(FriendType<T, U, N>)>
-		consteval operator U()
-		{
-			return U();
-		}
-	};
-
-	template<typename T, size_t... Ns>
-	consteval auto ConstructorParameterCount(size_t) -> decltype(T(TypeConversion<T, Ns>()...), 0)
-	{
-		return sizeof...(Ns);
+			using Type = std::
+			conditional_t<N <= std::numeric_limits<T>::max(), T, typename MinimalIntegerImpl<N, Rest...>::Type>;
+		};
 	}
-
-	template<typename T, size_t... Ns>
-	consteval size_t ConstructorParameterCount(...)
-	{
-		return ConstructorParameterCount<T, Ns..., sizeof...(Ns)>(0);
-	}
-
-	// Declaration required for specialization
-	template<typename T, typename U>
-	struct TaggedTuple;
-
-	// Provide the only specialization, making the inputs an integer_sequence type
-	template<typename T, size_t... Ns>
-	struct TaggedTuple<T, std::index_sequence<Ns...>>
-	{
-		using Type = std::tuple<decltype(GetType(Tag<T, Ns>()))...>;
-	};
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Exports
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 *	Evaluates the given integer and returns the minimally sized integral type that can hold the value. If the value
-	 *		cannot be held by any integral type the alias will resolve to void.
+	 *	Evaluates the given integer and returns the minimally sized unsigned integral type that can hold the value.
+	 *		If the value cannot be held by any integral type, the alias resolves to void.
 	 */
 	export template<std::size_t N>
-	using MinimalIntegerType = std::conditional_t<
-		N <= std::numeric_limits<std::uint8_t>::max(),
-		std::uint8_t,
-		std::conditional_t<
-			N <= std::numeric_limits<std::uint16_t>::max(),
-			std::uint16_t,
-			std::conditional_t<
-				N <= std::numeric_limits<std::uint32_t>::max(),
-				std::uint32_t,
-				std::conditional_t<
-					N <= std::numeric_limits<std::uint64_t>::max(),
-					std::uint64_t,
-					std::conditional_t<N <= std::numeric_limits<std::uintmax_t>::max(), std::uintmax_t, void>>>>>;
+	using MinimalUnsignedType =
+	detail::MinimalIntegerImpl<N, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t>::Type;
 
-	// Given a type T, returns a tuple of the parameters for the shortest constructor for that type
-	export template<typename T>
-	using ConstructorParameters =
-		typename TaggedTuple<T, std::make_index_sequence<ConstructorParameterCount<T>(0)>>::Type;
+	/**
+	 *	Evaluates the given integer and returns the minimally sized signed integral type that can hold the value.
+	 *		If the value cannot be held by any signed integral type, the alias resolves to void.
+	 */
+	export template<std::size_t N>
+	using MinimalSignedType =
+	detail::MinimalIntegerImpl<N, std::int8_t, std::int16_t, std::int32_t, std::int64_t>::Type;
 
+	/**
+	 *	@deprecated Use MinimalUnsignedType instead
+	 */
+	export template<std::size_t N>
+	using MinimalIntegerType = MinimalUnsignedType<N>;
 }

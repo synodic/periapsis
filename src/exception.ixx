@@ -4,7 +4,9 @@ import std;
 
 export namespace peri
 {
-	/// @brief Thrown when a function or feature is not yet implemented
+	/**
+	 * @brief Thrown when a function or feature is not yet implemented
+	 */
 	class NotImplementedException final : public std::logic_error
 	{
 	public:
@@ -19,7 +21,9 @@ export namespace peri
 		}
 	};
 
-	/// @brief Thrown when an operation is attempted on an object in an invalid state
+	/**
+	 * @brief Thrown when an object is in an invalid state for the requested operation
+	 */
 	class InvalidStateException final : public std::logic_error
 	{
 	public:
@@ -34,7 +38,9 @@ export namespace peri
 		}
 	};
 
-	/// @brief Thrown when an operation exceeds its time limit
+	/**
+	 * @brief Thrown when an operation times out
+	 */
 	class TimeoutException final : public std::runtime_error
 	{
 	public:
@@ -49,7 +55,9 @@ export namespace peri
 		}
 	};
 
-	/// @brief Thrown when an operation is cancelled
+	/**
+	 * @brief Thrown when an operation is cancelled by the user or system
+	 */
 	class OperationCancelledException final : public std::runtime_error
 	{
 	public:

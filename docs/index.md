@@ -28,7 +28,7 @@ The Periapsis provides high-performance, concept-constrained data structures and
   - `Visitor` class for traversal (satisfies `visitor` concept)
   - Visitor concept for generic algorithm compatibility
 
-- [State Machine](state_machine.md) - Constexpr-capable finite state machines
+- [Automata](automata.md) - Constexpr-capable finite state machines
   - Unified `StateMachine<Event,StateData,TransData,MaxS,MaxT>` type
   - Compile-time FSM definition and validation
   - `Runner` class for execution (satisfies `visitor` concept)
@@ -116,7 +116,7 @@ synodic.periapsis
 ├── :container.sparse.*               - BitMap, HashMap, HashSet, Vector
 ├── :container.lockfree.spsc_queue    - SPSCQueue
 ├── :structure.graph.*                - Graph, Visitor, walker concept
-├── :structure.state_machine.*        - StateMachine, Runner
+├── :structure.automata.*             - StateMachine, Runner
 ├── :algorithm.graph.max_flow         - Max flow algorithm
 ├── :type.concepts.*                  - Container concepts
 ├── :type.traits                      - ConstructorParameters

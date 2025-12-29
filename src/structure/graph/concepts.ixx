@@ -24,101 +24,108 @@ export namespace peri::graph
 	// Minimal requirements for any graph storage backend
 	//	Storage is responsible for holding vertices, edges, and their relationships
 	template<typename S>
-	concept graph_storage = requires {
-		typename S::vertex_descriptor;
-		typename S::edge_descriptor;
-		typename S::vertices_size_type;
-		typename S::edges_size_type;
-		typename S::degree_size_type;
+	concept graph_storage = requires
+	{
+		typename S::VertexDescriptor;
+		typename S::EdgeDescriptor;
+		typename S::VerticesSizeType;
+		typename S::EdgesSizeType;
+		typename S::DegreeSizeType;
 
-		requires vertex_descriptor<typename S::vertex_descriptor>;
-		requires edge_descriptor<typename S::edge_descriptor>;
-		requires std::unsigned_integral<typename S::vertices_size_type>;
-		requires std::unsigned_integral<typename S::edges_size_type>;
-		requires std::unsigned_integral<typename S::degree_size_type>;
+		requires vertex_descriptor<typename S::VertexDescriptor>;
+		requires edge_descriptor<typename S::EdgeDescriptor>;
+		requires std::unsigned_integral<typename S::VerticesSizeType>;
+		requires std::unsigned_integral<typename S::EdgesSizeType>;
+		requires std::unsigned_integral<typename S::DegreeSizeType>;
 	};
 
 	// Storage that provides vertex enumeration
 	template<typename S>
-	concept vertex_list_storage = graph_storage<S> and requires(const S& storage) {
-		{ storage.vertices() } -> std::ranges::input_range;
-		{ storage.num_vertices() } -> std::same_as<typename S::vertices_size_type>;
+	concept vertex_list_storage = graph_storage<S> and requires(const S& storage)
+	{
+		{ storage.Vertices() } -> std::ranges::input_range;
+		{ storage.NumVertices() } -> std::same_as<typename S::VerticesSizeType>;
 	};
 
 	// Storage that provides edge enumeration
 	template<typename S>
-	concept edge_list_storage = graph_storage<S> and requires(const S& storage) {
-		{ storage.edges() } -> std::ranges::input_range;
-		{ storage.num_edges() } -> std::same_as<typename S::edges_size_type>;
+	concept edge_list_storage = graph_storage<S> and requires(const S& storage)
+	{
+		{ storage.Edges() } -> std::ranges::input_range;
+		{ storage.NumEdges() } -> std::same_as<typename S::EdgesSizeType>;
 	};
 
-	// Storage supporting out-edge traversal (directed graphs)
-	//	Provides O(1) access to outgoing edges from a vertex
+	// Storage supporting out-edge traversal
 	template<typename S>
 	concept incidence_storage =
-		graph_storage<S> and
-		requires(const S& storage, typename S::vertex_descriptor v, typename S::edge_descriptor e) {
-			{ storage.out_edges(v) } -> std::ranges::input_range;
-			{ storage.out_degree(v) } -> std::same_as<typename S::degree_size_type>;
-			{ storage.source(e) } -> std::same_as<typename S::vertex_descriptor>;
-			{ storage.target(e) } -> std::same_as<typename S::vertex_descriptor>;
+		graph_storage<S> and requires(const S& storage, typename S::VertexDescriptor v, typename S::EdgeDescriptor e)
+		{
+			{ storage.OutEdges(v) } -> std::ranges::input_range;
+			{ storage.OutDegree(v) } -> std::same_as<typename S::DegreeSizeType>;
+			{ storage.Source(e) } -> std::same_as<typename S::VertexDescriptor>;
+			{ storage.Target(e) } -> std::same_as<typename S::VertexDescriptor>;
 		};
 
-	// Storage supporting in-edge traversal (bidirectional graphs)
-	//	Required for efficient predecessor queries
+	// Storage supporting in-edge traversal
 	template<typename S>
 	concept bidirectional_storage =
-		incidence_storage<S> and requires(const S& storage, typename S::vertex_descriptor v) {
-			{ storage.in_edges(v) } -> std::ranges::input_range;
-			{ storage.in_degree(v) } -> std::same_as<typename S::degree_size_type>;
+		incidence_storage<S> and requires(const S& storage, typename S::VertexDescriptor v)
+		{
+			{ storage.InEdges(v) } -> std::ranges::input_range;
+			{ storage.InDegree(v) } -> std::same_as<typename S::DegreeSizeType>;
 		};
 
 	// Storage supporting adjacency queries without edge descriptors
 	//	More efficient when edge properties are not needed
 	template<typename S>
-	concept adjacency_storage = graph_storage<S> and requires(const S& storage, typename S::vertex_descriptor v) {
-		{ storage.adjacent_vertices(v) } -> std::ranges::input_range;
+	concept adjacency_storage = graph_storage<S> and requires(const S& storage, typename S::VertexDescriptor v)
+	{
+		{ storage.AdjacentVertices(v) } -> std::ranges::input_range;
 	};
 
 	// ============================================================================
 	// Mutable Storage Concepts
 	// ============================================================================
 
-	// Storage supporting vertex addition (append-only, no removal required)
+	// Storage supporting vertex addition
 	template<typename S>
-	concept appendable_vertex_storage = graph_storage<S> and requires(S& storage) {
-		{ storage.add_vertex() } -> std::same_as<typename S::vertex_descriptor>;
+	concept appendable_vertex_storage = graph_storage<S> and requires(S& storage)
+	{
+		{ storage.AddVertex() } -> std::same_as<typename S::VertexDescriptor>;
 	};
 
-	// Storage supporting edge addition (append-only, no removal required)
+	// Storage supporting edge addition
 	template<typename S>
 	concept appendable_edge_storage =
-		graph_storage<S> and requires(S& storage, typename S::vertex_descriptor u, typename S::vertex_descriptor v) {
-			{ storage.add_edge(u, v) } -> std::same_as<std::pair<typename S::edge_descriptor, bool>>;
+		graph_storage<S> and requires(S& storage, typename S::VertexDescriptor u, typename S::VertexDescriptor v)
+		{
+			{ storage.AddEdge(u, v) } -> std::same_as<std::pair<typename S::EdgeDescriptor, bool>>;
 		};
 
 	// Storage supporting vertex addition and removal
 	template<typename S>
-	concept mutable_vertex_storage = appendable_vertex_storage<S> and requires(S& storage) {
-		{ storage.remove_vertex(std::declval<typename S::vertex_descriptor>()) };
-		{ storage.clear_vertices() };
+	concept mutable_vertex_storage = appendable_vertex_storage<S> and requires(S& storage)
+	{
+		{ storage.RemoveVertex(std::declval<typename S::VertexDescriptor>()) };
+		{ storage.ClearVertices() };
 	};
 
 	// Storage supporting edge addition and removal
 	template<typename S>
 	concept mutable_edge_storage =
 		appendable_edge_storage<S> and
-		requires(S& storage, typename S::vertex_descriptor u, typename S::vertex_descriptor v) {
-			{ storage.remove_edge(u, v) };
-			{ storage.remove_edge(std::declval<typename S::edge_descriptor>()) };
-			{ storage.clear_edges() };
+		requires(S& storage, typename S::VertexDescriptor u, typename S::VertexDescriptor v)
+		{
+			{ storage.RemoveEdge(u, v) };
+			{ storage.RemoveEdge(std::declval<typename S::EdgeDescriptor>()) };
+			{ storage.ClearEdges() };
 		};
 
-	// Fully mutable storage (add and remove)
+	// Fully mutable storage
 	template<typename S>
 	concept mutable_storage = mutable_vertex_storage<S> and mutable_edge_storage<S>;
 
-	// Append-only storage (add but no remove - like StaticStorage)
+	// Append-only storage
 	template<typename S>
 	concept appendable_storage = appendable_vertex_storage<S> and appendable_edge_storage<S>;
 
@@ -128,59 +135,80 @@ export namespace peri::graph
 
 	// Storage providing O(1) vertex property access via descriptor
 	template<typename S>
-	concept vertex_property_storage = graph_storage<S> and requires { typename S::vertex_property_type; } and
-									  requires(S& storage, const S& constStorage, typename S::vertex_descriptor v) {
-										  { storage[v] } -> std::same_as<typename S::vertex_property_type&>;
-										  { constStorage[v] } -> std::same_as<const typename S::vertex_property_type&>;
-									  };
+	concept vertex_property_storage = graph_storage<S> and requires { typename S::VertexPropertyType; } and
+	                                  requires(S& storage, const S& constStorage, typename S::VertexDescriptor v)
+	                                  {
+		                                  { storage[v] } -> std::same_as<typename S::VertexPropertyType&>;
+		                                  { constStorage[v] } -> std::same_as<const typename S::VertexPropertyType&>;
+	                                  };
 
 	// Storage providing O(1) edge property access via descriptor
 	template<typename S>
-	concept edge_property_storage = graph_storage<S> and requires { typename S::edge_property_type; } and
-									requires(S& storage, const S& constStorage, typename S::edge_descriptor e) {
-										{ storage[e] } -> std::same_as<typename S::edge_property_type&>;
-										{ constStorage[e] } -> std::same_as<const typename S::edge_property_type&>;
-									};
+	concept edge_property_storage = graph_storage<S> and requires { typename S::EdgePropertyType; } and
+	                                requires(S& storage, const S& constStorage, typename S::EdgeDescriptor e)
+	                                {
+		                                { storage[e] } -> std::same_as<typename S::EdgePropertyType&>;
+		                                { constStorage[e] } -> std::same_as<const typename S::EdgePropertyType&>;
+	                                };
 
 	// ============================================================================
-	// Compile-Time Graph Concepts
+	// Composable Storage Concepts
 	// ============================================================================
-
-	// Storage that can be constructed and manipulated at compile-time
-	template<typename S>
-	concept constexpr_storage = graph_storage<S> and requires { requires S::is_constexpr_capable; };
 
 	// Storage that can be composed into a larger graph
 	//	Subgraphs expose boundary vertices for connection points
 	template<typename S>
-	concept composable_storage = graph_storage<S> and requires(const S& storage) {
-		{ storage.boundary_vertices() } -> std::ranges::input_range;
+	concept composable_storage = graph_storage<S> and requires(const S& storage)
+	{
+		{ storage.BoundaryVertices() } -> std::ranges::input_range;
 	};
 
 	// ============================================================================
 	// Graph Direction Concepts
 	// ============================================================================
 
+	/**
+	 * @brief Storage is undirected where edges connect vertices symmetrically.
+	 * Undirected storage stores each edge once but makes it accessible from both endpoints.
+	 * The opposite() function returns the other endpoint of an edge given one endpoint.
+	 */
 	template<typename S>
-	concept directed_storage = graph_storage<S> and requires { requires S::is_directed; };
-
-	template<typename S>
-	concept undirected_storage = graph_storage<S> and requires { requires not S::is_directed; };
+	concept undirected_storage = graph_storage<S> and requires
+	                             {
+		                             requires S::IS_UNDIRECTED;
+	                             } and requires(
+	                             const S& storage,
+	                             typename S::VertexDescriptor v,
+	                             typename S::EdgeDescriptor e)
+	                             {
+		                             // Total degree. Number of incident edges.
+		                             { storage.Degree(v) } -> std::same_as<typename S::DegreeSizeType>;
+		                             // All edges incident to vertex v
+		                             { storage.IncidentEdges(v) } -> std::ranges::input_range;
+		                             // Get the other endpoint of edge e from vertex v
+		                             { storage.Opposite(e, v) } -> std::same_as<typename S::VertexDescriptor>;
+		                             // Get the endpoints of an edge
+		                             { storage.Endpoint1(e) } -> std::same_as<typename S::VertexDescriptor>;
+		                             { storage.Endpoint2(e) } -> std::same_as<typename S::VertexDescriptor>;
+	                             };
 
 	// ============================================================================
-	// Combined Graph Concepts (for algorithm constraints)
+	// Combined Graph Concepts
 	// ============================================================================
 
-	// A complete directed graph with all traversal capabilities
+	// A graph with full traversal capabilities: vertex list, edge list, and incidence
 	template<typename S>
-	concept traversable_directed_storage =
-		directed_storage<S> and vertex_list_storage<S> and edge_list_storage<S> and incidence_storage<S>;
+	concept traversable_storage = vertex_list_storage<S> and edge_list_storage<S> and incidence_storage<S>;
 
-	// A complete bidirectional graph
+	// A traversable graph with bidirectional edge access
 	template<typename S>
-	concept traversable_bidirectional_storage = traversable_directed_storage<S> and bidirectional_storage<S>;
+	concept traversable_bidirectional_storage = traversable_storage<S> and bidirectional_storage<S>;
 
-	// A graph suitable for flow algorithms (needs edge properties for capacity/flow)
+	// A traversable undirected graph
+	template<typename S>
+	concept traversable_undirected_storage = undirected_storage<S> and vertex_list_storage<S> and edge_list_storage<S>;
+
+	// A graph suitable for flow algorithms requiring edge properties for capacity and flow
 	template<typename S>
 	concept flow_network_storage =
 		traversable_bidirectional_storage<S> and edge_property_storage<S> and mutable_edge_storage<S>;

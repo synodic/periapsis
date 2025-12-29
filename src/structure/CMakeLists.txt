@@ -3,7 +3,7 @@ add_subdirectory(
 )
 
 add_subdirectory(
-    state_machine
+    automata
 )
 
 add_subdirectory(
