@@ -32,9 +32,6 @@ export import :structure.automata.storage.dynamic_storage;
 export import :structure.automata.state_machine;
 export import :structure.automata.runner;
 
-// Function partitions
-export import :function.executor;
-
 // Exception partitions
 export import :exception;
 

@@ -7,10 +7,6 @@ add_subdirectory(
 )
 
 add_subdirectory(
-	functional
-)
-
-add_subdirectory(
 	math
 )
 

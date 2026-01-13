@@ -15,10 +15,6 @@ add_subdirectory(
 )
 
 add_subdirectory(
-	"function"
-)
-
-add_subdirectory(
 	"string"
 )
 

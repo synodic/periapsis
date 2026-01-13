@@ -7,10 +7,6 @@ export namespace peri::fixed
 	/**
 	 * @brief A fixed-size bitset with configurable block type and direct block access.
 	 *
-	 * @details Unlike std::bitset which hides its internal representation, this class
-	 *          exposes block-level access for efficient bulk operations, SIMD processing,
-	 *          serialization, and integration with data structures that need direct storage access.
-	 *
 	 * @tparam N The number of bits in the bitset
 	 * @tparam Block The unsigned integral type used for internal block representation
 	 */

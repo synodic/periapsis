@@ -5,5 +5,4 @@ target_sources(periapsis
 	"hash_string.ixx"
 	"inplace_string.ixx"
 	"fixed_string.ixx"
-	"zstring_view.ixx"
 )
