@@ -3,36 +3,3 @@ site_name = "Periapsis"
 site_url = "https://synodic.github.io/periapsis"
 docs_dir = "docs"
 site_dir = "dist"
-
-[nav]
-nav = [
-    { "Home" = "index.md" },
-    { "Setup" = "setup.md" },
-    { "Development" = "development.md" },
-    { "Library" = [
-        { "Containers" = [
-            { "Overview" = "library/containers/index.md" },
-            { "Fixed-Capacity" = "library/containers/fixed.md" },
-            { "Sparse" = "library/containers/sparse.md" },
-            { "Dynamic" = "library/containers/dynamic.md" },
-            { "Lock-Free" = "library/containers/lockfree.md" },
-        ] },
-        { "Structures" = [
-            { "Overview" = "library/structures/index.md" },
-            { "Graph" = "library/structures/graph.md" },
-            { "Automata" = "library/structures/automata.md" },
-            { "Trees" = "library/structures/tree.md" },
-        ] },
-        { "Math" = "library/math/index.md" },
-        { "Statistics" = "library/statistics/index.md" },
-        { "Algorithms" = "library/algorithms/index.md" },
-        { "Strings" = "library/strings/index.md" },
-        { "Type System" = [
-            { "Overview" = "library/type/index.md" },
-            { "Concepts" = "library/type/concepts.md" },
-            { "Traits" = "library/type/traits.md" },
-        ] },
-        { "Utilities" = "library/utilities/index.md" },
-        { "Threading" = "library/threading/index.md" },
-    ] },
-]

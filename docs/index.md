@@ -163,5 +163,3 @@ static_assert(build_graph() == 1);
 ## License
 
 Periapsis is licensed under the [MIT License](https://github.com/synodic/periapsis/blob/development/LICENSE.md).
-
-Copyright © 2025 Synodic Software
