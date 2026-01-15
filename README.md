@@ -31,6 +31,8 @@ Python is required for development.
 
 See [Development](https://synodic.github.io/periapsis/development) for build, test, and installation instructions.
 
+For contribution guidelines, see [CONTRIBUTING.md](https://github.com/synodic/.github/blob/stable/CONTRIBUTING.md).
+
 ## Documentation
 
 - [Containers](https://synodic.github.io/periapsis/containers) — Fixed, sparse, and lock-free containers

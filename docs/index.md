@@ -1,72 +1,49 @@
+---
+title: Home
+description: Periapsis - A modern C++23 template library with modules support
+---
+
 # Periapsis
 
-A modern C++23 template library with modules support.
+<p class="subtitle">A modern C++23 template library with modules support.</p>
+
+---
 
 ## Overview
 
-The Periapsis provides high-performance, concept-constrained data structures and algorithms with first-class support for compile-time evaluation.
+Periapsis is a high-performance, concept-constrained template library designed for modern C++ development. It provides data structures and algorithms with first-class support for compile-time evaluation.
 
-**Key Features:**
+<div class="grid cards" markdown>
 
-- C++23 modules (`import synodic.periapsis;`)
-- Extensive use of concepts for clear constraints
-- Constexpr-capable containers and algorithms
-- Storage abstraction patterns (like `std::allocator_traits`)
+- :material-lightning-bolt:{ .lg .middle } __C++23 Modules__
 
-## Documentation
+    ---
 
-### Data Structures
+    Import the entire library with a single statement:
 
-- [Containers](containers.md) - Fixed-capacity, sparse, and lock-free containers
-  - `FixedRingBuffer`, `FixedQueue`, `FixedStack`
-  - `sparse::BitMap`, `sparse::HashMap`, `sparse::Vector`
-  - `lockfree::SPSCQueue`
+    ```cpp
+    import synodic.periapsis;
+    ```
 
-- [Graph Library](graph.md) - High-performance graph data structures
-  - Unified `Graph<V,E,MaxV,MaxE>` type with automatic storage selection
-  - Compile-time graph construction
-  - `Visitor` class for traversal (satisfies `visitor` concept)
-  - Visitor concept for generic algorithm compatibility
+- :material-clock-fast:{ .lg .middle } __Constexpr Everything__
 
-- [Automata](automata.md) - Constexpr-capable finite state machines
-  - Unified `StateMachine<Event,StateData,TransData,MaxS,MaxT>` type
-  - Compile-time FSM definition and validation
-  - `Runner` class for execution (satisfies `visitor` concept)
-  - Guards, actions, and event processing
+    ---
 
-### Algorithms
+    Containers and algorithms designed for compile-time evaluation with `static_assert` verification.
 
-- [Algorithms](algorithms.md) - Graph and general algorithms
-  - Max Flow (Edmonds-Karp, constexpr-capable)
+- :material-shield-check:{ .lg .middle } __Concept-Constrained__
 
-### Math
+    ---
 
-- [Math](math.md) - Vector and matrix types for graphics
-  - `Vec2`, `Vec3`, `Vec4` - SIMD-ready vector types
-  - Constexpr operations: `Dot`, `Cross`, `Normalize`, `Lerp`
+    Clear, enforceable type constraints throughout using C++20 concepts.
 
-### Type System
+- :material-memory:{ .lg .middle } __Zero Overhead__
 
-- [Concepts](concepts.md) - Container and utility concepts
-  - `container`, `sequence_container`, `associative_container`
-  - `random_access_container`, `contiguous_container`
-  - Full concept hierarchy
+    ---
 
-- [Type Traits](traits.md) - Metaprogramming utilities
-  - `ConstructorParameters<T>`
+    Fixed-capacity containers with no heap allocation and SIMD-ready alignment.
 
-### Utilities
-
-- [Strings](strings.md) - String utilities
-  - `HashString` - Compile-time FNV-1a hashing
-
-- [Utilities](utilities.md) - Miscellaneous utilities
-  - `nth_element` - Parameter pack indexing
-  - `NotImplementedException`
-
-- [Threading](threading.md) - Thread utilities (WIP)
-  - `ThreadLocal`
-  - Executor concepts
+</div>
 
 ## Quick Start
 
@@ -75,8 +52,8 @@ import synodic.periapsis;
 
 using namespace peri;
 
-// Constexpr queue
-constexpr auto sum = []() constexpr {
+// Constexpr ring buffer
+constexpr auto sum = [] constexpr {
     FixedRingBuffer<int, 8> buf;
     buf.push_back(1);
     buf.push_back(2);
@@ -84,66 +61,107 @@ constexpr auto sum = []() constexpr {
 }();
 static_assert(sum == 3);
 
-// Compile-time graph with unified API
-using namespace peri::graph;
-
+// Compile-time graph
 constexpr auto build_graph() {
-    Graph<void, void, 4, 4> g;  // Fixed-size, constexpr capable
+    graph::Graph<void, void, graph::Fixed<4, 4>> g;
     auto v0 = g.add_vertex();
     auto v1 = g.add_vertex();
     g.add_edge(v0, v1);
     return g.num_edges();
 }
 static_assert(build_graph() == 1);
-
-// Visitor concept - same interface for graph and FSM traversal
-Graph<int, void> graph;
-Visitor vis{graph, start_vertex};
-vis.position();     // Get current position
-vis.move_to(v);     // Navigate directly
-vis.advance(...);   // Follow edge
-
-// Container concepts
-template<random_access_container C>
-auto process(const C& c) { /* ... */ }
 ```
 
-## Module Structure
+## Library Components
 
-```
-synodic.periapsis
-├── :container.fixed.ring_buffer      - FixedRingBuffer, FixedQueue, FixedStack
-├── :container.sparse.*               - BitMap, HashMap, HashSet, Vector
-├── :container.lockfree.spsc_queue    - SPSCQueue
-├── :structure.graph.*                - Graph, Visitor, walker concept
-├── :structure.automata.*             - StateMachine, Runner
-├── :algorithm.graph.max_flow         - Max flow algorithm
-├── :type.concepts.*                  - Container concepts
-├── :type.traits                      - ConstructorParameters
-├── :string.hash_string               - HashString
-├── :thread.local                     - ThreadLocal
-├── :function.executor                - Executor concepts
-├── :utility                          - nth_element
-└── :exception.not_implemented        - NotImplementedException
-```
+<div class="grid cards" markdown>
 
-## Building
+- :material-database:{ .lg .middle } __[Containers](library/containers/index.md)__
 
-Requires:
+    ---
 
-- C++23 compiler with modules support (MSVC 19.34+, Clang 16+, GCC 14+)
-- CMake 3.28+
-- Conan 2.0+ (for dependencies)
+    Fixed-capacity, sparse, dynamic, and lock-free containers.
 
-```bash
-# Configure
-conan install . --build=missing
-cmake --preset <your-preset>
+    [:octicons-arrow-right-24: Explore containers](library/containers/index.md)
 
-# Build
-cmake --build --preset <your-preset>
-```
+- :material-graph:{ .lg .middle } __[Structures](library/structures/index.md)__
+
+    ---
+
+    Graphs, automata (FSMs), and tree data structures.
+
+    [:octicons-arrow-right-24: Explore structures](library/structures/index.md)
+
+- :material-math-compass:{ .lg .middle } __[Math](library/math/index.md)__
+
+    ---
+
+    SIMD-ready vectors, matrices, quaternions, and geometry.
+
+    [:octicons-arrow-right-24: Explore math](library/math/index.md)
+
+- :material-chart-line:{ .lg .middle } __[Statistics](library/statistics/index.md)__
+
+    ---
+
+    Online statistical accumulators with composable features.
+
+    [:octicons-arrow-right-24: Explore statistics](library/statistics/index.md)
+
+- :material-function:{ .lg .middle } __[Algorithms](library/algorithms/index.md)__
+
+    ---
+
+    Graph algorithms including max flow.
+
+    [:octicons-arrow-right-24: Explore algorithms](library/algorithms/index.md)
+
+- :material-text:{ .lg .middle } __[Strings](library/strings/index.md)__
+
+    ---
+
+    Compile-time string hashing and fixed-capacity strings.
+
+    [:octicons-arrow-right-24: Explore strings](library/strings/index.md)
+
+- :material-puzzle:{ .lg .middle } __[Type System](library/type/index.md)__
+
+    ---
+
+    Concepts and type traits for metaprogramming.
+
+    [:octicons-arrow-right-24: Explore types](library/type/index.md)
+
+- :material-wrench:{ .lg .middle } __[Utilities](library/utilities/index.md)__
+
+    ---
+
+    Miscellaneous utilities and helpers.
+
+    [:octicons-arrow-right-24: Explore utilities](library/utilities/index.md)
+
+</div>
+
+## Getting Started
+
+<div class="grid cards" markdown>
+
+- :material-download:{ .lg .middle } __[Setup](setup.md)__
+
+    ---
+
+    Install and integrate Periapsis into your project.
+
+- :material-code-braces:{ .lg .middle } __[Development](development.md)__
+
+    ---
+
+    Build, test, and contribute to the library.
+
+</div>
 
 ## License
 
-See [LICENSE.md](../LICENSE.md)
+Periapsis is licensed under the [MIT License](https://github.com/synodic/periapsis/blob/development/LICENSE.md).
+
+Copyright © 2025 Synodic Software
