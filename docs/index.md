@@ -82,15 +82,11 @@ static_assert(build_graph() == 1);
 
     Fixed-capacity, sparse, dynamic, and lock-free containers.
 
-    [:octicons-arrow-right-24: Explore containers](library/containers/index.md)
-
 - :material-graph:{ .lg .middle } __[Structures](library/structures/index.md)__
 
     ---
 
     Graphs, automata (FSMs), and tree data structures.
-
-    [:octicons-arrow-right-24: Explore structures](library/structures/index.md)
 
 - :material-math-compass:{ .lg .middle } __[Math](library/math/index.md)__
 
@@ -98,15 +94,11 @@ static_assert(build_graph() == 1);
 
     SIMD-ready vectors, matrices, quaternions, and geometry.
 
-    [:octicons-arrow-right-24: Explore math](library/math/index.md)
-
 - :material-chart-line:{ .lg .middle } __[Statistics](library/statistics/index.md)__
 
     ---
 
     Online statistical accumulators with composable features.
-
-    [:octicons-arrow-right-24: Explore statistics](library/statistics/index.md)
 
 - :material-function:{ .lg .middle } __[Algorithms](library/algorithms/index.md)__
 
@@ -114,15 +106,11 @@ static_assert(build_graph() == 1);
 
     Graph algorithms including max flow.
 
-    [:octicons-arrow-right-24: Explore algorithms](library/algorithms/index.md)
-
 - :material-text:{ .lg .middle } __[Strings](library/strings/index.md)__
 
     ---
 
     Compile-time string hashing and fixed-capacity strings.
-
-    [:octicons-arrow-right-24: Explore strings](library/strings/index.md)
 
 - :material-puzzle:{ .lg .middle } __[Type System](library/type/index.md)__
 
@@ -130,15 +118,11 @@ static_assert(build_graph() == 1);
 
     Concepts and type traits for metaprogramming.
 
-    [:octicons-arrow-right-24: Explore types](library/type/index.md)
-
 - :material-wrench:{ .lg .middle } __[Utilities](library/utilities/index.md)__
 
     ---
 
     Miscellaneous utilities and helpers.
-
-    [:octicons-arrow-right-24: Explore utilities](library/utilities/index.md)
 
 </div>
 
