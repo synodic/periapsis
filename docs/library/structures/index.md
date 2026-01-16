@@ -7,57 +7,11 @@ description: Graphs, automata (FSMs), and tree data structures
 
 Periapsis provides high-performance data structures for graphs, finite state machines, and trees.
 
-## Overview
+## Graph Library
 
-<div class="grid cards" markdown>
+## Automata
 
-- :material-graph:{ .lg .middle } __[Graph Library](graph.md)__
-
-    ---
-
-    High-performance graph data structures with unified API.
-
-  - Automatic storage selection (fixed vs dynamic)
-  - Constexpr graph construction
-  - Visitor-based traversal
-  - Directed, bidirectional, and undirected graphs
-
-- :material-state-machine:{ .lg .middle } __[Automata](automata.md)__
-
-    ---
-
-    Constexpr-capable finite state machines.
-
-  - Unified `StateMachine` type
-  - Compile-time FSM definition
-  - `Runner` class for execution
-  - Event-driven transitions
-
-- :material-file-tree:{ .lg .middle } __[Trees](tree.md)__
-
-    ---
-
-    Specialized tree structures.
-
-  - `Fenwick` — Binary indexed tree for prefix sums
-
-</div>
-
-## Design Principles
-
-### 1. Unified Types
-
-Both `Graph` and `StateMachine` use a single template with automatic storage selection:
-
-```cpp
-// Graph: storage selected by policy
-graph::Graph<Data, void, graph::Fixed<10, 20>> fixed_graph;   // Constexpr
-graph::Graph<Data, void, graph::Dynamic<>> dynamic_graph;     // Runtime
-
-// StateMachine: storage selected by capacity
-automata::StateMachine<Event, void, void, 4, 8> fixed_fsm;    // Constexpr
-automata::StateMachine<Event> dynamic_fsm;                    // Runtime
-```
+## Trees
 
 ### 2. Compile-Time Construction
 

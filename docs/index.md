@@ -5,13 +5,13 @@ description: Periapsis - A modern C++23 template library with modules support
 
 # Periapsis
 
-<p class="subtitle">A modern C++23 template library with modules support.</p>
+<p class="subtitle">A companion to the C++ standard library.</p>
 
 ---
 
 ## Overview
 
-Periapsis is a high-performance, concept-constrained template library designed for modern C++ development. It provides data structures and algorithms with first-class support for compile-time evaluation.
+A future-focused template library.
 
 <div class="grid cards" markdown>
 
@@ -19,7 +19,7 @@ Periapsis is a high-performance, concept-constrained template library designed f
 
     ---
 
-    Import the entire library with a single statement:
+    Import the entire library:
 
     ```cpp
     import synodic.periapsis;
@@ -29,7 +29,7 @@ Periapsis is a high-performance, concept-constrained template library designed f
 
     ---
 
-    Containers and algorithms designed for compile-time evaluation with `static_assert` verification.
+    Containers and algorithms designed for compile-time evaluation.
 
 - :material-shield-check:{ .lg .middle } __Concept-Constrained__
 
@@ -41,36 +41,9 @@ Periapsis is a high-performance, concept-constrained template library designed f
 
     ---
 
-    Fixed-capacity containers with no heap allocation and SIMD-ready alignment.
+    Fixed-capacity containers.
 
 </div>
-
-## Quick Start
-
-```cpp
-import synodic.periapsis;
-
-using namespace peri;
-
-// Constexpr ring buffer
-constexpr auto sum = [] constexpr {
-    FixedRingBuffer<int, 8> buf;
-    buf.push_back(1);
-    buf.push_back(2);
-    return buf.front() + buf.back();
-}();
-static_assert(sum == 3);
-
-// Compile-time graph
-constexpr auto build_graph() {
-    graph::Graph<void, void, graph::Fixed<4, 4>> g;
-    auto v0 = g.add_vertex();
-    auto v1 = g.add_vertex();
-    g.add_edge(v0, v1);
-    return g.num_edges();
-}
-static_assert(build_graph() == 1);
-```
 
 ## Library Components
 
@@ -86,7 +59,7 @@ static_assert(build_graph() == 1);
 
     ---
 
-    Graphs, automata (FSMs), and tree data structures.
+    Graphs, finite state machines, and tree data structures.
 
 - :material-math-compass:{ .lg .middle } __[Math](library/math/index.md)__
 
@@ -104,7 +77,7 @@ static_assert(build_graph() == 1);
 
     ---
 
-    Graph algorithms including max flow.
+    Graph algorithms.
 
 - :material-text:{ .lg .middle } __[Strings](library/strings/index.md)__
 
