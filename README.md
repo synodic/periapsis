@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/periapsis-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="docs/images/periapsis-light.svg">
-    <img width=25% alt="Periapsis Logo" src="docs/images/periapsis-light.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/synodic/periapsis/development/docs/images/periapsis-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/synodic/periapsis/development/docs/images/periapsis-light.svg">
+    <img width=25% alt="Periapsis Logo" src="https://raw.githubusercontent.com/synodic/periapsis/development/docs/images/periapsis-light.svg">
   </picture>
   <br>
   <em>A companion to the C++ standard library.</em>
