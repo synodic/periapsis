@@ -25,6 +25,8 @@ A future-focused template library.
 
 See [Setup](https://synodic.github.io/periapsis/setup) for setup instructions.
 
+[![Install with Porringer](https://img.shields.io/badge/Install_with-Porringer-blue)](synodic://install?manifest=https://raw.githubusercontent.com/synodic/periapsis/development/tool/porringer/porringer.json)
+
 ## Development
 
 Python is required for development.
