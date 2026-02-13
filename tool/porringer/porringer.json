@@ -1,36 +1,40 @@
 {
-    "version": "1",
-    "name": "Python Bootstrap",
-    "description": "Bootstrap a complete Python development environment from scratch",
-    "author": "Synodic Software",
-    "url": "https://github.com/synodic/porringer",
-    "runtimes": {
-        "python": [
-            "3.14"
-        ]
-    },
-    "packages": {
-        "python": [
-            {
-                "name": "pipx",
-                "description": "Install and run Python applications in isolated environments"
-            }
-        ]
-    },
-    "tools": {
-        "python": [
-            {
-                "name": "pdm",
-                "description": "Python package and dependency manager"
-            }
-        ]
-    },
-    "scm": {
-        "git": [
-            "https://github.com/synodic/porringer"
-        ]
-    },
-    "post_sync": [
-        "pdm install"
-    ]
+	"version": "1",
+	"name": "Python Bootstrap",
+	"description": "Bootstrap a complete Python development environment from scratch",
+	"author": "Synodic Software",
+	"url": "https://github.com/synodic/porringer",
+	"runtimes": {
+		"python": [
+			"3.14"
+		]
+	},
+	"packages": {
+		"python": [
+			{
+				"name": "pipx",
+				"description": "Install and run Python applications in isolated environments"
+			}
+		]
+	},
+	"tools": {
+		"python": [
+			{
+				"name": "pdm",
+				"description": "Python package and dependency manager"
+			},
+			{
+				"name": "cppython",
+				"description": "C++ package management for Python"
+			}
+		]
+	},
+	"scm": {
+		"git": [
+			"https://github.com/synodic/porringer"
+		]
+	},
+	"post_sync": [
+		"pdm install"
+	]
 }
