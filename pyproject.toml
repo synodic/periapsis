@@ -78,6 +78,9 @@ serve = "zensical serve"
 post_install = "copier recopy --force --skip-answered"
 post_update = "copier recopy --force --skip-answered"
 
+[tool.porringer]
+manifest = "tool/porringer/porringer.json"
+
 [build-system]
 build-backend = "pdm.backend"
 requires = ["pdm.backend"]
